@@ -1,0 +1,47 @@
+hash: 7c4f4f08aead5b51de7fc947365b851b9b2210749e7e30efab09010c4c7fdee4
+updated: 2017-02-08T13:29:11.425871147-05:00
+imports:
+- name: github.com/btcsuite/btclog
+  version: 73889fb79bd687870312b6e40effcecffbd57d30
+- name: github.com/btcsuite/go-socks
+  version: cfe8b59e565c1a5bd4e2005d77cd9aa8b2e14524
+  subpackages:
+  - socks
+- name: github.com/btcsuite/golangcrypto
+  version: 53f62d9b43e87a6c56975cf862af7edf33a8d0df
+  subpackages:
+  - ripemd160
+- name: github.com/btcsuite/seelog
+  version: 313961b101eb55f65ae0f03ddd4e322731763b6c
+- name: github.com/btcsuite/websocket
+  version: 31079b6807923eb23992c421b114992b95131b55
+- name: github.com/decred/blake256
+  version: a840e32d7c31fe2e0218607334cb120a683951a4
+- name: github.com/decred/dcrd
+  version: cdd4cf130dc3345dc3fa7615bcbc309ae2babb4b
+  subpackages:
+  - blockchain/stake
+  - blockchain/stake/internal/dbnamespace
+  - blockchain/stake/internal/ticketdb
+  - blockchain/stake/internal/tickettreap
+  - chaincfg
+  - chaincfg/chainec
+  - chaincfg/chainhash
+  - database
+  - dcrec/edwards
+  - dcrec/secp256k1
+  - dcrec/secp256k1/schnorr
+  - dcrjson
+  - txscript
+  - wire
+- name: github.com/decred/dcrrpcclient
+  version: 05e9423f948589f0446f13c66805ef7f5e82ea43
+- name: github.com/decred/dcrutil
+  version: ba0a5f399a43abc0e1a0a0442509c36f35321bce
+  subpackages:
+  - base58
+- name: github.com/decred/ed25519
+  version: b0909d3f798b97a03c9e77023f97a5301a2a7900
+  subpackages:
+  - edwards25519
+testImports: []

@@ -1,0 +1,15 @@
+{{define "home"}}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hard fork demo</title>
+        <script src="public/js/Chart.min.js"></script>
+    </head>
+    <body>
+    <h1>Current block height:{{.BlockHeight}}</h1>
+    <script>
+        var myChart = new Chart()
+    </script>
+</body>
+</html>
+{{end}}
