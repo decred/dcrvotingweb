@@ -8,21 +8,26 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 
-	"github.com/decred/dcrd/chaincfg/chainhash"
+	"github.com/decred/dcrd/chaincfg"
 	"github.com/decred/dcrd/wire"
 	"github.com/decred/dcrrpcclient"
 )
 
 type hardForkInfo struct {
-	BlockHeight int64
-	BlockHash   *chainhash.Hash
+	BlockHeight              int64
+	BlockVersionWindowValues map[uint64]*blockVersions
 }
+
+type blockVersions struct {
+	VersionPercentages map[int32]int64
+}
+
+var activeNetParams = &chaincfg.TestNetParams
 
 var hardForkInformation = &hardForkInfo{}
 
@@ -45,18 +50,29 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	hardForkInformation.BlockHash = hash
+	stakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(), int32(activeNetParams.BlockUpgradeNumToCheck*2))
+	if err != nil {
+		fmt.Println(err)
+	}
+	blockVersionLookBack := make(map[uint64]*blockVersions, activeNetParams.BlockUpgradeNumToCheck)
+
+	for i := uint64(0); i < activeNetParams.BlockUpgradeNumToCheck; i++ {
+		currentBlockVersions := &blockVersions{}
+		currentBlockVersionPercentages := make(map[int32]int64)
+		for j := i; j < activeNetParams.BlockUpgradeNumToCheck+i; j++ {
+			currentBlockVersionPercentages[stakeVersionResults.StakeVersions[i].BlockVersion] += currentBlockVersionPercentages[stakeVersionResults.StakeVersions[i].BlockVersion] + int64(1)
+			//fmt.Println(i, j)
+		}
+		currentBlockVersions.VersionPercentages = currentBlockVersionPercentages
+		blockVersionLookBack[i] = currentBlockVersions
+	}
+	hardForkInformation.BlockVersionWindowValues = blockVersionLookBack
 	hardForkInformation.BlockHeight = height
 }
 
 var mux map[string]func(http.ResponseWriter, *http.Request)
 
 func main() {
-	server := http.Server{
-		Addr:    ":8000",
-		Handler: &myHandler{},
-	}
-
 	mux = make(map[string]func(http.ResponseWriter, *http.Request))
 	mux["/"] = demoPage
 
@@ -107,7 +123,7 @@ func main() {
 			"block notifications: %s\n", err.Error())
 		os.Exit(1)
 	}
-
+	updateHardForkInformation(dcrdClient)
 	go func() {
 		for {
 			select {
@@ -123,17 +139,11 @@ func main() {
 			}
 		}
 	}()
-
-	server.ListenAndServe()
-}
-
-type myHandler struct{}
-
-func (*myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if h, ok := mux[r.URL.String()]; ok {
-		h(w, r)
-		return
+	http.HandleFunc("/", demoPage)
+	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("public/js/"))))
+	http.Handle("/css", http.StripPrefix("/css/", http.FileServer(http.Dir("public/css/"))))
+	err = http.ListenAndServe(":8000", nil)
+	if err != nil {
+		fmt.Printf("Failed to bind http server: %s\n", err.Error())
 	}
-
-	io.WriteString(w, "My server: "+r.URL.String())
 }

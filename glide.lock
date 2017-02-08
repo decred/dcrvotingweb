@@ -1,10 +1,10 @@
-hash: 7c4f4f08aead5b51de7fc947365b851b9b2210749e7e30efab09010c4c7fdee4
-updated: 2017-02-08T13:29:11.425871147-05:00
+hash: 4d4c2d87b101d296fa8f05ca8374b9e8d8d2554eca4a8c4cefbe63e8fc12c2bf
+updated: 2017-02-08T16:01:33.353385642-05:00
 imports:
 - name: github.com/btcsuite/btclog
   version: 73889fb79bd687870312b6e40effcecffbd57d30
 - name: github.com/btcsuite/go-socks
-  version: cfe8b59e565c1a5bd4e2005d77cd9aa8b2e14524
+  version: 4720035b7bfd2a9bb130b1c184f8bbe41b6f0d0f
   subpackages:
   - socks
 - name: github.com/btcsuite/golangcrypto
@@ -18,7 +18,7 @@ imports:
 - name: github.com/decred/blake256
   version: a840e32d7c31fe2e0218607334cb120a683951a4
 - name: github.com/decred/dcrd
-  version: cdd4cf130dc3345dc3fa7615bcbc309ae2babb4b
+  version: 278a49154346b49af9451e555fb4db20fa676d05
   subpackages:
   - blockchain/stake
   - blockchain/stake/internal/dbnamespace
@@ -35,7 +35,7 @@ imports:
   - txscript
   - wire
 - name: github.com/decred/dcrrpcclient
-  version: 05e9423f948589f0446f13c66805ef7f5e82ea43
+  version: b498119ecaab8b8f063e8f4920e635ec4c2e7a82
 - name: github.com/decred/dcrutil
   version: ba0a5f399a43abc0e1a0a0442509c36f35321bce
   subpackages:
