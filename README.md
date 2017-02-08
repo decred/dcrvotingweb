@@ -43,5 +43,5 @@ is used for this project.
 
 ## License
 
-decrediton is licensed under the [copyfree](http://copyfree.org) ISC License.
+hardforkdemo is licensed under the [copyfree](http://copyfree.org) ISC License.
 
