@@ -19,12 +19,12 @@ import (
 )
 
 type hardForkInfo struct {
-	BlockHeight              int64
-	BlockVersionWindowValues map[uint64]*blockVersions
+	BlockHeight   int64
+	BlockVersions map[int32]*blockVersions
 }
 
 type blockVersions struct {
-	VersionPercentages map[int32]int64
+	RollingWindowLookBacks map[uint64]int64
 }
 
 var activeNetParams = &chaincfg.TestNetParams
@@ -54,8 +54,15 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	blockVersionLookBack := make(map[uint64]*blockVersions, activeNetParams.BlockUpgradeNumToCheck)
 
+	blockVersionsFound := make(map[int32]*blockVersions)
+	for i, stakeVersions := range stakeVersionResults.StakeVersions {
+		_, ok := blockVersionsFound[stakeVersions.BlockVersion]
+		if !ok {
+			blockVersionsFound[stakeVersions.BlockVersion] = &blockVersions{}
+			fmt.Printf("found block version: %v\n", stakeVersions.BlockVersion)
+		}
+	}
 	for i := uint64(0); i < activeNetParams.BlockUpgradeNumToCheck; i++ {
 		currentBlockVersions := &blockVersions{}
 		currentBlockVersionPercentages := make(map[int32]int64)
