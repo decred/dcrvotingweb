@@ -18,16 +18,29 @@ import (
 	"github.com/decred/dcrrpcclient"
 )
 
+// Settings for daemon
+var dcrdCertPath = ("/home/user/.dcrd/rpc.cert")
+var dcrdServer = "127.0.0.1:19109"
+var dcrdUser = "USER"
+var dcrdPass = "PASSWORD"
+
+// Daemon Params to use
+var activeNetParams = &chaincfg.TestNetParams
+
+// Webserver settings
+var listeningPort = ":8000"
+
+// Overall Data structure given to the template to render
 type hardForkInfo struct {
 	BlockHeight   int64
 	BlockVersions map[int32]*blockVersions
 }
 
+// Contains a certain block version's count of blocks in the
+// rolling window (which has a length of activeNetParams.BlockUpgradeNumToCheck)
 type blockVersions struct {
-	RollingWindowLookBacks map[uint64]int64
+	RollingWindowLookBacks map[int]int
 }
-
-var activeNetParams = &chaincfg.TestNetParams
 
 var hardForkInformation = &hardForkInfo{}
 
@@ -50,30 +63,36 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	stakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(), int32(activeNetParams.BlockUpgradeNumToCheck*2))
+	// Request twice as many, so we can populate the rolling block version window's first
+	stakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
+		int32(activeNetParams.BlockUpgradeNumToCheck*2))
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	blockVersionsFound := make(map[int32]*blockVersions)
-	for i, stakeVersions := range stakeVersionResults.StakeVersions {
-		_, ok := blockVersionsFound[stakeVersions.BlockVersion]
-		if !ok {
-			blockVersionsFound[stakeVersions.BlockVersion] = &blockVersions{}
-			fmt.Printf("found block version: %v\n", stakeVersions.BlockVersion)
+	// Start halfway through StakeVersions results, so we can populate first data point (100)
+	for i := len(stakeVersionResults.StakeVersions) / 2; i < len(stakeVersionResults.StakeVersions); i++ {
+		currentLoc := i - int(activeNetParams.BlockUpgradeNumToCheck)
+		stakeVersionsWindow := stakeVersionResults.StakeVersions[currentLoc:i]
+		for _, stakeVersion := range stakeVersionsWindow {
+			_, ok := blockVersionsFound[stakeVersion.BlockVersion]
+			if !ok {
+				// Had not found this block version yet
+				blockVersionsFound[stakeVersion.BlockVersion] = &blockVersions{}
+				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks = make(map[int]int, activeNetParams.BlockUpgradeNumToCheck)
+				// Need to populate "back" to fill in values for previously missed window
+				for k := 0; k < currentLoc; k++ {
+					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[k] = 0
+				}
+			} else {
+				// Already had that block version, so increment
+				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[currentLoc] =
+					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[currentLoc] + 1
+			}
 		}
 	}
-	for i := uint64(0); i < activeNetParams.BlockUpgradeNumToCheck; i++ {
-		currentBlockVersions := &blockVersions{}
-		currentBlockVersionPercentages := make(map[int32]int64)
-		for j := i; j < activeNetParams.BlockUpgradeNumToCheck+i; j++ {
-			currentBlockVersionPercentages[stakeVersionResults.StakeVersions[i].BlockVersion] += currentBlockVersionPercentages[stakeVersionResults.StakeVersions[i].BlockVersion] + int64(1)
-			//fmt.Println(i, j)
-		}
-		currentBlockVersions.VersionPercentages = currentBlockVersionPercentages
-		blockVersionLookBack[i] = currentBlockVersions
-	}
-	hardForkInformation.BlockVersionWindowValues = blockVersionLookBack
+	hardForkInformation.BlockVersions = blockVersionsFound
 	hardForkInformation.BlockHeight = height
 }
 
@@ -98,16 +117,12 @@ func main() {
 		},
 	}
 	var dcrdCerts []byte
-	dcrdCertPath := ("/home/user/.dcrd/rpc.cert")
 	dcrdCerts, err := ioutil.ReadFile(dcrdCertPath)
 	if err != nil {
 		fmt.Printf("Failed to read dcrd cert file at %s: %s\n", dcrdCertPath,
 			err.Error())
 		os.Exit(1)
 	}
-	dcrdServer := "127.0.0.1:19109"
-	dcrdUser := "USER"
-	dcrdPass := "PASSWORD"
 	fmt.Printf("Attempting to connect to dcrd RPC %s as user %s "+
 		"using certificate located in %s\n",
 		dcrdServer, dcrdUser, dcrdCertPath)
@@ -151,7 +166,7 @@ func main() {
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("public/css/"))))
 	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir("public/fonts/"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("public/images/"))))
-	err = http.ListenAndServe(":8000", nil)
+	err = http.ListenAndServe(listeningPort, nil)
 	if err != nil {
 		fmt.Printf("Failed to bind http server: %s\n", err.Error())
 	}
