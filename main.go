@@ -33,7 +33,7 @@ var hardForkInformation = &hardForkInfo{}
 
 func demoPage(w http.ResponseWriter, r *http.Request) {
 
-	fp := filepath.Join("public/views", "home.html")
+	fp := filepath.Join("public/views", "design_sketch.html")
 	tmpl, err := template.New("home").ParseFiles(fp)
 	if err != nil {
 		panic(err)
@@ -141,7 +141,9 @@ func main() {
 	}()
 	http.HandleFunc("/", demoPage)
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("public/js/"))))
-	http.Handle("/css", http.StripPrefix("/css/", http.FileServer(http.Dir("public/css/"))))
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("public/css/"))))
+	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir("public/fonts/"))))
+	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("public/images/"))))
 	err = http.ListenAndServe(":8000", nil)
 	if err != nil {
 		fmt.Printf("Failed to bind http server: %s\n", err.Error())
