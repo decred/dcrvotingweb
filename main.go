@@ -39,7 +39,7 @@ type hardForkInfo struct {
 // Contains a certain block version's count of blocks in the
 // rolling window (which has a length of activeNetParams.BlockUpgradeNumToCheck)
 type blockVersions struct {
-	RollingWindowLookBacks map[int]int
+	RollingWindowLookBacks []int
 }
 
 var hardForkInformation = &hardForkInfo{}
@@ -80,7 +80,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 			if !ok {
 				// Had not found this block version yet
 				blockVersionsFound[stakeVersion.BlockVersion] = &blockVersions{}
-				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks = make(map[int]int, activeNetParams.BlockUpgradeNumToCheck)
+				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks = make([]int, activeNetParams.BlockUpgradeNumToCheck)
 				// Need to populate "back" to fill in values for previously missed window
 				for k := 0; k < currentLoc; k++ {
 					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[k] = 0

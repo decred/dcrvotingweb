@@ -94,15 +94,15 @@ PoS Miners on latest Votebits: <span style="color:#FD714A;">80%</span>
 <!-- FIRST CHART -->
 <canvas id="blockVersions" width="400" height="200"></canvas>
 <script>
-var ctx = document.getElementById("blockVersions");
-var myChart = new Chart(ctx, {
+  var ctx = document.getElementById("blockVersions");
+  var myChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: ["105600", "105744", "105888", "106032", "106176", "106320", "106464"],
-    datasets: [
+      labels: ["105600", "105744", "105888", "106032", "106176", "106320", "106464"],
+      datasets: [
+      {{range $i, $element := .BlockVersions}}
         {
-            label: "Block v2",
-
+            label: "Block v"+{{$i}},
             fill: true,
             lineTension: 0.1,
             backgroundColor: "rgba(75,192,192,0.4)",
@@ -120,9 +120,11 @@ var myChart = new Chart(ctx, {
             pointHoverBorderWidth: 2,
             pointRadius: 1,
             pointHitRadius: 10,
-            data: [100, 80, 60, 50, 40, 30, 15],
+            data: {{.RollingWindowLookBacks}},
             spanGaps: false,
         },
+        {{end}}
+        /*
         {
             label: "Block v3",
             fill: true,
@@ -144,7 +146,8 @@ var myChart = new Chart(ctx, {
             pointHitRadius: 10,
             data: [0, 20, 40, 50, 60, 70, 85],
             spanGaps: false,
-        }]
+        }
+        */]
     },
     options: {
 	title: {
