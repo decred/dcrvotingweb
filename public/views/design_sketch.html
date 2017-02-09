@@ -1,5 +1,5 @@
 <!-- CAUTION: This is a professionally uglified proof-of-concept by karamble. Base for discussion, let me know your thoughts. -->
-
+{{define "home"}}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -71,7 +71,7 @@
 <div class="col-md-6">
 <blockquote>Current Consensus Ruleset: v3
 <br />
-Blockheight: 105021
+Blockheight: {{.BlockHeight}}
 <br />
 PoW Miners on latest Block Version: <span style="color:#2ED6A1;">95%</span>
 <br />
@@ -479,4 +479,4 @@ new Chart(ctu, configctu);
 
   </body>
 </html>
-
+{{end}}
