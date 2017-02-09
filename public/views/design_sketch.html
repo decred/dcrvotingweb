@@ -63,7 +63,7 @@
 <!-- INTRODUCTION TEXT -->
 <div class="row">
 <div class="col-md-6">
-<p>When 95% of the Blocks (PoW) and Votes (PoS) in a rolling 144 Block Window (SVI) are on the latest version, this new votebit version can be locked in.</p>
+<p>When {{.BlockVersionThreshold}}% of the Blocks (PoW) and Votes (PoS) in a rolling {{.BlockVersionWindowLength}} Block Window (SVI) are on the latest version, this new votebit version can be locked in.</p>
 <p>At that point, nodes will begin rejecting blocks and votes with any version less than the latest one.</p>
 </div>
 
@@ -182,21 +182,22 @@ PoS Miners on latest Votebits: <span style="color:#FD714A;">80%</span>
 <canvas id="blockVersionsIndicator" width="400" height="510"></canvas>
 </div>
 <script>
+var blockVersionColors = ['','','#FD714A', '#41BF53']
 var config = {
   type: 'bar',
   data: {
-    labels: ["Last 144 Blocks"],
-    datasets: [{
+    labels: ["Last {{.BlockVersionWindowLength}} Blocks"],
+    datasets: [
+    {{range $i, $element := .BlockVersions}}
+    {{$length := minus (len $element.RollingWindowLookBacks) 1}}
+      {
       type: 'bar',
-      label: 'Block v2',
-      backgroundColor: "#FD714A",
-      data: [7],
-    }, {
-      type: 'bar',
-      label: 'Block v3',
-      backgroundColor: "#41BF53",
-      data: [137]
-    }]
+      label: 'Block v{{$i}}',
+      backgroundColor: blockVersionColors[{{$i}}],
+      data: [{{index $element.RollingWindowLookBacks $length}}],
+      }, 
+    {{end}}
+    ]
   },
   options: {
     scales: {

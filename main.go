@@ -32,9 +32,11 @@ var listeningPort = ":8000"
 
 // Overall Data structure given to the template to render
 type hardForkInfo struct {
-	BlockHeight          int64
-	BlockVersions        map[int32]*blockVersions
-	BlockVersionsHeights []int64
+	BlockHeight              int64
+	BlockVersions            map[int32]*blockVersions
+	BlockVersionsHeights     []int64
+	BlockVersionWindowLength uint64
+	BlockVersionThreshold    int
 }
 
 // Contains a certain block version's count of blocks in the
@@ -45,10 +47,18 @@ type blockVersions struct {
 
 var hardForkInformation = &hardForkInfo{}
 
+var funcMap = template.FuncMap{
+	"minus": minus,
+}
+
+func minus(a, b int) int {
+	return a - b
+}
+
 func demoPage(w http.ResponseWriter, r *http.Request) {
 
 	fp := filepath.Join("public/views", "design_sketch.html")
-	tmpl, err := template.New("home").ParseFiles(fp)
+	tmpl, err := template.New("home").Funcs(funcMap).ParseFiles(fp)
 	if err != nil {
 		panic(err)
 	}
@@ -101,6 +111,8 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.BlockVersionsHeights = blockVersionsHeights
 	hardForkInformation.BlockVersions = blockVersionsFound
 	hardForkInformation.BlockHeight = height
+	hardForkInformation.BlockVersionThreshold = int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
+	hardForkInformation.BlockVersionWindowLength = activeNetParams.BlockUpgradeNumToCheck
 }
 
 var mux map[string]func(http.ResponseWriter, *http.Request)
