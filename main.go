@@ -18,25 +18,35 @@ import (
 	"github.com/decred/dcrrpcclient"
 )
 
+// Set some high value to check version number
+var maxVersion = 10000
+
 // Settings for daemon
 var dcrdCertPath = ("/home/user/.dcrd/rpc.cert")
-var dcrdServer = "127.0.0.1:19109"
+var dcrdServer = "127.0.0.1:9109"
 var dcrdUser = "USER"
 var dcrdPass = "PASSWORD"
 
 // Daemon Params to use
-var activeNetParams = &chaincfg.TestNetParams
+var activeNetParams = &chaincfg.MainNetParams
 
 // Webserver settings
 var listeningPort = ":8000"
 
 // Overall Data structure given to the template to render
 type hardForkInfo struct {
-	BlockHeight              int64
-	BlockVersions            map[int32]*blockVersions
-	BlockVersionsHeights     []int64
-	BlockVersionWindowLength uint64
-	BlockVersionThreshold    int
+	BlockHeight                   int64
+	BlockVersions                 map[int32]*blockVersions
+	BlockVersionsHeights          []int64
+	BlockVersionWindowLength      uint64
+	BlockVersionEnforceThreshold  int
+	BlockVersionRejectThreshold   int
+	CurrentCalculatedBlockVersion int32
+	BlockCountAtLatestVersion     int
+	StakeVersionThreshold         int
+	StakeVersionWindowLength      int64
+	MostPopularVersion            int32
+	MostPopularVersionPercentage  float64
 }
 
 // Contains a certain block version's count of blocks in the
@@ -88,7 +98,6 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 		windowEnd := i + int(activeNetParams.BlockUpgradeNumToCheck)
 		blockVersionsHeights[elementNum] = stakeVersionResults.StakeVersions[i].Height
 		stakeVersionsWindow := stakeVersionResults.StakeVersions[i:windowEnd]
-
 		for _, stakeVersion := range stakeVersionsWindow {
 			_, ok := blockVersionsFound[stakeVersion.BlockVersion]
 			if !ok {
@@ -110,9 +119,39 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 	hardForkInformation.BlockVersionsHeights = blockVersionsHeights
 	hardForkInformation.BlockVersions = blockVersionsFound
+
+	// Calculate current block version and most popular version (and that percentage)
+	hardForkInformation.CurrentCalculatedBlockVersion = int32(maxVersion)
+	mostPopularVersionCount := 0
+	for i, blockVersion := range hardForkInformation.BlockVersions {
+		tipBlockVersionCount := blockVersion.RollingWindowLookBacks[len(blockVersion.RollingWindowLookBacks)-1]
+		if tipBlockVersionCount >= int(activeNetParams.BlockRejectNumRequired) {
+			hardForkInformation.CurrentCalculatedBlockVersion = i
+			hardForkInformation.MostPopularVersion = i
+			hardForkInformation.MostPopularVersionPercentage = float64(tipBlockVersionCount) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100
+		}
+		if tipBlockVersionCount > mostPopularVersionCount {
+			mostPopularVersionCount = tipBlockVersionCount
+			hardForkInformation.MostPopularVersion = i
+			hardForkInformation.MostPopularVersionPercentage = float64(tipBlockVersionCount) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100
+		}
+	}
+	if hardForkInformation.CurrentCalculatedBlockVersion == int32(maxVersion) {
+		for i := range hardForkInformation.BlockVersions {
+			if i < hardForkInformation.CurrentCalculatedBlockVersion {
+				hardForkInformation.CurrentCalculatedBlockVersion = i
+			}
+		}
+	}
+
 	hardForkInformation.BlockHeight = height
-	hardForkInformation.BlockVersionThreshold = int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
+	hardForkInformation.BlockVersionEnforceThreshold = int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
+	hardForkInformation.BlockVersionRejectThreshold = int(float64(activeNetParams.BlockRejectNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
 	hardForkInformation.BlockVersionWindowLength = activeNetParams.BlockUpgradeNumToCheck
+	hardForkInformation.StakeVersionWindowLength = activeNetParams.StakeVersionInterval
+
+	// XXX Fill in with real numbers once added to params
+	hardForkInformation.StakeVersionThreshold = 75
 }
 
 var mux map[string]func(http.ResponseWriter, *http.Request)

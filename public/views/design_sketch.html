@@ -63,19 +63,19 @@
 <!-- INTRODUCTION TEXT -->
 <div class="row">
 <div class="col-md-6">
-<p>When {{.BlockVersionThreshold}}% of the Blocks (PoW) and Votes (PoS) in a rolling {{.BlockVersionWindowLength}} Block Window (SVI) are on the latest version, this new votebit version can be locked in.</p>
-<p>At that point, nodes will begin rejecting blocks and votes with any version less than the latest one.</p>
+<p>Once the majority of the PoW miners have upgraded ({{.BlockVersionRejectThreshold}}% of the {{.BlockVersionWindowLength}} most recent blocks are at the latest version) 
+  and the majority of the PoS miners ({{.StakeVersionThreshold}}% of the votes in a {{.StakeVersionWindowLength}} block window) have upgraded, the voting process begins.</p>
 </div>
 
 <!-- OVERALL STATISTICS -->
 <div class="col-md-6">
-<blockquote>Current Consensus Ruleset: v3
+<blockquote>Network Block Version: v{{.CurrentCalculatedBlockVersion}}
 <br />
 Blockheight: {{.BlockHeight}}
 <br />
-PoW Miners on latest Block Version: <span style="color:#2ED6A1;">95%</span>
+Most popular version (v{{.MostPopularVersion}}) percentage: <span style="color:#2ED6A1;">{{.MostPopularVersionPercentage}}%</span>
 <br />
-PoS Miners on latest Votebits: <span style="color:#FD714A;">80%</span>
+PoS Miners on latest Votebits: <span style="color:#FD714A;">XX%</span>
 </blockquote>
 </div>
 </div>
@@ -96,7 +96,7 @@ PoS Miners on latest Votebits: <span style="color:#FD714A;">80%</span>
 <canvas id="blockVersions" width="400" height="200"></canvas>
 <script>
 
-  var blockVersionGraphColors = ['','','75,192,192','41,113,255']
+  var blockVersionGraphColors = ['23,12,220','244,100,1','75,192,192','41,113,255']
   var ctx = document.getElementById("blockVersions");
   var myChart = new Chart(ctx, {
     type: 'line',
@@ -224,7 +224,7 @@ new Chart(ctx, config);
 <dic class="col-md-12">
 <br /><br />
 <div class="alert alert-success">
-  <strong>Success!</strong> During the last {{.BlockVersionWindowLength}} Blocks we have reached the minimum of XX% Blocks which are on the latest Block Version <strong>v3</strong>
+  <strong>Success!</strong> During the last {{.BlockVersionWindowLength}} Blocks we have reached the minimum of {{.BlockVersionRejectThreshold}}% Blocks which are on the latest Block Version <strong>vX</strong>
 </div>
 </div>
 
