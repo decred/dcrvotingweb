@@ -32,8 +32,9 @@ var listeningPort = ":8000"
 
 // Overall Data structure given to the template to render
 type hardForkInfo struct {
-	BlockHeight   int64
-	BlockVersions map[int32]*blockVersions
+	BlockHeight          int64
+	BlockVersions        map[int32]*blockVersions
+	BlockVersionsHeights []int64
 }
 
 // Contains a certain block version's count of blocks in the
@@ -71,10 +72,13 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 
 	blockVersionsFound := make(map[int32]*blockVersions)
-	// Start halfway through StakeVersions results, so we can populate first data point (100)
-	for i := len(stakeVersionResults.StakeVersions) / 2; i < len(stakeVersionResults.StakeVersions); i++ {
-		currentLoc := i - int(activeNetParams.BlockUpgradeNumToCheck)
-		stakeVersionsWindow := stakeVersionResults.StakeVersions[currentLoc:i]
+	blockVersionsHeights := make([]int64, activeNetParams.BlockUpgradeNumToCheck)
+	elementNum := 0
+	for i := len(stakeVersionResults.StakeVersions)/2 - 1; i >= 0; i-- {
+		windowEnd := i + int(activeNetParams.BlockUpgradeNumToCheck)
+		blockVersionsHeights[elementNum] = stakeVersionResults.StakeVersions[i].Height
+		stakeVersionsWindow := stakeVersionResults.StakeVersions[i:windowEnd]
+
 		for _, stakeVersion := range stakeVersionsWindow {
 			_, ok := blockVersionsFound[stakeVersion.BlockVersion]
 			if !ok {
@@ -82,16 +86,19 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 				blockVersionsFound[stakeVersion.BlockVersion] = &blockVersions{}
 				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks = make([]int, activeNetParams.BlockUpgradeNumToCheck)
 				// Need to populate "back" to fill in values for previously missed window
-				for k := 0; k < currentLoc; k++ {
+				for k := 0; k < elementNum; k++ {
 					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[k] = 0
 				}
+				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[elementNum] = 1
 			} else {
 				// Already had that block version, so increment
-				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[currentLoc] =
-					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[currentLoc] + 1
+				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[elementNum] =
+					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[elementNum] + 1
 			}
 		}
+		elementNum++
 	}
+	hardForkInformation.BlockVersionsHeights = blockVersionsHeights
 	hardForkInformation.BlockVersions = blockVersionsFound
 	hardForkInformation.BlockHeight = height
 }

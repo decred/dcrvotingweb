@@ -98,7 +98,7 @@ PoS Miners on latest Votebits: <span style="color:#FD714A;">80%</span>
   var myChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ["105600", "105744", "105888", "106032", "106176", "106320", "106464"],
+      labels: {{.BlockVersionsHeights}},
       datasets: [
       {{range $i, $element := .BlockVersions}}
         {
@@ -150,26 +150,28 @@ PoS Miners on latest Votebits: <span style="color:#FD714A;">80%</span>
         */]
     },
     options: {
-	title: {
-            display: true,
-            text: 'PoW Block Versions',
+	  title: {
+      display: true,
+      text: 'PoW Block Versions',
 	    fontColor: '#FFF'
-        },
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero:true,
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero:true,
 			    fontColor: '#FFF'
-                }
-            }],
-	xAxes: [{
-                ticks: {
-                    beginAtZero:true,
-			    fontColor: '#FFF'
-                }
-            }]
         }
+      }],
+	    xAxes: [{
+        ticks: {
+          autoSkipPadding: 50,
+          beginAtZero:true,
+			    fontColor: '#FFF',
+          reverse: true,
+        }
+      }]
     }
+  }
 });
 </script>
 </div>
