@@ -58,6 +58,7 @@ type hardForkInfo struct {
 	RuleChangeActivationWindow      uint32
 	RuleChangeActivationWindowVotes uint32
 
+	Quorum                    bool
 	QuorumPercentage          float64
 	QuorumVotes               int
 	QuorumVotedPercentage     float64
@@ -257,6 +258,14 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.StakeVersionThreshold = float64(activeNetParams.StakeMajorityMultiplier) / float64(activeNetParams.StakeMajorityDivisor) * 100
 
 	// Quorum/vote information
+
+	getVoteInfo, err := dcrdClient.GetVoteInfo(4)
+	if err != nil {
+		fmt.Println("Get vote info err", err)
+		hardForkInformation.Quorum = false
+		return
+	}
+	hardForkInformation.Quorum = true
 	hardForkInformation.RuleChangeActivationQuorum = activeNetParams.RuleChangeActivationQuorum
 	hardForkInformation.RuleChangeActivationMultiplier = activeNetParams.RuleChangeActivationMultiplier
 	hardForkInformation.RuleChangeActivationDivisor = activeNetParams.RuleChangeActivationDivisor
@@ -264,18 +273,24 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
 	hardForkInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(hardForkInformation.RuleChangeActivationWindowVotes) * 100
 
-	hardForkInformation.QuorumVotedPercentage = 0.1 * 100
-	hardForkInformation.QuorumAbstainedPercentage = 0.9 * 100
-
-	hardForkInformation.AgendaID = "Agenda ID"
-	hardForkInformation.AgendaDescription = "Agenda Description"
-	hardForkInformation.VoteStartHeight = int64(200000)
-	hardForkInformation.VoteEndHeight = int64(210000)
-	hardForkInformation.VoteBlockLeft = int64(2000)
+	hardForkInformation.QuorumVotedPercentage = getVoteInfo.Agendas[0].QuorumPercentage
+	hardForkInformation.QuorumAbstainedPercentage = float64(1) - getVoteInfo.Agendas[0].QuorumPercentage
+	hardForkInformation.AgendaID = getVoteInfo.Agendas[0].Id
+	hardForkInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
+	hardForkInformation.VoteStartHeight = getVoteInfo.StartHeight
+	hardForkInformation.VoteEndHeight = getVoteInfo.EndHeight
+	hardForkInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
 	hardForkInformation.VoteExpirationBlock = int64(210001)
 
-	hardForkInformation.ChoiceIds = []string{"yes", "no", "abstain"}
-	hardForkInformation.ChoicePercentages = []float64{0.1 * 100, 0.2 * 100, 0.6 * 100}
+	choiceIds := make([]string, len(getVoteInfo.Agendas[0].Choices))
+	choicePercentages := make([]float64, len(getVoteInfo.Agendas[0].Choices))
+	for i, choice := range getVoteInfo.Agendas[0].Choices {
+		choiceIds[i] = choice.Id
+		choicePercentages[i] = choice.Percentage
+	}
+	hardForkInformation.ChoiceIds = choiceIds
+	hardForkInformation.ChoicePercentages = choicePercentages
+
 }
 
 var mux map[string]func(http.ResponseWriter, *http.Request)

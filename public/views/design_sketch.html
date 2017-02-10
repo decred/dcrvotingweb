@@ -127,6 +127,7 @@
       <br />
       <br />
       <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION TRESHOLD 95% -->
+      {{if .Quorum}}
       <h4><span>Step 2</span></h4>
       <!-- INTRODUCTION TEXT -->
       <div class="row">
@@ -159,6 +160,7 @@
           </blockquote>
         </div>
       </div>
+      {{end}}
     </div> <!-- /container -->
 
   <!-- blockVersions line chart-->
@@ -313,7 +315,7 @@
     };
     var cty = document.getElementById("voteVersions");
     var myChart = new Chart(cty, voteVersionLineConfig);
-
+    {{if .Quorum}}
     var voteVersionBarConfig = {
       type: 'bar',
       data: {
@@ -399,6 +401,7 @@
     };
     var ctu = document.getElementById("voteProgress");
     new Chart(ctu, quorumDonutConfig);
+    {{end}}
   </script>
     
     <!-- Bootstrap core JavaScript
