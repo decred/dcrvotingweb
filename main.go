@@ -43,7 +43,7 @@ type hardForkInfo struct {
 	BlockVersionRejectThreshold   int
 	CurrentCalculatedBlockVersion int32
 	BlockCountAtLatestVersion     int
-	StakeVersionThreshold         int
+	StakeVersionThreshold         float64
 	StakeVersionWindowLength      int64
 	StakeVersionWindowStartHeight int64
 	StakeVersionWindowEndHeight   int
@@ -228,7 +228,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.StakeVersionWindowLength = activeNetParams.StakeVersionInterval
 
 	// XXX Fill in with real numbers once added to params
-	hardForkInformation.StakeVersionThreshold = int(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)) * 100
+	hardForkInformation.StakeVersionThreshold = float64(activeNetParams.StakeMajorityMultiplier) / float64(activeNetParams.StakeMajorityDivisor) * 100
 }
 
 var mux map[string]func(http.ResponseWriter, *http.Request)
