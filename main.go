@@ -196,8 +196,8 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 		}
 		elementNum++
 	}
-	numDataPoints := 20
-	dataTickLength := int(len(heightstakeVersionResults.StakeVersions)) / numDataPoints
+	numDataPoints := 24
+	dataTickLength := int(activeNetParams.StakeVersionInterval) / numDataPoints
 	dataTickHeights := make([]int64, numDataPoints)
 	for vote := range stakeVersionsFound {
 		dataTickedVoteCounts := make([]int, numDataPoints)
@@ -205,14 +205,19 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 		for elementNum, counts := range stakeVersionsFound[vote].StaticWindowVoteCounts {
 			if elementNum%dataTickLength == 0 {
 				dataTickedVoteCounts[dataTicketNumber] = counts
-				if elementNum != 0 {
-					dataTickHeights[dataTicketNumber] = stakeVersionsHeights[elementNum]
-					dataTicketNumber++
-				}
+				dataTickHeights[dataTicketNumber] = stakeVersionsHeights[elementNum]
+				dataTicketNumber++
 			}
 		}
 		stakeVersionsFound[vote].StaticWindowVoteCounts = dataTickedVoteCounts
 	}
+	for i := range dataTickHeights {
+		if dataTickHeights[i] == 0 {
+			dataTickHeights[i] = dataTickHeights[i-1] + (int64(activeNetParams.StakeVersionInterval) / int64(numDataPoints))
+		}
+	}
+	// Add end of window height dataTick
+	dataTickHeights = append(dataTickHeights, dataTickHeights[len(dataTickHeights)-1]+int64(activeNetParams.StakeVersionInterval)/int64(numDataPoints))
 	hardForkInformation.StakeVersionHeights = dataTickHeights
 	hardForkInformation.StakeVersions = stakeVersionsFound
 
