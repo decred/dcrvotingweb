@@ -297,7 +297,9 @@
           yAxes: [{
             ticks: {
               beginAtZero:true,
-              fontColor: '#FFF'
+              fontColor: '#FFF',
+              suggestedMin: 0,
+              suggestedMax: {{.StakeVersionWindowVoteTotal}}
             }
           }],
           xAxes: [{
@@ -315,7 +317,7 @@
     var voteVersionBarConfig = {
       type: 'bar',
       data: {
-        labels: ["Last XXX Blocks"],
+        labels: ["Totals for Block {{.BlockHeight}}"],
         datasets: [
         {{range $i, $element := .StakeVersions}}
           {
@@ -330,10 +332,14 @@
       options: {
         scales: {
           xAxes: [{
-            stacked: true
+            stacked: true,
+            suggestedMin: 0,
+            suggestedMax: {{.StakeVersionWindowVoteTotal}}
           }],
           yAxes: [{
-            stacked: true
+            stacked: true,
+            suggestedMin: 0,
+            suggestedMax: {{.StakeVersionWindowVoteTotal}}
           }]
         }
       }
