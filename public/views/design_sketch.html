@@ -287,12 +287,11 @@ var config = {
     labels: ["Last XXX Blocks"],
     datasets: [
     {{range $i, $element := .StakeVersions}}
-    {{$length := minus (len $element.StaticWindowVoteCounts) 1}}
       {
       type: 'bar',
       label: 'Block v{{$i}}',
       backgroundColor: "rgba("+voteVersionGraphColors[{{$i}}]+",1)",
-      data: [{{index $element.StaticWindowVoteCounts $length}}],
+      data: [{{$element.CurrentTotalVotes}}],
       }, 
     {{end}}
     ]

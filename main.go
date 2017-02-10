@@ -64,6 +64,7 @@ type blockVersions struct {
 // (currentHeight - StakeValidationHeight) % StakeVersionInterval == 0
 type stakeVersions struct {
 	StaticWindowVoteCounts []int
+	CurrentTotalVotes      int
 }
 
 var hardForkInformation = &hardForkInfo{}
@@ -205,12 +206,15 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 		for elementNum, counts := range stakeVersionsFound[vote].StaticWindowVoteCounts {
 			if elementNum%dataTickLength == 0 {
 				dataTickedVoteCounts[dataTicketNumber] = counts
+				stakeVersionsFound[vote].CurrentTotalVotes = counts
 				dataTickHeights[dataTicketNumber] = stakeVersionsHeights[elementNum]
 				dataTicketNumber++
 			}
 		}
 		stakeVersionsFound[vote].StaticWindowVoteCounts = dataTickedVoteCounts
+
 	}
+	// Fill in heights for any that weren't populated
 	for i := range dataTickHeights {
 		if dataTickHeights[i] == 0 {
 			dataTickHeights[i] = dataTickHeights[i-1] + (int64(activeNetParams.StakeVersionInterval) / int64(numDataPoints))
@@ -218,6 +222,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 	// Add end of window height dataTick
 	dataTickHeights = append(dataTickHeights, dataTickHeights[len(dataTickHeights)-1]+int64(activeNetParams.StakeVersionInterval)/int64(numDataPoints))
+
 	hardForkInformation.StakeVersionHeights = dataTickHeights
 	hardForkInformation.StakeVersions = stakeVersionsFound
 
