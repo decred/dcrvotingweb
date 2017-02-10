@@ -263,8 +263,8 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
 	hardForkInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(hardForkInformation.RuleChangeActivationWindowVotes) * 100
 
-	hardForkInformation.QuorumVotedPercentage = 0.1
-	hardForkInformation.QuorumAbstainedPercentage = 0.9
+	hardForkInformation.QuorumVotedPercentage = 0.1 * 100
+	hardForkInformation.QuorumAbstainedPercentage = 0.9 * 100
 
 	hardForkInformation.AgendaID = "Agenda ID"
 	hardForkInformation.AgendaDescription = "Agenda Description"
@@ -274,7 +274,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.VoteExpirationBlock = int64(210001)
 
 	hardForkInformation.ChoiceIds = []string{"yes", "no", "abstain"}
-	hardForkInformation.ChoicePercentages = []float64{0.1, 0.2, 0.6}
+	hardForkInformation.ChoicePercentages = []float64{0.1 * 100, 0.2 * 100, 0.6 * 100}
 }
 
 var mux map[string]func(http.ResponseWriter, *http.Request)

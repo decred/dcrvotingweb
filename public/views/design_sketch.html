@@ -356,6 +356,17 @@
           data: [{{.QuorumAbstainedPercentage}}],
           backgroundColor: '#FD714A'
         }] 
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            display: true,
+            ticks: {
+              suggestedMin: 0,
+              suggestedMax: 100,
+            }
+          }]
+        }
       }
     };
     var cta = document.getElementById("voteQuorum");
@@ -364,9 +375,9 @@
     var quorumDonutConfig = {
       type: 'doughnut',
       data: {
-      labels: [{{.ChoiceIds}}],
+      labels: {{.ChoiceIds}},
         datasets: [{
-          data: [{{.ChoicePercentages}}],
+          data: {{.ChoicePercentages}},
           backgroundColor: [
             "#FD714A",
             "#41BF53",
