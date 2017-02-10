@@ -66,7 +66,7 @@
           <blockquote>
             Network Block Version: v{{.CurrentCalculatedBlockVersion}}
             <br />
-            Blockheight: {{.BlockHeight}}
+            Current Block Height: {{.BlockHeight}}
             <br />
             Most popular version (v{{.MostPopularVersion}}) percentage: <span style="color:#2ED6A1;">{{.MostPopularVersionPercentage}}%</span>
             <br />
@@ -145,15 +145,15 @@
         </div>
         <!-- OVERALL STATISTICS -->
         <div class="col-md-6">
-          <blockquote>Agenda ID: #3244 <- link to forum posting or rfp portal
+          <blockquote>Agenda ID: #{{.AgendaID}}
             <br />
-            Agenda Title: Block Expansion to 1MB <- same link again
+            Agenda Title: {{.AgendaDescription}}
             <br />
-            Voting Window: Block 100000-105040
+            Voting Window: Block {{.VoteStartHeight}}-{{.VoteEndHeight}}
             <br />
-            Blocks left for voting: 2300
+            Blocks left for voting: {{.VoteBlockLeft}}
             <br />
-            Expiration Block: 110080
+            Estimated Vote Expiration Block: {{.VoteExpirationBlock}}
             <h3>Voting Progress:</h3>
             <canvas id="voteProgress" width="100" height="100"></canvas>
           </blockquote>
@@ -348,12 +348,12 @@
         datasets: [{
           type: 'horizontalBar',
           label: 'Voted',
-          data: [9],
+          data: [{{.QuorumVotedPercentage}}],
           backgroundColor: '#41BF53',
           }, {
           type: 'horizontalBar',
           label: 'Abstained',
-          data: [91],
+          data: [{{.QuorumAbstainedPercentage}}],
           backgroundColor: '#FD714A'
         }] 
       }
@@ -364,9 +364,9 @@
     var quorumDonutConfig = {
       type: 'doughnut',
       data: {
-      labels: ["No","Yes","Abstain"],
+      labels: [{{.ChoiceIds}}],
         datasets: [{
-          data: [300, 50, 100],
+          data: [{{.ChoicePercentages}}],
           backgroundColor: [
             "#FD714A",
             "#41BF53",

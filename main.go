@@ -56,8 +56,21 @@ type hardForkInfo struct {
 	RuleChangeActivationDivisor     uint32
 	RuleChangeActivationWindow      uint32
 	RuleChangeActivationWindowVotes uint32
-	QuorumPercentage                float64
-	QuorumVotes                     int
+
+	QuorumPercentage          float64
+	QuorumVotes               int
+	QuorumVotedPercentage     float64
+	QuorumAbstainedPercentage float64
+
+	AgendaID            string
+	AgendaDescription   string
+	VoteStartHeight     int64
+	VoteEndHeight       int64
+	VoteBlockLeft       int64
+	VoteExpirationBlock int64
+
+	ChoiceIds         []string
+	ChoicePercentages []float64
 }
 
 // Contains a certain block version's count of blocks in the
@@ -249,6 +262,19 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.RuleChangeActivationWindow = activeNetParams.RuleChangeActivationWindow
 	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
 	hardForkInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(hardForkInformation.RuleChangeActivationWindowVotes) * 100
+
+	hardForkInformation.QuorumVotedPercentage = 0.1
+	hardForkInformation.QuorumAbstainedPercentage = 0.9
+
+	hardForkInformation.AgendaID = "Agenda ID"
+	hardForkInformation.AgendaDescription = "Agenda Description"
+	hardForkInformation.VoteStartHeight = int64(200000)
+	hardForkInformation.VoteEndHeight = int64(210000)
+	hardForkInformation.VoteBlockLeft = int64(2000)
+	hardForkInformation.VoteExpirationBlock = int64(210001)
+
+	hardForkInformation.ChoiceIds = []string{"yes", "no", "abstain"}
+	hardForkInformation.ChoicePercentages = []float64{0.1, 0.2, 0.6}
 }
 
 var mux map[string]func(http.ResponseWriter, *http.Request)
