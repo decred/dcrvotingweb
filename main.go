@@ -35,22 +35,29 @@ var listeningPort = ":8000"
 
 // Overall Data structure given to the template to render
 type hardForkInfo struct {
-	BlockHeight                   int64
-	BlockVersions                 map[int32]*blockVersions
-	BlockVersionsHeights          []int64
-	BlockVersionWindowLength      uint64
-	BlockVersionEnforceThreshold  int
-	BlockVersionRejectThreshold   int
-	CurrentCalculatedBlockVersion int32
-	BlockCountAtLatestVersion     int
-	StakeVersionThreshold         float64
-	StakeVersionWindowLength      int64
-	StakeVersionWindowStartHeight int64
-	StakeVersionWindowEndHeight   int
-	MostPopularVersion            int32
-	MostPopularVersionPercentage  float64
-	StakeVersions                 map[uint32]*stakeVersions
-	StakeVersionHeights           []int64
+	BlockHeight                     int64
+	BlockVersions                   map[int32]*blockVersions
+	BlockVersionsHeights            []int64
+	BlockVersionWindowLength        uint64
+	BlockVersionEnforceThreshold    int
+	BlockVersionRejectThreshold     int
+	CurrentCalculatedBlockVersion   int32
+	BlockCountAtLatestVersion       int
+	StakeVersionThreshold           float64
+	StakeVersionWindowLength        int64
+	StakeVersionWindowStartHeight   int64
+	StakeVersionWindowEndHeight     int
+	MostPopularVersion              int32
+	MostPopularVersionPercentage    float64
+	StakeVersions                   map[uint32]*stakeVersions
+	StakeVersionHeights             []int64
+	RuleChangeActivationQuorum      uint32
+	RuleChangeActivationMultiplier  uint32
+	RuleChangeActivationDivisor     uint32
+	RuleChangeActivationWindow      uint32
+	RuleChangeActivationWindowVotes uint32
+	QuorumPercentage                int
+	QuorumVotes                     int
 }
 
 // Contains a certain block version's count of blocks in the
@@ -234,6 +241,13 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 
 	// XXX Fill in with real numbers once added to params
 	hardForkInformation.StakeVersionThreshold = float64(activeNetParams.StakeMajorityMultiplier) / float64(activeNetParams.StakeMajorityDivisor) * 100
+
+	// Quorum/vote information
+	hardForkInformation.RuleChangeActivationQuorum = activeNetParams.RuleChangeActivationQuorum
+	hardForkInformation.RuleChangeActivationMultiplier = activeNetParams.RuleChangeActivationMultiplier
+	hardForkInformation.RuleChangeActivationDivisor = activeNetParams.RuleChangeActivationDivisor
+	hardForkInformation.RuleChangeActivationWindow = activeNetParams.RuleChangeActivationWindow
+	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
 }
 
 var mux map[string]func(http.ResponseWriter, *http.Request)

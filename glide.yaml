@@ -1,4 +1,9 @@
 package: github.com/decred/hardforkdemo
 import:
 - package: github.com/decred/dcrrpcclient
-  version: b498119ecaab8b8f063e8f4920e635ec4c2e7a82
+  repo: git@github.com:alexlyp/dcrrpcclient
+  version: 4673f6f7755089ba295cf97222aadeed4c2b060e
+- package: github.com/decred/dcrd
+  repo: git@github.com:marcopeereboom/dcrd
+  version: e399e12dfa0e3cf3d36901ad4a97480ccb7b78da
+
