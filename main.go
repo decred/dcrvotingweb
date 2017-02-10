@@ -23,12 +23,12 @@ var maxVersion = 10000
 
 // Settings for daemon
 var dcrdCertPath = ("/home/user/.dcrd/rpc.cert")
-var dcrdServer = "127.0.0.1:9109"
+var dcrdServer = "127.0.0.1:19109"
 var dcrdUser = "USER"
 var dcrdPass = "PASSWORD"
 
 // Daemon Params to use
-var activeNetParams = &chaincfg.MainNetParams
+var activeNetParams = &chaincfg.TestNetParams
 
 // Webserver settings
 var listeningPort = ":8000"
