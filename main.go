@@ -273,13 +273,15 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
 	hardForkInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(hardForkInformation.RuleChangeActivationWindowVotes) * 100
 
-	hardForkInformation.QuorumVotedPercentage = getVoteInfo.Agendas[0].QuorumPercentage
-	hardForkInformation.QuorumAbstainedPercentage = float64(1) - getVoteInfo.Agendas[0].QuorumPercentage
+	hardForkInformation.QuorumVotedPercentage = getVoteInfo.Agendas[0].QuorumPercentage * 100
+	hardForkInformation.QuorumAbstainedPercentage = (float64(1) - getVoteInfo.Agendas[0].QuorumPercentage) * 100
 	hardForkInformation.AgendaID = getVoteInfo.Agendas[0].Id
 	hardForkInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
 	hardForkInformation.VoteStartHeight = getVoteInfo.StartHeight
 	hardForkInformation.VoteEndHeight = getVoteInfo.EndHeight
 	hardForkInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
+
+	/// XXX need to calculate expiration block
 	hardForkInformation.VoteExpirationBlock = int64(210001)
 
 	choiceIds := make([]string, len(getVoteInfo.Agendas[0].Choices))
