@@ -45,6 +45,8 @@ type hardForkInfo struct {
 	BlockCountAtLatestVersion     int
 	StakeVersionThreshold         int
 	StakeVersionWindowLength      int64
+	StakeVersionWindowStartHeight int64
+	StakeVersionWindowEndHeight   int
 	MostPopularVersion            int32
 	MostPopularVersionPercentage  float64
 }
@@ -143,7 +145,15 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 			}
 		}
 	}
-
+	blocksIntoStakeVersionWindow := (height - activeNetParams.StakeValidationHeight) % activeNetParams.StakeVersionInterval
+	// Request twice as many, so we can populate the rolling block version window's first
+	heightstakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
+		int32(blocksIntoStakeVersionWindow))
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(heightstakeVersionResults.StakeVersions[0])
+	fmt.Println(heightstakeVersionResults.StakeVersions[len(heightstakeVersionResults.StakeVersions)-1])
 	hardForkInformation.BlockHeight = height
 	hardForkInformation.BlockVersionEnforceThreshold = int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
 	hardForkInformation.BlockVersionRejectThreshold = int(float64(activeNetParams.BlockRejectNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
