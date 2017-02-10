@@ -49,12 +49,21 @@ type hardForkInfo struct {
 	StakeVersionWindowEndHeight   int
 	MostPopularVersion            int32
 	MostPopularVersionPercentage  float64
+	StakeVersions                 map[uint32]*stakeVersions
+	StakeVersionHeights           []int64
 }
 
 // Contains a certain block version's count of blocks in the
 // rolling window (which has a length of activeNetParams.BlockUpgradeNumToCheck)
 type blockVersions struct {
 	RollingWindowLookBacks []int
+}
+
+// Contains a certain stake version's count of votes in the
+// static window which is defined to start when
+// (currentHeight - StakeValidationHeight) % StakeVersionInterval == 0
+type stakeVersions struct {
+	StaticWindowVoteCounts []int
 }
 
 var hardForkInformation = &hardForkInfo{}
@@ -152,8 +161,61 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(heightstakeVersionResults.StakeVersions[0])
-	fmt.Println(heightstakeVersionResults.StakeVersions[len(heightstakeVersionResults.StakeVersions)-1])
+
+	stakeVersionsFound := make(map[uint32]*stakeVersions)
+	stakeVersionsHeights := make([]int64, len(heightstakeVersionResults.StakeVersions))
+	elementNum = 0
+	for i := len(heightstakeVersionResults.StakeVersions) - 1; i >= 0; i-- {
+		stakeVersion := heightstakeVersionResults.StakeVersions[i]
+		stakeVersionsHeights[elementNum] = stakeVersion.Height
+		for _, vote := range stakeVersion.VoterVersions {
+			_, ok := stakeVersionsFound[vote]
+			if !ok {
+				// Had not found this block version yet
+				stakeVersionsFound[vote] = &stakeVersions{}
+				stakeVersionsFound[vote].StaticWindowVoteCounts = make([]int, len(heightstakeVersionResults.StakeVersions))
+				// Need to populate "back" to fill in values for previously missed window
+				for k := 0; k < elementNum; k++ {
+					stakeVersionsFound[vote].StaticWindowVoteCounts[k] = 0
+				}
+				stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] = 1
+			} else {
+				if elementNum == 0 {
+					stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] = 1
+				} else {
+					stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] =
+						stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] + 1
+				}
+			}
+		}
+		for voteVersion := range stakeVersionsFound {
+			if elementNum > 0 {
+				stakeVersionsFound[voteVersion].StaticWindowVoteCounts[elementNum] +=
+					stakeVersionsFound[voteVersion].StaticWindowVoteCounts[elementNum-1]
+			}
+		}
+		elementNum++
+	}
+	numDataPoints := 20
+	dataTickLength := int(len(heightstakeVersionResults.StakeVersions)) / numDataPoints
+	dataTickHeights := make([]int64, numDataPoints)
+	for vote := range stakeVersionsFound {
+		dataTickedVoteCounts := make([]int, numDataPoints)
+		dataTicketNumber := 0
+		for elementNum, counts := range stakeVersionsFound[vote].StaticWindowVoteCounts {
+			if elementNum%dataTickLength == 0 {
+				dataTickedVoteCounts[dataTicketNumber] = counts
+				if elementNum != 0 {
+					dataTickHeights[dataTicketNumber] = stakeVersionsHeights[elementNum]
+					dataTicketNumber++
+				}
+			}
+		}
+		stakeVersionsFound[vote].StaticWindowVoteCounts = dataTickedVoteCounts
+	}
+	hardForkInformation.StakeVersionHeights = dataTickHeights
+	hardForkInformation.StakeVersions = stakeVersionsFound
+
 	hardForkInformation.BlockHeight = height
 	hardForkInformation.BlockVersionEnforceThreshold = int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
 	hardForkInformation.BlockVersionRejectThreshold = int(float64(activeNetParams.BlockRejectNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
@@ -161,7 +223,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.StakeVersionWindowLength = activeNetParams.StakeVersionInterval
 
 	// XXX Fill in with real numbers once added to params
-	hardForkInformation.StakeVersionThreshold = 75
+	hardForkInformation.StakeVersionThreshold = int(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)) * 100
 }
 
 var mux map[string]func(http.ResponseWriter, *http.Request)
