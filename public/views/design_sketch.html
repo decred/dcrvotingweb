@@ -131,11 +131,11 @@
       <!-- INTRODUCTION TEXT -->
       <div class="row">
         <div class="col-md-6">
-          <p>After the network made sure that {{.BlockVersionThreshold}}% of the PoW and {{.StakeVersionThreshold}}% of the PoS Miners are update the actual Voting on a Agenda can take place.</p>
-          <p>On Testnet we have a Voting Window of {{.RuleChangeActivationWindow}} Blocks (around one Week). In this time there can be made XXXXX Votes (5 votes per Block).</p>
+          <p>After the network made sure that {{.BlockVersionRejectThreshold}}% of the PoW and {{.StakeVersionThreshold}}% of the PoS Miners are update the actual Voting on a Agenda can take place.</p>
+          <p>On Testnet we have a Voting Window of {{.RuleChangeActivationWindow}} Blocks (around one Week). In this time there can be made {{.RuleChangeActivationWindowVotes}} Votes (5 votes per Block).</p>
           <p>Users can vote either yes, no or abstain. The wallet abstains per default, users have to set their votebits on purpose.</p>
-          <p>We have a Quorum of {{.QuorumPercentage}}%. This means a minimum of {{.QuorumVotes}} votes have to be done ({{.QuorumPercentage}}% of all votes during the voting window) and have to vote either YES or NO. Otherwise the voting  is invalid.</p>
-          <p>When less than {{.QuorumPercenatge}}% actively placed a vote the voting is canceled and will be reinitiated until the expiration date</p>
+          <p>We have a Quorum of {{.QuorumPercentage}}%. This means a minimum of {{.RuleChangeActivationQuorum}} votes have to be done ({{.QuorumPercentage}}% of all votes during the voting window) and have to vote either YES or NO. Otherwise the voting  is invalid.</p>
+          <p>When less than {{.QuorumPercentage}}% actively placed a vote the voting is canceled and will be reinitiated until the expiration date</p>
           <h3>Quorum:</h3>
           <!-- QUORUM HORIZONTAL BARCHART -->
           <canvas id="voteQuorum" width="400" height="100"></canvas>

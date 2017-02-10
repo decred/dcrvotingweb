@@ -56,7 +56,7 @@ type hardForkInfo struct {
 	RuleChangeActivationDivisor     uint32
 	RuleChangeActivationWindow      uint32
 	RuleChangeActivationWindowVotes uint32
-	QuorumPercentage                int
+	QuorumPercentage                float64
 	QuorumVotes                     int
 }
 
@@ -248,6 +248,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.RuleChangeActivationDivisor = activeNetParams.RuleChangeActivationDivisor
 	hardForkInformation.RuleChangeActivationWindow = activeNetParams.RuleChangeActivationWindow
 	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
+	hardForkInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(hardForkInformation.RuleChangeActivationWindowVotes) * 100
 }
 
 var mux map[string]func(http.ResponseWriter, *http.Request)
