@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/decred/dcrd/chaincfg"
 	"github.com/decred/dcrd/wire"
@@ -63,13 +64,13 @@ type hardForkInfo struct {
 	QuorumVotes               int
 	QuorumVotedPercentage     float64
 	QuorumAbstainedPercentage float64
-
-	AgendaID            string
-	AgendaDescription   string
-	VoteStartHeight     int64
-	VoteEndHeight       int64
-	VoteBlockLeft       int64
-	VoteExpirationBlock int64
+	QuorumExpirationDate      string
+	AgendaID                  string
+	AgendaDescription         string
+	VoteStartHeight           int64
+	VoteEndHeight             int64
+	VoteBlockLeft             int64
+	VoteExpirationBlock       int64
 
 	ChoiceIds         []string
 	ChoicePercentages []float64
@@ -273,6 +274,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
 	hardForkInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(hardForkInformation.RuleChangeActivationWindowVotes) * 100
 
+	hardForkInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
 	hardForkInformation.QuorumVotedPercentage = getVoteInfo.Agendas[0].QuorumPercentage * 100
 	hardForkInformation.QuorumAbstainedPercentage = (float64(1) - getVoteInfo.Agendas[0].QuorumPercentage) * 100
 	hardForkInformation.AgendaID = getVoteInfo.Agendas[0].Id

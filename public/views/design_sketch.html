@@ -132,11 +132,27 @@
       <!-- INTRODUCTION TEXT -->
       <div class="row">
         <div class="col-md-6">
-          <p>After the network made sure that {{.BlockVersionRejectThreshold}}% of the PoW and {{.StakeVersionThreshold}}% of the PoS Miners are update the actual Voting on a Agenda can take place.</p>
-          <p>On Testnet we have a Voting Window of {{.RuleChangeActivationWindow}} Blocks (around one Week). In this time there can be made {{.RuleChangeActivationWindowVotes}} Votes (5 votes per Block).</p>
-          <p>Users can vote either yes, no or abstain. The wallet abstains per default, users have to set their votebits on purpose.</p>
-          <p>We have a Quorum of {{.QuorumPercentage}}%. This means a minimum of {{.RuleChangeActivationQuorum}} votes have to be done ({{.QuorumPercentage}}% of all votes during the voting window) and have to vote either YES or NO. Otherwise the voting  is invalid.</p>
-          <p>When less than {{.QuorumPercentage}}% actively placed a vote the voting is canceled and will be reinitiated until the expiration date</p>
+          <p>
+            After {{.BlockVersionRejectThreshold}}% of blocks in a rolling window 
+            of {{.BlockVersionWindowLength}} blocks are the latest block version 
+            *and* {{.StakeVersionThreshold}}% of the vote versions in a fixed 
+            {{.RuleChangeActivationWindow}} block interval have the latest vote 
+            version, voting on a new agenda will begin.
+          </p>
+          <p>
+            Stakeholders can vote either yes, no or abstain.  The wallet's default 
+            behavior is to abstain, meaning stakeholders must actively set their 
+            votebits in order to vote.
+          </p>
+          <p>
+            Votes cast during a voting period must surpass a quorum of {{.QuorumPercentage}}%, 
+            meaning that a minimum of {{.RuleChangeActivationQuorum}} votes in a given voting period must be 
+            set to either YES or NO in order for any outcome of the voting on a 
+            given issue to be considered valid.  The results of voting on a given 
+            issue will only be considered valid if that issue's votes meet the 10% 
+            quorum, and this means that the issue will be up for vote again during 
+            the next voting period, until it passes its expiration date of {{.QuorumExpirationDate}}.
+          </p>
           <h3>Quorum:</h3>
           <!-- QUORUM HORIZONTAL BARCHART -->
           <canvas id="voteQuorum" width="400" height="100"></canvas>
