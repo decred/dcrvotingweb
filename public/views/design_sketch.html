@@ -94,9 +94,15 @@
         <div class="col-md-12">
           <br />
           <br />
+          {{if .BlockVersionSuccess}}
           <div class="alert alert-success">
-            <strong>Success!</strong> During the last {{.BlockVersionWindowLength}} Blocks we have reached the minimum of {{.BlockVersionRejectThreshold}}% Blocks which are on the latest Block Version <strong>v{{.CurrentCalculatedBlockVersion}}</strong>
+           
           </div>
+          {{else}}
+           <div class="alert alert-danger">
+            
+          </div>
+          {{end}}
         </div>
       </div>
       <div class="row">
@@ -116,10 +122,17 @@
       <!-- 95% Treshold reached alertbox -->
       <div class="row">
         <div class="col-md-12">
-          <br /><br />
-          <div class="alert alert-danger">
-            <strong>Danger!</strong> PoS Miners please upgrade your Software. XX% of the Votes during the XX Blocks Window are outdated.
+          <br />
+          <br />
+          {{if .StakeVersionSuccess}}
+          <div class="alert alert-success">
+           
           </div>
+          {{else}}
+           <div class="alert alert-danger">
+            
+          </div>
+          {{end}}
         </div>
       </div>
       <br />
