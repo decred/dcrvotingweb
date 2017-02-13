@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -169,7 +170,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 			// Show Green
 			hardForkInformation.CurrentCalculatedBlockVersion = i
 			hardForkInformation.MostPopularBlockVersion = i
-			hardForkInformation.MostPopularBlockVersionPercentage = float64(tipBlockVersionCount) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100
+			hardForkInformation.MostPopularBlockVersionPercentage = toFixed(float64(tipBlockVersionCount)/float64(activeNetParams.BlockUpgradeNumToCheck)*100, 2)
 			hardForkInformation.BlockVersionSuccess = true
 			MostPopularBlockVersionCount = tipBlockVersionCount
 		}
@@ -177,7 +178,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 			// Show Red
 			MostPopularBlockVersionCount = tipBlockVersionCount
 			hardForkInformation.MostPopularBlockVersion = i
-			hardForkInformation.MostPopularBlockVersionPercentage = float64(tipBlockVersionCount) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100
+			hardForkInformation.MostPopularBlockVersionPercentage = toFixed(float64(tipBlockVersionCount)/float64(activeNetParams.BlockUpgradeNumToCheck)*100, 2)
 		}
 	}
 	if hardForkInformation.CurrentCalculatedBlockVersion == int32(maxVersion) {
@@ -269,30 +270,31 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.StakeVersionWindowLength = activeNetParams.StakeVersionInterval
 	hardForkInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval * 5
 
-	hardForkInformation.StakeVersionThreshold = float64(activeNetParams.StakeMajorityMultiplier) / float64(activeNetParams.StakeMajorityDivisor) * 100
-
+	hardForkInformation.StakeVersionThreshold = toFixed(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)*100, 2)
+	voteVersionVoteThreshold := float64(activeNetParams.StakeMajorityMultiplier) / float64(activeNetParams.StakeMajorityDivisor) * float64(hardForkInformation.StakeVersionWindowVoteTotal)
 	// Calculate current block version and most popular version (and that percentage)
 	hardForkInformation.CurrentCalculatedStakeVersion = uint32(maxVersion)
-	MostPopularStakeVersionCount := 0
-	for i, StakeVersion := range hardForkInformation.StakeVersions {
-		tipStakeVersionCount := StakeVersion.StaticWindowVoteCounts[len(StakeVersion.StaticWindowVoteCounts)-1]
-		if tipStakeVersionCount >= int(activeNetParams.BlockRejectNumRequired) {
+	mostPopularStakeVersionCount := 0
+	for i, stakeVersion := range hardForkInformation.StakeVersions {
+		fmt.Println(stakeVersion.CurrentTotalVotes, voteVersionVoteThreshold, int(hardForkInformation.StakeVersionWindowVoteTotal))
+		if stakeVersion.CurrentTotalVotes >= int(voteVersionVoteThreshold) {
 			// Show Green
 			hardForkInformation.CurrentCalculatedStakeVersion = i
 			hardForkInformation.MostPopularStakeVersion = i
-			hardForkInformation.MostPopularStakeVersionPercentage = float64(tipStakeVersionCount) / float64(hardForkInformation.StakeVersionThreshold) * 100
+			hardForkInformation.MostPopularStakeVersionPercentage = float64(stakeVersion.CurrentTotalVotes) / float64(hardForkInformation.StakeVersionWindowVoteTotal) * 100
 			hardForkInformation.StakeVersionSuccess = true
-			MostPopularStakeVersionCount = tipStakeVersionCount
+			mostPopularStakeVersionCount = stakeVersion.CurrentTotalVotes
 		}
-		if tipStakeVersionCount > MostPopularStakeVersionCount {
+		if stakeVersion.CurrentTotalVotes > mostPopularStakeVersionCount {
 			// Show Red
-			MostPopularStakeVersionCount = tipStakeVersionCount
+			mostPopularStakeVersionCount = stakeVersion.CurrentTotalVotes
 			hardForkInformation.MostPopularStakeVersion = i
-			hardForkInformation.MostPopularStakeVersionPercentage = float64(tipStakeVersionCount) / float64(hardForkInformation.StakeVersionThreshold) * 100
+			hardForkInformation.MostPopularStakeVersionPercentage = float64(stakeVersion.CurrentTotalVotes) / float64(hardForkInformation.StakeVersionWindowVoteTotal) * 100
 		}
 	}
 	if hardForkInformation.CurrentCalculatedStakeVersion == uint32(maxVersion) {
 		for i := range hardForkInformation.StakeVersions {
+			fmt.Println(i, hardForkInformation.CurrentCalculatedStakeVersion)
 			if i < hardForkInformation.CurrentCalculatedStakeVersion {
 				hardForkInformation.CurrentCalculatedStakeVersion = i
 			}
@@ -410,4 +412,13 @@ func main() {
 	if err != nil {
 		fmt.Printf("Failed to bind http server: %s\n", err.Error())
 	}
+}
+
+func round(num float64) int {
+	return int(num + math.Copysign(0.5, num))
+}
+
+func toFixed(num float64, precision int) float64 {
+	output := math.Pow(10, float64(precision))
+	return float64(round(num*output)) / output
 }
