@@ -281,7 +281,7 @@
         datasets: [
           {{range $i, $element := .StakeVersions}}
           {
-            label: "Votebits v{{$i}}",
+            label: "Vote v{{$i}}",
             fill: true,
             lineTension: 0.1,
             backgroundColor: "rgba("+voteVersionGraphColors[{{$i}}]+",0.4)",
@@ -340,7 +340,7 @@
         {{range $i, $element := .StakeVersions}}
           {
           type: 'bar',
-          label: 'Block v{{$i}}',
+          label: 'Vote v{{$i}}',
           backgroundColor: "rgba("+voteVersionGraphColors[{{$i}}]+",1)",
           data: [{{$element.CurrentTotalVotes}}],
           }, 
