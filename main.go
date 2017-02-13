@@ -120,8 +120,13 @@ func demoPage(w http.ResponseWriter, r *http.Request) {
 
 }
 func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
+
 	fmt.Println("updating hard fork information")
 	hash, height, err := dcrdClient.GetBestBlock()
+	if err != nil {
+		fmt.Println(err)
+	}
+	block, err := dcrdClient.GetBlockVerbose(hash, false)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -276,12 +281,11 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.CurrentCalculatedStakeVersion = uint32(maxVersion)
 	mostPopularStakeVersionCount := 0
 	for i, stakeVersion := range hardForkInformation.StakeVersions {
-		fmt.Println(stakeVersion.CurrentTotalVotes, voteVersionVoteThreshold, int(hardForkInformation.StakeVersionWindowVoteTotal))
 		if stakeVersion.CurrentTotalVotes >= int(voteVersionVoteThreshold) {
 			// Show Green
 			hardForkInformation.CurrentCalculatedStakeVersion = i
 			hardForkInformation.MostPopularStakeVersion = i
-			hardForkInformation.MostPopularStakeVersionPercentage = float64(stakeVersion.CurrentTotalVotes) / float64(hardForkInformation.StakeVersionWindowVoteTotal) * 100
+			hardForkInformation.MostPopularStakeVersionPercentage = toFixed(float64(stakeVersion.CurrentTotalVotes)/float64(hardForkInformation.StakeVersionWindowVoteTotal)*100, 2)
 			hardForkInformation.StakeVersionSuccess = true
 			mostPopularStakeVersionCount = stakeVersion.CurrentTotalVotes
 		}
@@ -289,16 +293,11 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 			// Show Red
 			mostPopularStakeVersionCount = stakeVersion.CurrentTotalVotes
 			hardForkInformation.MostPopularStakeVersion = i
-			hardForkInformation.MostPopularStakeVersionPercentage = float64(stakeVersion.CurrentTotalVotes) / float64(hardForkInformation.StakeVersionWindowVoteTotal) * 100
+			hardForkInformation.MostPopularStakeVersionPercentage = toFixed(float64(stakeVersion.CurrentTotalVotes)/float64(hardForkInformation.StakeVersionWindowVoteTotal)*100, 2)
 		}
 	}
 	if hardForkInformation.CurrentCalculatedStakeVersion == uint32(maxVersion) {
-		for i := range hardForkInformation.StakeVersions {
-			fmt.Println(i, hardForkInformation.CurrentCalculatedStakeVersion)
-			if i < hardForkInformation.CurrentCalculatedStakeVersion {
-				hardForkInformation.CurrentCalculatedStakeVersion = i
-			}
-		}
+		hardForkInformation.CurrentCalculatedStakeVersion = block.StakeVersion
 	}
 
 	// Quorum/vote information
