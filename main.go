@@ -239,8 +239,10 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 	// Fill in heights for any that weren't populated
 	for i := range dataTickHeights {
-		if dataTickHeights[i] != 0 {
+		if dataTickHeights[i] == 0 && i != 0 {
 			dataTickHeights[i] = dataTickHeights[i-1] + (int64(activeNetParams.StakeVersionInterval) / int64(numDataPoints))
+		} else if dataTickHeights[i] == 0 && i == 0 {
+			dataTickHeights[i] = height
 		}
 	}
 	// Add end of window height dataTick
