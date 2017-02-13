@@ -64,13 +64,15 @@
         <!-- OVERALL STATISTICS -->
         <div class="col-md-6">
           <blockquote>
-            Network Block Version: v{{.CurrentCalculatedBlockVersion}}
-            <br />
             Current Block Height: {{.BlockHeight}}
             <br />
-            Most popular version (v{{.MostPopularVersion}}) percentage: <span style="color:#2ED6A1;">{{.MostPopularVersionPercentage}}%</span>
+            Network Block Version: v{{.CurrentCalculatedBlockVersion}}
             <br />
-            PoS Miners on latest Votebits: <span style="color:#FD714A;">XX%</span>
+            Most popular block version (v{{.MostPopularBlockVersion}}) percentage: <span style="color:#2ED6A1;">{{.MostPopularBlockVersionPercentage}}%</span>
+            <br />
+            Network Stake Version: v{{.CurrentCalculatedStakeVersion}}
+            <br />
+            Most popular stake version (v{{.MostPopularStakeVersion}}) percentage: <span style="color:#FD714A;">{{.MostPopularStakeVersionPercentage}}%</span>
           </blockquote>
         </div>
       </div>
@@ -96,11 +98,11 @@
           <br />
           {{if .BlockVersionSuccess}}
           <div class="alert alert-success">
-           
+            Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version(v{{.CurrentCalculatedBlockVersion}})
           </div>
           {{else}}
            <div class="alert alert-danger">
-            
+            v{{.CurrentCalculatedBlockVersion}} is still the current block version.  But v{{.MostPopularBlockVersion}} has received {{.MostPopularBlockVersionPercentage}}% of the votes in the latest rolling window.  Be prepared to upgrade if it reaches the threshold.
           </div>
           {{end}}
         </div>
@@ -126,11 +128,11 @@
           <br />
           {{if .StakeVersionSuccess}}
           <div class="alert alert-success">
-           
+            Success! v{{.MostPopularStakeVersion}} had {{.MostPopularStakeVersionPercentage}}% of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
           </div>
           {{else}}
            <div class="alert alert-danger">
-            
+            v{{.CurrentCalculatedStakeVersion}} is still the current vote version.  But v{{.MostPopularStakeVersion}} has received {{.MostPopularStakeVersionPercentage}}% of the votes in the latest static window.  Be prepared to upgrade if it reaches the threshold.
           </div>
           {{end}}
         </div>
