@@ -272,10 +272,9 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.RuleChangeActivationQuorum = activeNetParams.RuleChangeActivationQuorum
 	hardForkInformation.RuleChangeActivationMultiplier = activeNetParams.RuleChangeActivationMultiplier
 	hardForkInformation.RuleChangeActivationDivisor = activeNetParams.RuleChangeActivationDivisor
-	hardForkInformation.RuleChangeActivationWindow = activeNetParams.RuleChangeActivationWindow
+	hardForkInformation.RuleChangeActivationWindow = activeNetParams.RuleChangeActivationInterval
 	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
 	hardForkInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(hardForkInformation.RuleChangeActivationWindowVotes) * 100
-
 	hardForkInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
 	hardForkInformation.QuorumVotedPercentage = getVoteInfo.Agendas[0].QuorumPercentage * 100
 	hardForkInformation.QuorumAbstainedPercentage = (float64(1) - getVoteInfo.Agendas[0].QuorumPercentage) * 100
