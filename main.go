@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/decred/dcrd/chaincfg"
 	"github.com/decred/dcrd/wire"
@@ -23,34 +24,56 @@ var maxVersion = 10000
 
 // Settings for daemon
 var dcrdCertPath = ("/home/user/.dcrd/rpc.cert")
-var dcrdServer = "127.0.0.1:9109"
+var dcrdServer = "127.0.0.1:19109"
 var dcrdUser = "USER"
 var dcrdPass = "PASSWORD"
 
 // Daemon Params to use
-var activeNetParams = &chaincfg.MainNetParams
+var activeNetParams = &chaincfg.TestNetParams
 
 // Webserver settings
 var listeningPort = ":8000"
 
 // Overall Data structure given to the template to render
 type hardForkInfo struct {
-	BlockHeight                   int64
-	BlockVersions                 map[int32]*blockVersions
-	BlockVersionsHeights          []int64
-	BlockVersionWindowLength      uint64
-	BlockVersionEnforceThreshold  int
-	BlockVersionRejectThreshold   int
-	CurrentCalculatedBlockVersion int32
-	BlockCountAtLatestVersion     int
-	StakeVersionThreshold         float64
-	StakeVersionWindowLength      int64
-	StakeVersionWindowStartHeight int64
-	StakeVersionWindowEndHeight   int
-	MostPopularVersion            int32
-	MostPopularVersionPercentage  float64
-	StakeVersions                 map[uint32]*stakeVersions
-	StakeVersionHeights           []int64
+	BlockHeight                     int64
+	BlockVersions                   map[int32]*blockVersions
+	BlockVersionsHeights            []int64
+	BlockVersionWindowLength        uint64
+	BlockVersionEnforceThreshold    int
+	BlockVersionRejectThreshold     int
+	CurrentCalculatedBlockVersion   int32
+	BlockCountAtLatestVersion       int
+	StakeVersionThreshold           float64
+	StakeVersionWindowLength        int64
+	StakeVersionWindowVoteTotal     int64
+	StakeVersionWindowStartHeight   int64
+	StakeVersionWindowEndHeight     int
+	MostPopularVersion              int32
+	MostPopularVersionPercentage    float64
+	StakeVersions                   map[uint32]*stakeVersions
+	StakeVersionHeights             []int64
+	RuleChangeActivationQuorum      uint32
+	RuleChangeActivationMultiplier  uint32
+	RuleChangeActivationDivisor     uint32
+	RuleChangeActivationWindow      uint32
+	RuleChangeActivationWindowVotes uint32
+
+	Quorum                    bool
+	QuorumPercentage          float64
+	QuorumVotes               int
+	QuorumVotedPercentage     float64
+	QuorumAbstainedPercentage float64
+	QuorumExpirationDate      string
+	AgendaID                  string
+	AgendaDescription         string
+	VoteStartHeight           int64
+	VoteEndHeight             int64
+	VoteBlockLeft             int64
+	VoteExpirationBlock       int64
+
+	ChoiceIds         []string
+	ChoicePercentages []float64
 }
 
 // Contains a certain block version's count of blocks in the
@@ -216,8 +239,10 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 	// Fill in heights for any that weren't populated
 	for i := range dataTickHeights {
-		if dataTickHeights[i] == 0 {
+		if dataTickHeights[i] == 0 && i != 0 {
 			dataTickHeights[i] = dataTickHeights[i-1] + (int64(activeNetParams.StakeVersionInterval) / int64(numDataPoints))
+		} else if dataTickHeights[i] == 0 && i == 0 {
+			dataTickHeights[i] = height
 		}
 	}
 	// Add end of window height dataTick
@@ -231,9 +256,46 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.BlockVersionRejectThreshold = int(float64(activeNetParams.BlockRejectNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
 	hardForkInformation.BlockVersionWindowLength = activeNetParams.BlockUpgradeNumToCheck
 	hardForkInformation.StakeVersionWindowLength = activeNetParams.StakeVersionInterval
-
+	hardForkInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval * 5
 	// XXX Fill in with real numbers once added to params
 	hardForkInformation.StakeVersionThreshold = float64(activeNetParams.StakeMajorityMultiplier) / float64(activeNetParams.StakeMajorityDivisor) * 100
+
+	// Quorum/vote information
+
+	getVoteInfo, err := dcrdClient.GetVoteInfo(4)
+	if err != nil {
+		fmt.Println("Get vote info err", err)
+		hardForkInformation.Quorum = false
+		return
+	}
+	hardForkInformation.Quorum = true
+	hardForkInformation.RuleChangeActivationQuorum = activeNetParams.RuleChangeActivationQuorum
+	hardForkInformation.RuleChangeActivationMultiplier = activeNetParams.RuleChangeActivationMultiplier
+	hardForkInformation.RuleChangeActivationDivisor = activeNetParams.RuleChangeActivationDivisor
+	hardForkInformation.RuleChangeActivationWindow = activeNetParams.RuleChangeActivationInterval
+	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
+	hardForkInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(hardForkInformation.RuleChangeActivationWindowVotes) * 100
+	hardForkInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
+	hardForkInformation.QuorumVotedPercentage = getVoteInfo.Agendas[0].QuorumPercentage * 100
+	hardForkInformation.QuorumAbstainedPercentage = (float64(1) - getVoteInfo.Agendas[0].QuorumPercentage) * 100
+	hardForkInformation.AgendaID = getVoteInfo.Agendas[0].Id
+	hardForkInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
+	hardForkInformation.VoteStartHeight = getVoteInfo.StartHeight
+	hardForkInformation.VoteEndHeight = getVoteInfo.EndHeight
+	hardForkInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
+
+	/// XXX need to calculate expiration block
+	hardForkInformation.VoteExpirationBlock = int64(210001)
+
+	choiceIds := make([]string, len(getVoteInfo.Agendas[0].Choices))
+	choicePercentages := make([]float64, len(getVoteInfo.Agendas[0].Choices))
+	for i, choice := range getVoteInfo.Agendas[0].Choices {
+		choiceIds[i] = choice.Id
+		choicePercentages[i] = choice.Percentage
+	}
+	hardForkInformation.ChoiceIds = choiceIds
+	hardForkInformation.ChoicePercentages = choicePercentages
+
 }
 
 var mux map[string]func(http.ResponseWriter, *http.Request)
