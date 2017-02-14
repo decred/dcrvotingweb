@@ -60,6 +60,9 @@
             Once the majority of the PoW miners have upgraded ({{.BlockVersionRejectThreshold}}% of the {{.BlockVersionWindowLength}} most recent blocks are at the latest version) 
             and the majority of the PoS miners have upgraded ({{.StakeVersionThreshold}}% of the votes in a {{.StakeVersionWindowLength}} block interval) have upgraded, the voting process begins.
           </p>
+		<p>
+	          <a href="https://faucet.decred.org" target="_blank" class="btn-sm btn-info">&rarr; Visit the Testnet Faucet</a>
+	        </p>
         </div>
         <!-- OVERALL STATISTICS -->
         <div class="col-md-6">
@@ -150,7 +153,7 @@
           <p>
             After {{.BlockVersionRejectThreshold}}% of blocks in a rolling window 
             of {{.BlockVersionWindowLength}} blocks are the latest block version 
-            *and* {{.StakeVersionThreshold}}% of the vote versions in a fixed 
+            <strong>and</strong> {{.StakeVersionThreshold}}% of the vote versions in a fixed 
             {{.RuleChangeActivationWindow}} block interval have the latest vote 
             version, voting on a new agenda will begin.
           </p>
