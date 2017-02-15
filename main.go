@@ -108,7 +108,7 @@ func minus(a, b int) int {
 
 func demoPage(w http.ResponseWriter, r *http.Request) {
 
-	fp := filepath.Join("public/views", "design_sketch.html")
+	fp := filepath.Join("public", "views", "design_sketch.html")
 	tmpl, err := template.New("home").Funcs(funcMap).ParseFiles(fp)
 	if err != nil {
 		panic(err)
