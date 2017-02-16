@@ -189,7 +189,6 @@
      <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION TRESHOLD 95% -->
       <!-- BEGIN POW TRESHOLD CHART 144 BLOCKS WINDOW DATAPOINTS -->
       <div id="boxpow" class="hidden">
-        <div class="col-md-10">
           <h3>Block Version (PoW) {{if .BlockVersionSuccess}}
                                 <span class="label label-success">FINISHED</span>
                                 {{else}}
@@ -206,6 +205,7 @@
           </div>
           {{end}}
           <!-- FIRST CHART -->
+          <div class="col-md-10">
           <canvas id="blockVersions" width="400" height="200"></canvas>
         </div>
         <!-- BEGIN POW BAR LAST 144 BLOCKS -->
@@ -240,7 +240,7 @@
 
 
 <div id="boxpos" class="hidden">
-        <div class="col-md-10">
+        
           <h3>Stake Version (PoS){{if .StakeVersionSuccess}}
                                 <span class="label label-success">FINISHED</span>
                                 {{else}}
@@ -255,7 +255,9 @@
            <div class="alert alert-danger">
             v{{.CurrentCalculatedStakeVersion}} is still the current vote version.  But v{{.MostPopularStakeVersion}} has received {{.MostPopularStakeVersionPercentage}}% of the votes in the latest static window.  Be prepared to upgrade if it reaches the threshold.
           </div>
-          {{end}} 
+          {{end}} <br />
+          
+          <div class="col-md-10">
  
           <!-- SECOND CHART VOTE VERSIONS / SVI -->
       
@@ -287,11 +289,7 @@
     </div><!-- END POSCHARTSBOX -->
 
 <div id="boxstake" class="hidden">
-<h3>Stake Version (PoS){{if .StakeVersionSuccess}}
-                                <span class="label label-success">FINISHED</span>
-                                {{else}}
-                                <span class="label label-default">IN PROGRESS</span>
-                                {{end}}</h3>
+<h3>Stake Version (PoS){{if and .BlockVersionSuccess .StakeVersionSuccess}}<span class="label label-default">IN PROGRESS</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br /></h3>
           <!-- 95% Treshold reached alertbox --><br />
 
      <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION TRESHOLD 95% -->
