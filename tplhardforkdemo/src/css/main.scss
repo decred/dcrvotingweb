@@ -101,18 +101,6 @@ height: 70px;
 	padding: 10px;
 }
 
-
-
-
-footer {
-    background-color: #0C1E3E;
-    position: absolute;
-    bottom: 0;
-    width: 1705px;
-    max-width: 100%;
-    padding: 11px 13px;
-}
-
 .bigpercent {
 	font-weight: bold;
 	font-size: 2em;
@@ -127,4 +115,57 @@ footer {
 }
 .navbar-nav li a:link {
 	padding: 4px 27px;
+}
+
+.svg-logo{
+        width: 186px;
+        height: 34px;
+}
+
+.navbar-default{
+        background-color: #0C1E3E;
+        border: none;
+        border-radius: 0;
+        margin: auto;
+        width: 100%;
+        max-width: 100%;
+
+        .navbar-nav li>a{
+                color: #fff;
+                font-size: 2.0rem;
+                line-height: 63px;
+                padding: 10px 27px;
+
+                &:hover,&:focus,&:active{
+                        color: #2ed7a2;
+                }
+        }
+}
+
+
+.btn-primary{
+	background: #2972ff;
+	background: -webkit-linear-gradient(#699bff, #2972ff);
+	background: -o-linear-gradient(#699bff, #2972ff);
+	background: -moz-linear-gradient(#699bff, #2972ff);
+	background: linear-gradient(#699bff, #2972ff);
+	padding: 16px 28px;
+	font-size: 1.73rem;
+	border: 0;
+}
+
+.btn-primary a:link{
+	color: #fff;
+	font-size: 1.73rem;
+	text-decoration: none;
+	}
+
+
+footer {
+    background-color: #0C1E3E;
+    position: absolute;
+    bottom: 0;
+    width: 1705px;
+    max-width: 100%;
+    padding: 11px 13px;
 }

@@ -22,7 +22,7 @@
   <body>
     <!-- Fixed navbar -->
     <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
+      <div class="wrapper">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
@@ -30,22 +30,20 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-<a class="navbar-brand" href="#"><img src="img/decred-logo.png" /><!--<svg class="svg-logo"><use xlink:href="svg/sprites.svg#svg-decred-logo" /></svg> --></a>
+<a class="navbar-brand" href="#"><svg class="svg-logo"><use xlink:href="images/sprites.svg#svg-decred-logo" /></svg></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="https://faucet.decred.org" title="Testnet Faucet" title="_blank">Testnet Faucet</a></li>
-            <li class="active"><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
 
 
-<div class="wrapper" style="margin-top:60px;">
-	
+<div class="wrapper" style="margin-top:200px;">
                 <div class="col-md-5">
                         <div class="radial-progress">
                                 <div class="circle">
@@ -70,6 +68,7 @@
                                 </p> 
 				</div>
                         </div>
+                        <div class="boxindicators">
                           {{if .BlockVersionSuccess}}<div class="alert alert-success">
                             Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version(v{{.CurrentCalculatedBlockVersion}})
                           </div>
@@ -77,6 +76,8 @@
                             v{{.CurrentCalculatedBlockVersion}} is still the current block version.  But v{{.MostPopularBlockVersion}} has received {{.MostPopularBlockVersionPercentage}}% of the votes in the latest rolling window.  Be prepared to upgrade if it reaches the threshold.
                           </div>
                           {{end}}
+                        </div>
+
                 </div>
                 <div class="col-md-5">
                         <div class="radial-progress2">
@@ -102,6 +103,7 @@
                                 </p>
 				</div>
                         </div>
+                        <div class="boxindicators">
                           {{if .StakeVersionSuccess}}
                           <div class="alert alert-success">
                             Success! v{{.MostPopularStakeVersion}} had {{.MostPopularStakeVersionPercentage}}% of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
@@ -111,6 +113,7 @@
                             v{{.CurrentCalculatedStakeVersion}} is still the current vote version.  But v{{.MostPopularStakeVersion}} has received {{.MostPopularStakeVersionPercentage}}% of the votes in the latest static window.  Be prepared to upgrade if it reaches the threshold.
                           </div>
                           {{end}}
+                        </div>
                 </div>
                 <div class="col-md-5">
                         <div class="radial-progress3">
@@ -124,29 +127,32 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br /><span class="bigpercent">XX%</span><br /><span class="label label-warning">NOT STARTED</span><br />
+                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br /><span class="bigpercent">XX%</span><br />{{if and .BlockVersionSuccess .StakeVersionSuccess}}&nbsp;{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
 				<p class="textinset">
                                 <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting Window:</strong><br />Block {{.VoteStartHeight}}-{{.VoteEndHeight}}</small>
                                 </p>
                                 </div>
                         </div>
-			{{if and .StakeVersionSuccess .BlockVersionSuccess}}<div class="alert alert-success">
+                        <div class="boxindicators">
+			                      {{if and .StakeVersionSuccess .BlockVersionSuccess}}<div class="alert alert-success">
                             PoW v{{.MostPopularBlockVersion}} &hearts; PoS v{{.MostPopularStakeVersion}}<br />
-<strong>v{{.MostPopularBlockVersion}} locked in!</strong>Voting active.<br /><a href="#">Upgrade</a> your software if you have not yet.
+                            <strong>v{{.MostPopularBlockVersion}} locked in!</strong>Voting active.<br /><a href="#">Upgrade</a> your software if you have not yet.
                           </div>
                           {{else}}<div class="alert alert-danger">
                             <span class="text-center">PoW v{{.CurrentCalculatedBlockVersion}} <strong>&#8623;</strong> PoS v{{.CurrentCalculatedStakeVersion}}</span><br />
  Voting not active. Voting will begin when PoW <strong>and</strong> PoS miners have upgraded to latest v{{.MostPopularBlockVersion}}.
                           </div>
                           {{end}}
+                        </div>
 		</div><!-- END CYRCLE OVERVIEW -->
-
+<a name="detailcharts"></a>
 
 
 
 
 
 <div style="clear:both;">&nbsp;</div>
+<div id="peelagenda" class="hidden">
 <h4><span>Agenda</span></h4>
 <!-- BEGIN AGENDA OVERVIEW -->    
         <div class="col-md-10">
@@ -171,6 +177,7 @@
 	</tbody>
 	</table>
         </div>
+  </div>
 
 
 
@@ -179,17 +186,9 @@
 
 
 
-
-
-
-
-<div style="clear:both;">&nbsp;</div>
-
-
-      <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION TRESHOLD 95% -->
+     <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION TRESHOLD 95% -->
       <!-- BEGIN POW TRESHOLD CHART 144 BLOCKS WINDOW DATAPOINTS -->
-      <div class="overviewbox" {{if .BlockVersionSuccess}}style="display:none"{{end}}>
-<h4><span>Step 1 - PoW Version Upgrade</span></h4>
+      <div id="boxpow" class="hidden">
         <div class="col-md-10">
           <h3>Block Version (PoW) {{if .BlockVersionSuccess}}
                                 <span class="label label-success">FINISHED</span>
@@ -235,10 +234,12 @@
 </div>
 
 
-<div style="clear:both;">&nbsp;</div>
-<div class="poschartsbox" {{if .StakeVersionSuccess}}style="display:none"{{end}}>
-<h4><span>Step 2 - PoS Version Upgrade</span></h4>
-    
+
+
+
+
+
+<div id="boxpos" class="hidden">
         <div class="col-md-10">
           <h3>Stake Version (PoS){{if .StakeVersionSuccess}}
                                 <span class="label label-success">FINISHED</span>
@@ -285,9 +286,13 @@
         </div>
     </div><!-- END POSCHARTSBOX -->
 
-
-<div style="clear:both;">&nbsp;</div>
-<h4><span>Step 3 - Quorum</span></h4>
+<div id="boxstake" class="hidden">
+<h3>Stake Version (PoS){{if .StakeVersionSuccess}}
+                                <span class="label label-success">FINISHED</span>
+                                {{else}}
+                                <span class="label label-default">IN PROGRESS</span>
+                                {{end}}</h3>
+          <!-- 95% Treshold reached alertbox --><br />
 
      <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION TRESHOLD 95% -->
       {{if .Quorum}}
@@ -426,6 +431,7 @@
     };
     var ctx = document.getElementById("blockVersions");
     var myChart = new Chart(ctx, blockVersionsLineConfig);
+
     // blockVersions most recent bar chart
     var blockVersionsBarConfig = {
       type: 'bar',
