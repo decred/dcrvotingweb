@@ -75,7 +75,7 @@
             <br />
             Network Stake Version: v{{.CurrentCalculatedStakeVersion}}
             <br />
-            Most popular stake version (v{{.MostPopularStakeVersion}}) percentage: <span style="color:#FD714A;">{{.MostPopularStakeVersionPercentage}}%</span>
+            Most popular stake version (v{{.MostPopularStakeVersion}}) percentage: <span style="color:#FD714A;">{{.MostPopularStakeVersionCount}}%</span>
           </blockquote>
         </div>
       </div>
@@ -131,11 +131,11 @@
           <br />
           {{if .StakeVersionSuccess}}
           <div class="alert alert-success">
-            Success! v{{.MostPopularStakeVersion}} had {{.MostPopularStakeVersionPercentage}}% of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
+            Success! v{{.MostPopularStakeVersion}} had {{.MostPopularStakeVersionCount}} of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
           </div>
           {{else}}
-           <div class="alert alert-danger">
-            v{{.CurrentCalculatedStakeVersion}} is still the current stake version.  The most popular vote version in the current stake version upgrade interval is v{{.MostPopularStakeVersion}} and is at {{.MostPopularStakeVersionPercentage}}% of the total possible votes in the interval.  Be prepared to upgrade if it reaches the threshold.
+            <div class="alert alert-danger">
+              There are a total of {{.StakeVersionWindowVoteTotal}} votes in each interval. Of those {{.StakeVersionWindowVoteTotal}}, {{.VoteVersionThreshold}} are needed to signal a new version. There are currently {{.MostPopularStakeVersionCount}} votes signaling version v{{.MostPopularStakeVersion}}, with {{.StakeVersionVotesRemaining}} votes remaining
           </div>
           {{end}}
         </div>
@@ -188,7 +188,6 @@
             <br />
             Blocks left for voting: {{.VoteBlockLeft}}
             <br />
-            Estimated Vote Expiration Block: {{.VoteExpirationBlock}}
             <h3>Voting Progress:</h3>
             <canvas id="voteProgress" width="100" height="100"></canvas>
           </blockquote>
@@ -304,75 +303,20 @@
         }]
       }
     };
-    var voteVersionLineConfig = {
-      type: 'line',
-      data: {
-        labels: {{.StakeVersionHeights}},
-        datasets: [
-          {{range $i, $element := .StakeVersions}}
-          {
-            label: "Vote v{{$i}}",
-            fill: true,
-            lineTension: 0.1,
-            backgroundColor: "rgba("+voteVersionGraphColors[{{$i}}]+",0.4)",
-            borderColor: "rgba("+voteVersionGraphColors[{{$i}}]+",1)",
-            borderCapStyle: 'butt',
-            borderDash: [],
-            borderDashOffset: 0.0,
-            borderJoinStyle: 'miter',
-            pointBorderColor: "rgba("+voteVersionGraphColors[{{$i}}]+",1)",
-            pointBackgroundColor: "#fff",
-            pointBorderWidth: 1,
-            pointHoverRadius: 5,
-            pointHoverBackgroundColor: "rgba("+voteVersionGraphColors[{{$i}}]+",1)",
-            pointHoverBorderColor: "rgba(220,220,220,1)",
-            pointHoverBorderWidth: 2,
-            pointRadius: 1,
-            pointHitRadius: 10,
-            data: {{.StaticWindowVoteCounts}},
-            spanGaps: false,
-          },
-          {{end}}
-        ]
-      },
-      options: {
-        title: {
-          display: true,
-          text: 'Vote Versions / SVI / Stake version Interval',
-          fontColor: '#FFF'
-        },
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero:true,
-              fontColor: '#FFF',
-              suggestedMin: 0,
-              suggestedMax: {{.StakeVersionWindowVoteTotal}}
-            }
-          }],
-          xAxes: [{
-            ticks: {
-              beginAtZero:true,
-              fontColor: '#FFF'
-            }
-          }]
-        }
-      }
-    };
     var cty = document.getElementById("voteVersions");
     var myChart = new Chart(cty, barChartExampleConfig);
-    {{if .Quorum}}
     var voteVersionBarConfig = {
       type: 'bar',
       data: {
         labels: ["Totals for Block {{.BlockHeight}}"],
         datasets: [
-        {{range $i, $element := .StakeVersions}}
+        {{$interval := index .StakeVersionsIntervals 0}}
+        {{range $i, $element := $interval.VoteVersions}}
           {
           type: 'bar',
-          label: 'Vote v{{$i}}',
-          backgroundColor: "rgba("+voteVersionGraphColors[{{$i}}]+",1)",
-          data: [{{$element.CurrentTotalVotes}}],
+          label: 'Vote v{{$element.Version}}',
+          backgroundColor: "rgba("+voteVersionGraphColors[{{.Version}}]+",1)",
+          data: [{{$element.Count}}],
           }, 
         {{end}}
         ]
@@ -394,7 +338,7 @@
     };
     var ctx = document.getElementById("voteVersionsIndicator").getContext("2d");
     new Chart(ctx, voteVersionBarConfig);
-
+    {{if .Quorum}}
     var quorumHorizontalConfig = {
       type: 'horizontalBar',
       data: {

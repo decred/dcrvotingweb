@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/decred/dcrd/chaincfg"
+	"github.com/decred/dcrd/dcrjson"
 	"github.com/decred/dcrd/wire"
 	"github.com/decred/dcrrpcclient"
 )
@@ -53,12 +54,14 @@ type hardForkInfo struct {
 	StakeVersionWindowEndHeight       int
 	MostPopularBlockVersion           int32
 	MostPopularBlockVersionPercentage float64
-	StakeVersions                     map[uint32]*stakeVersions
+	VoteVersionThreshold              int32
+	StakeVersionVotesRemaining        int32
+	StakeVersionsIntervals            []dcrjson.VersionInterval
 	StakeVersionHeights               []int64
 	StakeVersionSuccess               bool
 	CurrentCalculatedStakeVersion     uint32
 	MostPopularStakeVersion           uint32
-	MostPopularStakeVersionPercentage float64
+	MostPopularStakeVersionCount      uint32
 	RuleChangeActivationQuorum        uint32
 	RuleChangeActivationMultiplier    uint32
 	RuleChangeActivationDivisor       uint32
@@ -86,14 +89,6 @@ type hardForkInfo struct {
 // rolling window (which has a length of activeNetParams.BlockUpgradeNumToCheck)
 type blockVersions struct {
 	RollingWindowLookBacks []int
-}
-
-// Contains a certain stake version's count of votes in the
-// static window which is defined to start when
-// (currentHeight - StakeValidationHeight) % StakeVersionInterval == 0
-type stakeVersions struct {
-	StaticWindowVoteCounts []int
-	CurrentTotalVotes      int
 }
 
 var hardForkInformation = &hardForkInfo{}
@@ -125,16 +120,14 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hash, height, err := dcrdClient.GetBestBlock()
 	if err != nil {
 		fmt.Println(err)
-	}
-	block, err := dcrdClient.GetBlockVerbose(hash, false)
-	if err != nil {
-		fmt.Println(err)
+		return
 	}
 	// Request twice as many, so we can populate the rolling block version window's first
 	stakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
 		int32(activeNetParams.BlockUpgradeNumToCheck*2))
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	blockVersionsFound := make(map[int32]*blockVersions)
@@ -193,113 +186,140 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 			}
 		}
 	}
+	/*
+		blocksIntoStakeVersionWindow := (height - activeNetParams.StakeValidationHeight) % activeNetParams.StakeVersionInterval
+		// Request twice as many, so we can populate the rolling block version window's first
+		heightstakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
+			int32(blocksIntoStakeVersionWindow))
+		if err != nil {
+			fmt.Println(err)
+		}
+			stakeVersionsFound := make(map[uint32]*stakeVersions)
+			stakeVersionsHeights := make([]int64, len(heightstakeVersionResults.StakeVersions))
+			elementNum = 0
+			for i := len(heightstakeVersionResults.StakeVersions) - 1; i >= 0; i-- {
+				stakeVersion := heightstakeVersionResults.StakeVersions[i]
+				stakeVersionsHeights[elementNum] = stakeVersion.Height
+				for _, vote := range stakeVersion.VoterVersions {
+					_, ok := stakeVersionsFound[vote]
+					if !ok {
+						// Had not found this block version yet
+						stakeVersionsFound[vote] = &stakeVersions{}
+						stakeVersionsFound[vote].StaticWindowVoteCounts = make([]int, len(heightstakeVersionResults.StakeVersions))
+						// Need to populate "back" to fill in values for previously missed window
+						for k := 0; k < elementNum; k++ {
+							stakeVersionsFound[vote].StaticWindowVoteCounts[k] = 0
+						}
+						stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] = 1
+					} else {
+						if elementNum == 0 {
+							stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] = 1
+						} else {
+							stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] =
+								stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] + 1
+						}
+					}
+				}
+				for voteVersion := range stakeVersionsFound {
+					if elementNum > 0 {
+						stakeVersionsFound[voteVersion].StaticWindowVoteCounts[elementNum] +=
+							stakeVersionsFound[voteVersion].StaticWindowVoteCounts[elementNum-1]
+					}
+				}
+				elementNum++
+			}
+			numDataPoints := 24
+			dataTickLength := int(activeNetParams.StakeVersionInterval) / numDataPoints
+			dataTickHeights := make([]int64, numDataPoints)
+			for vote := range stakeVersionsFound {
+				dataTickedVoteCounts := make([]int, numDataPoints)
+				dataTicketNumber := 0
+				for elementNum, counts := range stakeVersionsFound[vote].StaticWindowVoteCounts {
+					if elementNum%dataTickLength == 0 {
+						dataTickedVoteCounts[dataTicketNumber] = counts
+						stakeVersionsFound[vote].CurrentTotalVotes = counts
+						dataTickHeights[dataTicketNumber] = stakeVersionsHeights[elementNum]
+						dataTicketNumber++
+					}
+				}
+				stakeVersionsFound[vote].StaticWindowVoteCounts = dataTickedVoteCounts
 
-	blocksIntoStakeVersionWindow := (height - activeNetParams.StakeValidationHeight) % activeNetParams.StakeVersionInterval
-	// Request twice as many, so we can populate the rolling block version window's first
-	heightstakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
-		int32(blocksIntoStakeVersionWindow))
+			}
+
+			// Fill in heights for any that weren't populated
+			for i := range dataTickHeights {
+				if dataTickHeights[i] == 0 && i != 0 {
+					dataTickHeights[i] = dataTickHeights[i-1] + (int64(activeNetParams.StakeVersionInterval) / int64(numDataPoints))
+				} else if dataTickHeights[i] == 0 && i == 0 {
+					dataTickHeights[i] = height
+				}
+			}
+
+			// Add end of window height dataTick
+			dataTickHeights = append(dataTickHeights, dataTickHeights[len(dataTickHeights)-1]+int64(activeNetParams.StakeVersionInterval)/int64(numDataPoints))
+	*/
+	//hardForkInformation.StakeVersionHeights = dataTickHeights
+	//hardForkInformation.StakeVersions = stakeVersionsFound
+	numberOfIntervals := 4
+	stakeVersionInfo, err := dcrdClient.GetStakeVersionInfo(int32(numberOfIntervals))
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
-	stakeVersionsFound := make(map[uint32]*stakeVersions)
-	stakeVersionsHeights := make([]int64, len(heightstakeVersionResults.StakeVersions))
-	elementNum = 0
-	for i := len(heightstakeVersionResults.StakeVersions) - 1; i >= 0; i-- {
-		stakeVersion := heightstakeVersionResults.StakeVersions[i]
-		stakeVersionsHeights[elementNum] = stakeVersion.Height
-		for _, vote := range stakeVersion.VoterVersions {
-			_, ok := stakeVersionsFound[vote]
-			if !ok {
-				// Had not found this block version yet
-				stakeVersionsFound[vote] = &stakeVersions{}
-				stakeVersionsFound[vote].StaticWindowVoteCounts = make([]int, len(heightstakeVersionResults.StakeVersions))
-				// Need to populate "back" to fill in values for previously missed window
-				for k := 0; k < elementNum; k++ {
-					stakeVersionsFound[vote].StaticWindowVoteCounts[k] = 0
-				}
-				stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] = 1
-			} else {
-				if elementNum == 0 {
-					stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] = 1
-				} else {
-					stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] =
-						stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] + 1
-				}
-			}
-		}
-		for voteVersion := range stakeVersionsFound {
-			if elementNum > 0 {
-				stakeVersionsFound[voteVersion].StaticWindowVoteCounts[elementNum] +=
-					stakeVersionsFound[voteVersion].StaticWindowVoteCounts[elementNum-1]
-			}
-		}
-		elementNum++
-	}
-	numDataPoints := 24
-	dataTickLength := int(activeNetParams.StakeVersionInterval) / numDataPoints
-	dataTickHeights := make([]int64, numDataPoints)
-	for vote := range stakeVersionsFound {
-		dataTickedVoteCounts := make([]int, numDataPoints)
-		dataTicketNumber := 0
-		for elementNum, counts := range stakeVersionsFound[vote].StaticWindowVoteCounts {
-			if elementNum%dataTickLength == 0 {
-				dataTickedVoteCounts[dataTicketNumber] = counts
-				stakeVersionsFound[vote].CurrentTotalVotes = counts
-				dataTickHeights[dataTicketNumber] = stakeVersionsHeights[elementNum]
-				dataTicketNumber++
-			}
-		}
-		stakeVersionsFound[vote].StaticWindowVoteCounts = dataTickedVoteCounts
-
-	}
-
-	// Fill in heights for any that weren't populated
-	for i := range dataTickHeights {
-		if dataTickHeights[i] == 0 && i != 0 {
-			dataTickHeights[i] = dataTickHeights[i-1] + (int64(activeNetParams.StakeVersionInterval) / int64(numDataPoints))
-		} else if dataTickHeights[i] == 0 && i == 0 {
-			dataTickHeights[i] = height
-		}
-	}
-
-	// Add end of window height dataTick
-	dataTickHeights = append(dataTickHeights, dataTickHeights[len(dataTickHeights)-1]+int64(activeNetParams.StakeVersionInterval)/int64(numDataPoints))
-
-	hardForkInformation.StakeVersionHeights = dataTickHeights
-	hardForkInformation.StakeVersions = stakeVersionsFound
+	hardForkInformation.StakeVersionsIntervals = stakeVersionInfo.Intervals
 	hardForkInformation.BlockHeight = height
 	hardForkInformation.BlockVersionEnforceThreshold = int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
 	hardForkInformation.BlockVersionRejectThreshold = int(float64(activeNetParams.BlockRejectNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
 	hardForkInformation.BlockVersionWindowLength = activeNetParams.BlockUpgradeNumToCheck
 	hardForkInformation.StakeVersionWindowLength = activeNetParams.StakeVersionInterval
 	hardForkInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval * 5
-
-	hardForkInformation.StakeVersionThreshold = toFixed(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)*100, 2)
-	voteVersionVoteThreshold := float64(activeNetParams.StakeMajorityMultiplier) / float64(activeNetParams.StakeMajorityDivisor) * float64(hardForkInformation.StakeVersionWindowVoteTotal)
-	// Calculate current block version and most popular version (and that percentage)
-	hardForkInformation.CurrentCalculatedStakeVersion = uint32(maxVersion)
-	mostPopularStakeVersionCount := 0
-	for i, stakeVersion := range hardForkInformation.StakeVersions {
-		if stakeVersion.CurrentTotalVotes >= int(voteVersionVoteThreshold) {
-			// Show Green
-			hardForkInformation.CurrentCalculatedStakeVersion = i
-			hardForkInformation.MostPopularStakeVersion = i
-			hardForkInformation.MostPopularStakeVersionPercentage = toFixed(float64(stakeVersion.CurrentTotalVotes)/float64(hardForkInformation.StakeVersionWindowVoteTotal)*100, 2)
-			hardForkInformation.StakeVersionSuccess = true
-			mostPopularStakeVersionCount = stakeVersion.CurrentTotalVotes
+	/*
+		voteVersionVoteThreshold := float64(activeNetParams.StakeMajorityMultiplier) / float64(activeNetParams.StakeMajorityDivisor) * float64(hardForkInformation.StakeVersionWindowVoteTotal)
+		// Calculate current block version and most popular version (and that percentage)
+		hardForkInformation.CurrentCalculatedStakeVersion = uint32(maxVersion)
+		mostPopularStakeVersionCount := 0
+		for i, stakeVersion := range hardForkInformation.StakeVersions {
+			if stakeVersion.CurrentTotalVotes >= int(voteVersionVoteThreshold) {
+				// Show Green
+				hardForkInformation.CurrentCalculatedStakeVersion = i
+				hardForkInformation.MostPopularStakeVersion = i
+				hardForkInformation.MostPopularStakeVersionPercentage = toFixed(float64(stakeVersion.CurrentTotalVotes)/float64(hardForkInformation.StakeVersionWindowVoteTotal)*100, 2)
+				hardForkInformation.StakeVersionSuccess = true
+				mostPopularStakeVersionCount = stakeVersion.CurrentTotalVotes
+			}
+			if stakeVersion.CurrentTotalVotes > mostPopularStakeVersionCount {
+				// Show Red
+				mostPopularStakeVersionCount = stakeVersion.CurrentTotalVotes
+				hardForkInformation.MostPopularStakeVersion = i
+				hardForkInformation.MostPopularStakeVersionPercentage = toFixed(float64(stakeVersion.CurrentTotalVotes)/float64(hardForkInformation.StakeVersionWindowVoteTotal)*100, 2)
+			}
 		}
-		if stakeVersion.CurrentTotalVotes > mostPopularStakeVersionCount {
-			// Show Red
-			mostPopularStakeVersionCount = stakeVersion.CurrentTotalVotes
-			hardForkInformation.MostPopularStakeVersion = i
-			hardForkInformation.MostPopularStakeVersionPercentage = toFixed(float64(stakeVersion.CurrentTotalVotes)/float64(hardForkInformation.StakeVersionWindowVoteTotal)*100, 2)
+		if hardForkInformation.CurrentCalculatedStakeVersion == uint32(maxVersion) {
+			hardForkInformation.CurrentCalculatedStakeVersion = block.StakeVersion
+		}
+	*/
+	if len(stakeVersionInfo.Intervals) > 2 {
+		// Get the stakeversion from that most recent full window
+		// XXX THIS IS NOT QUITE RIGHT
+		hardForkInformation.CurrentCalculatedStakeVersion = stakeVersionInfo.Intervals[1].PoSVersions[0].Version
+	}
+	mostPopularVersion := uint32(0)
+	mostPopularVersionCount := uint32(0)
+	for _, voteVersion := range stakeVersionInfo.Intervals[0].VoteVersions {
+		if voteVersion.Version != hardForkInformation.CurrentCalculatedStakeVersion &&
+			voteVersion.Count > mostPopularVersionCount {
+			mostPopularVersion = voteVersion.Version
+			mostPopularVersionCount = voteVersion.Count
 		}
 	}
-	if hardForkInformation.CurrentCalculatedStakeVersion == uint32(maxVersion) {
-		hardForkInformation.CurrentCalculatedStakeVersion = block.StakeVersion
+	voteVersionThreshold := int32(hardForkInformation.StakeVersionWindowVoteTotal) * activeNetParams.StakeMajorityMultiplier / activeNetParams.StakeMajorityDivisor
+	if mostPopularVersionCount > uint32(voteVersionThreshold) {
+		hardForkInformation.StakeVersionSuccess = true
 	}
-
+	hardForkInformation.MostPopularStakeVersionCount = mostPopularVersionCount
+	hardForkInformation.MostPopularStakeVersion = mostPopularVersion
+	hardForkInformation.VoteVersionThreshold = voteVersionThreshold
 	// Quorum/vote information
 	getVoteInfo, err := dcrdClient.GetVoteInfo(4)
 	if err != nil {
@@ -315,8 +335,8 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
 	hardForkInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(hardForkInformation.RuleChangeActivationWindowVotes) * 100
 	hardForkInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
-	hardForkInformation.QuorumVotedPercentage = getVoteInfo.Agendas[0].QuorumPercentage * 100
-	hardForkInformation.QuorumAbstainedPercentage = (float64(1) - getVoteInfo.Agendas[0].QuorumPercentage) * 100
+	hardForkInformation.QuorumVotedPercentage = getVoteInfo.Agendas[0].QuorumProgress
+	hardForkInformation.QuorumAbstainedPercentage = (float64(1) - getVoteInfo.Agendas[0].QuorumProgress) * 100
 	hardForkInformation.AgendaID = getVoteInfo.Agendas[0].Id
 	hardForkInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
 	hardForkInformation.VoteStartHeight = getVoteInfo.StartHeight
@@ -330,7 +350,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	choicePercentages := make([]float64, len(getVoteInfo.Agendas[0].Choices))
 	for i, choice := range getVoteInfo.Agendas[0].Choices {
 		choiceIds[i] = choice.Id
-		choicePercentages[i] = choice.Percentage
+		choicePercentages[i] = choice.Progress
 	}
 	hardForkInformation.ChoiceIds = choiceIds
 	hardForkInformation.ChoicePercentages = choicePercentages
