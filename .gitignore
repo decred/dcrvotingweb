@@ -1,2 +1,7 @@
 *~
 vendor/
+tplhardfork/bower_components/
+tplhardfork/node_modules/
+tplhardfork/public/
+tplhardfork/.sass-cache/
+
