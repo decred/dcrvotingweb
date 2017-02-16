@@ -26,7 +26,7 @@ module.exports = function(grunt) {
                     {   
                         expand: true,
                         cwd: 'src/images',
-                        src: ['decred-logo.png','sprites.svg'],
+                        src: '**/*',
                         dest: '../public/images',
                         filter: 'isFile'
                     },
