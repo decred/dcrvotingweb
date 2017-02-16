@@ -135,7 +135,7 @@
           </div>
           {{else}}
            <div class="alert alert-danger">
-            v{{.CurrentCalculatedStakeVersion}} is still the current vote version.  But v{{.MostPopularStakeVersion}} has received {{.MostPopularStakeVersionPercentage}}% of the votes in the latest static window.  Be prepared to upgrade if it reaches the threshold.
+            v{{.CurrentCalculatedStakeVersion}} is still the current stake version.  The most popular vote version in the current stake version upgrade interval is v{{.MostPopularStakeVersion}} and is at {{.MostPopularStakeVersionPercentage}}% of the total possible votes in the interval.  Be prepared to upgrade if it reaches the threshold.
           </div>
           {{end}}
         </div>
