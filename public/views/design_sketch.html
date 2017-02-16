@@ -75,7 +75,7 @@
             <br />
             Network Stake Version: v{{.CurrentCalculatedStakeVersion}}
             <br />
-            Most popular stake version (v{{.MostPopularStakeVersion}}) percentage: <span style="color:#FD714A;">{{.MostPopularStakeVersionCount}}%</span>
+            Most popular stake version (v{{.MostPopularStakeVersion}}) progress: <span style="color:#FD714A;">{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</span>
           </blockquote>
         </div>
       </div>
@@ -198,7 +198,8 @@
 
   <!-- blockVersions line chart-->
   <script>
-    var blockVersionGraphColors = ['23,12,220','244,100,1','75,192,192','41,113,255','123,22,255','22,255,122']
+  
+    var blockVersionGraphColors = ['23,12,220','244,100,1','75,192,192','41,113,255','123,22,255','22,255,122', '28,97,21', '100,175,183', '139,177,22', '112,29,239']
 
     var blockVersionsLineConfig = {
       type: 'line',
@@ -289,18 +290,20 @@
     var ctx = document.getElementById("blockVersionsIndicator").getContext("2d");
     new Chart(ctx, blockVersionsBarConfig);
     // vote version line graph
-    var voteVersionGraphColors = ['23,12,220','244,100,1','75,192,192','41,113,255','123,22,255','22,255,122','255,0,122']
+    var voteVersionGraphColors = ['23,12,220','244,100,1','75,192,192','41,113,255','123,22,255','22,255,122', '28,97,21', '100,175,183', '139,177,22', '112,29,239']
     var barChartExampleConfig = {
       type: 'bar',
       data: {
-        labels: ["M", "T", "W", "R", "F", "S", "S"],
-        datasets: [{
-        label: 'apples',
-          data: [12, 19, 3, 17, 28, 24, 7]
-        }, {
-        label: 'oranges',
-          data: [30, 29, 5, 5, 20, 3, 10]
-        }]
+        labels: {{.StakeVersionIntervalLabels}},
+        datasets: [
+          {{range $i, $element := .StakeVersionIntervalResults}}
+          {
+          label: {{$element.Version}},
+          data: {{$element.Count}},
+          backgroundColor: "rgba("+voteVersionGraphColors[{{.Version}}]+",1)",
+          },
+          {{end}}
+        ]
       }
     };
     var cty = document.getElementById("voteVersions");
@@ -312,12 +315,14 @@
         datasets: [
         {{$interval := index .StakeVersionsIntervals 0}}
         {{range $i, $element := $interval.VoteVersions}}
+          {{if gt $element.Count 100}}
           {
           type: 'bar',
           label: 'Vote v{{$element.Version}}',
           backgroundColor: "rgba("+voteVersionGraphColors[{{.Version}}]+",1)",
           data: [{{$element.Count}}],
           }, 
+          {{end}}
         {{end}}
         ]
       },

@@ -55,8 +55,10 @@ type hardForkInfo struct {
 	MostPopularBlockVersion           int32
 	MostPopularBlockVersionPercentage float64
 	VoteVersionThreshold              int32
+	StakeVersionIntervalLabels        []string
 	StakeVersionVotesRemaining        int32
 	StakeVersionsIntervals            []dcrjson.VersionInterval
+	StakeVersionIntervalResults       []intervalVersionCounts
 	StakeVersionHeights               []int64
 	StakeVersionSuccess               bool
 	CurrentCalculatedStakeVersion     uint32
@@ -89,6 +91,11 @@ type hardForkInfo struct {
 // rolling window (which has a length of activeNetParams.BlockUpgradeNumToCheck)
 type blockVersions struct {
 	RollingWindowLookBacks []int
+}
+
+type intervalVersionCounts struct {
+	Version uint32
+	Count   []uint32
 }
 
 var hardForkInformation = &hardForkInfo{}
@@ -268,42 +275,47 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 
 	hardForkInformation.StakeVersionsIntervals = stakeVersionInfo.Intervals
+	minimumNeededVoteVersions := uint32(100)
+	// Hacky way of populating the Vote Version bar graph
+	// Each element in each dataset needs counts for each interval
+	// For example:
+	// version 1: [100, 200, 300, 400]
+	voteVersionIntervalResults := make([]intervalVersionCounts, 0)
+	for i, interval := range stakeVersionInfo.Intervals {
+		for _, voteVersion := range interval.VoteVersions {
+			found := false
+			for k, result := range voteVersionIntervalResults {
+				if result.Version == voteVersion.Version {
+					voteVersionIntervalResults[k].Count[i] = voteVersion.Count
+					voteVersionIntervalResults[k].Version = voteVersion.Version
+					found = true
+				}
+			}
+			if !found && voteVersion.Count > minimumNeededVoteVersions {
+				voteVersionIntervalResult := intervalVersionCounts{}
+				voteVersionIntervalResult.Count = make([]uint32, len(stakeVersionInfo.Intervals))
+				voteVersionIntervalResult.Count[i] = voteVersion.Count
+				voteVersionIntervalResult.Version = voteVersion.Version
+				voteVersionIntervalResults = append(voteVersionIntervalResults, voteVersionIntervalResult)
+			}
+		}
+	}
+	hardForkInformation.StakeVersionIntervalResults = voteVersionIntervalResults
 	hardForkInformation.BlockHeight = height
 	hardForkInformation.BlockVersionEnforceThreshold = int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
 	hardForkInformation.BlockVersionRejectThreshold = int(float64(activeNetParams.BlockRejectNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
 	hardForkInformation.BlockVersionWindowLength = activeNetParams.BlockUpgradeNumToCheck
 	hardForkInformation.StakeVersionWindowLength = activeNetParams.StakeVersionInterval
 	hardForkInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval * 5
-	/*
-		voteVersionVoteThreshold := float64(activeNetParams.StakeMajorityMultiplier) / float64(activeNetParams.StakeMajorityDivisor) * float64(hardForkInformation.StakeVersionWindowVoteTotal)
-		// Calculate current block version and most popular version (and that percentage)
-		hardForkInformation.CurrentCalculatedStakeVersion = uint32(maxVersion)
-		mostPopularStakeVersionCount := 0
-		for i, stakeVersion := range hardForkInformation.StakeVersions {
-			if stakeVersion.CurrentTotalVotes >= int(voteVersionVoteThreshold) {
-				// Show Green
-				hardForkInformation.CurrentCalculatedStakeVersion = i
-				hardForkInformation.MostPopularStakeVersion = i
-				hardForkInformation.MostPopularStakeVersionPercentage = toFixed(float64(stakeVersion.CurrentTotalVotes)/float64(hardForkInformation.StakeVersionWindowVoteTotal)*100, 2)
-				hardForkInformation.StakeVersionSuccess = true
-				mostPopularStakeVersionCount = stakeVersion.CurrentTotalVotes
-			}
-			if stakeVersion.CurrentTotalVotes > mostPopularStakeVersionCount {
-				// Show Red
-				mostPopularStakeVersionCount = stakeVersion.CurrentTotalVotes
-				hardForkInformation.MostPopularStakeVersion = i
-				hardForkInformation.MostPopularStakeVersionPercentage = toFixed(float64(stakeVersion.CurrentTotalVotes)/float64(hardForkInformation.StakeVersionWindowVoteTotal)*100, 2)
-			}
-		}
-		if hardForkInformation.CurrentCalculatedStakeVersion == uint32(maxVersion) {
-			hardForkInformation.CurrentCalculatedStakeVersion = block.StakeVersion
-		}
-	*/
+
+	hardForkInformation.StakeVersionIntervalLabels = []string{"Current Window", "2nd", "3rd", "4th"}
+
 	if len(stakeVersionInfo.Intervals) > 2 {
 		// Get the stakeversion from that most recent full window
 		// XXX THIS IS NOT QUITE RIGHT
 		hardForkInformation.CurrentCalculatedStakeVersion = stakeVersionInfo.Intervals[1].PoSVersions[0].Version
 	}
+
 	mostPopularVersion := uint32(0)
 	mostPopularVersionCount := uint32(0)
 	for _, voteVersion := range stakeVersionInfo.Intervals[0].VoteVersions {
