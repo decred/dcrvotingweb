@@ -307,7 +307,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.BlockVersionWindowLength = activeNetParams.BlockUpgradeNumToCheck
 	hardForkInformation.StakeVersionWindowLength = activeNetParams.StakeVersionInterval
 	hardForkInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval * 5
-
+	hardForkInformation.StakeVersionThreshold = toFixed(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)*100, 0)
 	hardForkInformation.StakeVersionIntervalLabels = []string{"Current Window", "2nd", "3rd", "4th"}
 
 	if len(stakeVersionInfo.Intervals) > 2 {
