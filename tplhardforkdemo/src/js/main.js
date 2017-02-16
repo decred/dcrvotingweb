@@ -25,7 +25,7 @@ $('.radial-progress').click(function() {
 });
 
 $('.radial-progress2').click(function() {
-     $('#boxpos').removeClass('hidden');
+     $('#boxpos').toggleClass('hidden');
     $('#boxpow').addClass('hidden');
     $('#boxstake').addClass('hidden');
 //    $('.boxindicators').addClass('hidden');
