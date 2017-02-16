@@ -43,7 +43,7 @@
     </nav>
 
 
-<div class="wrapper" style="margin-top:200px;">
+<div class="wrapper" style="margin-top:100px;">
                 <div class="col-md-5">
                         <div class="radial-progress">
                                 <div class="circle">
@@ -73,7 +73,7 @@
                             Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version(v{{.CurrentCalculatedBlockVersion}})
                           </div>
                           {{else}}<div class="alert alert-danger">
-                            v{{.CurrentCalculatedBlockVersion}} is still the current block version.  But v{{.MostPopularBlockVersion}} has received {{.MostPopularBlockVersionPercentage}}% of the votes in the latest rolling window.  Be prepared to upgrade if it reaches the threshold.
+                            v{{.CurrentCalculatedStakeVersion}} is still the current stake version.  The most popular vote version in the current stake version upgrade interval is v{{.MostPopularStakeVersion}} and is at {{.MostPopularStakeVersionPercentage}}% of the total possible votes in the interval.  Be prepared to upgrade if it reaches the threshold.
                           </div>
                           {{end}}
                         </div>
