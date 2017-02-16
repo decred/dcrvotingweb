@@ -98,7 +98,7 @@
                                 <span class="label label-default">IN PROGRESS</span><br />
                                {{end}}
 			        <p class="textinset">
-                                <small><strong>Current Block:</strong> {{.BlockHeight}}<br /><strong>Static Window:</strong> {{.StakeVersionWindowLength}} Blocks<br /><strong>Reject treshold:</strong> {{.StakeVersionThreshold}}%<br /><strong>Blocks left:</strong> [[StakeVersionWindowBlocksLeft]]</small>
+                                <small><strong>Current Block:</strong> {{.BlockHeight}}<br /><strong>Static Window:</strong> {{.StakeVersionWindowLength}} Blocks<br /><strong>Reject treshold:</strong> {{.StakeVersionThreshold}}%<br /><strong>Blocks left:</strong> {{.VoteBlockLeft}}</small>
                                 </p>
 				</div>
                         </div>
@@ -165,9 +165,9 @@
 	<table class="table table-condensed">
 	<tbody>
 	<tr><td>Network <strong>Block</strong> Version:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedBlockVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}</strong></td></tr>
-	<tr><td>Most popular block version (v{{.MostPopularBlockVersion}}) percentage:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">{{.MostPopularBlockVersionPercentage}}%</span>{{else}}<span style="color:#FD714A">{{.MostPopularBlockVersionPercentage}}%</span>{{end}}</td></tr>
+	<tr><td>Most popular block version (v{{.MostPopularBlockVersion}}) percentage:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">{{.MostPopularBlockVersionPercentage}}%</span>{{else}}<span style="color:#FD714A">{{.MostPopularBlockVersionPercentage}}%</span>{{end}}</strong></td></tr>
 	<tr><td>Network <strong>Stake</strong> Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}</strong></td></tr>
-	<tr><td>Most popular stake version (v{{.MostPopularStakeVersion}}) percentage:</td><td><span style="color:#FD714A;">{{.MostPopularStakeVersionPercentage}}%</span></td></tr>
+	<tr><td>Most popular stake version (v{{.MostPopularStakeVersion}}) percentage:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">{{.MostPopularStakeVersionPercentage}}%</span>{{else}}<span style="color:#FD714A">{{.MostPopularStakeVersionPercentage}}%</span>{{end}}</strong></td></tr>
 	</tbody>
 	</table>
         </div>
@@ -184,8 +184,11 @@
 
 
 <div style="clear:both;">&nbsp;</div>
+
+
       <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION TRESHOLD 95% -->
       <!-- BEGIN POW TRESHOLD CHART 144 BLOCKS WINDOW DATAPOINTS -->
+      <div class="overviewbox" {{if .BlockVersionSuccess}}style="display:none"{{end}}>
 <h4><span>Step 1 - PoW Version Upgrade</span></h4>
         <div class="col-md-10">
           <h3>Block Version (PoW) {{if .BlockVersionSuccess}}
@@ -211,8 +214,8 @@
 	<strong>Block Version:</strong>
 	<table class="table table-condensed">
 	<tbody>
-	<tr><td>Block v4 first seen on the network:</td><td>v{{.CurrentCalculatedBlockVersion}}</td></tr>
-	<tr><td>Block v4 reached 75%:</td><td><span style="color:#2ED6A1;">Not yet</span></td></tr>
+	<tr><td>Block v4 first seen on the network:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">Block#{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}</strong></td></tr>
+	<tr><td>Block v4 reached 75%:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">Block#{{else}}<span style="color:#FD714A">Treshold not reached</span>{{end}}</strong></td></tr>
 	<tr><td>Block version locked to v4:</td><td> </td></tr>
 	</tbody>
 	</table>
@@ -220,8 +223,8 @@
 	<table class="table table-condensed">
 	<tbody>
 	<tr><td>Current Block Version:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedBlockVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}</strong></td></tr>
-	<tr><td>Most Popular Block Version:</td><td><strong>v{{.MostPopularBlockVersion}}</strong></td></tr>
-	<tr><td>Most Popular:</td><td><strong>{{.MostPopularBlockVersionPercentage}}%</strong></td></tr>
+	<tr><td>Most Popular Block Version:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">v{{.MostPopularBlockVersion}}</span>{{else}}<span style="color:#FD714A">v{{.MostPopularBlockVersion}}</span>{{end}}</strong></td></tr>
+	<tr><td>Most Popular:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">{{.MostPopularBlockVersionPercentage}}%</span>{{else}}<span style="color:#FD714A"><{{.MostPopularBlockVersionPercentage}}%/span>{{end}}</strong></td></tr>
 	<tr><td>Reject Treshold:</td><td><strong>{{.BlockVersionRejectThreshold}}%</strong></td></tr>
 	<tr><td>Rolling Window:</td><td><strong>{{.BlockVersionWindowLength}} Blocks</strong></td></tr>
 	</tbody>
@@ -229,11 +232,11 @@
 
           <canvas id="blockVersionsIndicator" width="400" height="510" style="display:none;"></canvas>
         </div>
-     
-
+</div>
 
 
 <div style="clear:both;">&nbsp;</div>
+<div class="poschartsbox" {{if .StakeVersionSuccess}}style="display:none"{{end}}>
 <h4><span>Step 2 - PoS Version Upgrade</span></h4>
     
         <div class="col-md-10">
@@ -263,24 +266,24 @@
 	<strong>Votebit Version:</strong>
 	<table class="table table-condensed">
 	<tbody>
-	<tr><td>Stake v4 first seen on the network:</td><td>v{{.CurrentCalculatedBlockVersion}}</td></tr>
-	<tr><td>Stake v4 reached 75%:</td><td><span style="color:#2ED6A1;">Not yet</span></td></tr>
-	<tr><td>Stake version locked to v4:</td><td> </td></tr>
+	<tr><td>Stake v4 first seen on the network:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">Block#</span>{{else}}<span style="color:#FD714A">Block#</span>{{end}}</strong></td></tr>
+	<tr><td>Stake v4 reached 75%:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">Block#</span>{{else}}<span style="color:#FD714A">< TRESHOLD</span>{{end}}</strong></td></tr>
+	<tr><td>Stake version locked to v4:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">Block#</span>{{else}}<span style="color:#FD714A">< TRESHOLD</span>{{end}}</strong></td></tr>
 	</tbody>
 	</table>
 	<strong>Upgrade Interval:</strong>
 	<table class="table table-condensed">
 	<tbody>
-	<tr><td>Current Votebit Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}v{{.CurrentCalculatedStakeVersion}}{{end}}</strong></td></tr>
-	<tr><td>Most Votebit Version:</td><td><strong>v{{.MostPopularStakeVersion}}</strong></td></tr>
-	<tr><td>Most Popular:</td><td><strong>{{.MostPopularStakeVersionPercentage}}%</strong></td></tr>
+	<tr><td>Current Votebit Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}</strong></td></tr>
+	<tr><td>Most Votebit Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.MostPopularStakeVersion}}</span>{{else}}<span style="color:#FD714A">v{{.MostPopularStakeVersion}}</span>{{end}}</strong></td></tr>
+	<tr><td>Most Popular:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">{{.MostPopularStakeVersionPercentage}}%</span>{{else}}<span style="color:#FD714A">{{.MostPopularStakeVersionPercentage}}%</span>{{end}}</strong></td></tr>
 	<tr><td>Reject Treshold:</td><td><strong>{{.StakeVersionThreshold}}%</strong></td></tr>
 	<tr><td>Static Window:</td><td><strong>{{.StakeVersionWindowLength}} Blocks</strong></td></tr>
 	</tbody>
 	</table>
           <canvas id="voteVersionsIndicator" width="400" height="510" style="display:none;"></canvas>
         </div>
-    
+    </div><!-- END POSCHARTSBOX -->
 
 
 <div style="clear:both;">&nbsp;</div>
@@ -362,10 +365,10 @@
 <script src="js/complete.js"></script>
 
 <!-- CHARTS JS -->
- <!-- blockVersions line chart-->
+
+  <!-- blockVersions line chart-->
   <script>
     var blockVersionGraphColors = ['23,12,220','244,100,1','75,192,192','41,113,255','123,22,255','22,255,122']
-
     var blockVersionsLineConfig = {
       type: 'line',
       data: {
@@ -423,7 +426,6 @@
     };
     var ctx = document.getElementById("blockVersions");
     var myChart = new Chart(ctx, blockVersionsLineConfig);
-
     // blockVersions most recent bar chart
     var blockVersionsBarConfig = {
       type: 'bar',
@@ -454,9 +456,9 @@
     };
     var ctx = document.getElementById("blockVersionsIndicator").getContext("2d");
     new Chart(ctx, blockVersionsBarConfig);
+
     // vote version line graph
     var voteVersionGraphColors = ['23,12,220','244,100,1','75,192,192','41,113,255','123,22,255','22,255,122','255,0,122']
-
     var voteVersionLineConfig = {
       type: 'line',
       data: {
@@ -500,7 +502,7 @@
               beginAtZero:true,
               fontColor: '#FFF',
               suggestedMin: 0,
-      
+              suggestedMax: {{.StakeVersionWindowVoteTotal}}
             }
           }],
           xAxes: [{
@@ -547,7 +549,6 @@
     };
     var ctx = document.getElementById("voteVersionsIndicator").getContext("2d");
     new Chart(ctx, voteVersionBarConfig);
-
     var quorumHorizontalConfig = {
       type: 'horizontalBar',
       data: {
@@ -578,7 +579,6 @@
     };
     var cta = document.getElementById("voteQuorum");
     new Chart(cta, quorumHorizontalConfig);
-
     var quorumDonutConfig = {
       type: 'doughnut',
       data: {
