@@ -56,7 +56,7 @@ type hardForkInfo struct {
 	MostPopularBlockVersionPercentage float64
 	VoteVersionThreshold              int32
 	StakeVersionIntervalLabels        []string
-	StakeVersionVotesRemaining        int32
+	StakeVersionVotesRemaining        int64
 	StakeVersionsIntervals            []dcrjson.VersionInterval
 	StakeVersionIntervalResults       []intervalVersionCounts
 	StakeVersionHeights               []int64
@@ -332,6 +332,9 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.MostPopularStakeVersionCount = mostPopularVersionCount
 	hardForkInformation.MostPopularStakeVersion = mostPopularVersion
 	hardForkInformation.VoteVersionThreshold = voteVersionThreshold
+
+	blocksIntoInterval := stakeVersionInfo.Intervals[0].EndHeight - stakeVersionInfo.Intervals[0].StartHeight
+	hardForkInformation.StakeVersionVotesRemaining = (activeNetParams.StakeVersionInterval - blocksIntoInterval) * 5
 	// Quorum/vote information
 	getVoteInfo, err := dcrdClient.GetVoteInfo(4)
 	if err != nil {
