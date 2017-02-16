@@ -1,7 +1,7 @@
 *~
 vendor/
-tplhardfork/bower_components/
-tplhardfork/node_modules/
-tplhardfork/public/
-tplhardfork/.sass-cache/
+tplhardforkdemo/bower_components/
+tplhardforkdemo/node_modules/
+tplhardforkdemo/public/
+tplhardforkdemo/.sass-cache/
 
