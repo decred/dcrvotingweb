@@ -223,12 +223,15 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	// For example:
 	// version 1: [100, 200, 300, 400]
 	voteVersionIntervalResults := make([]intervalVersionCounts, 0)
-	for i, interval := range stakeVersionInfo.Intervals {
+	voteVersionLabels := make([]string, len(stakeVersionInfo.Intervals))
+	for i := len(stakeVersionInfo.Intervals) - 1; i >= 0; i-- {
+		interval := stakeVersionInfo.Intervals[i]
+		voteVersionLabels[len(stakeVersionInfo.Intervals)-1-i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
 		for _, voteVersion := range interval.VoteVersions {
 			found := false
 			for k, result := range voteVersionIntervalResults {
 				if result.Version == voteVersion.Version {
-					voteVersionIntervalResults[k].Count[i] = voteVersion.Count
+					voteVersionIntervalResults[k].Count[len(stakeVersionInfo.Intervals)-1-i] = voteVersion.Count
 					voteVersionIntervalResults[k].Version = voteVersion.Version
 					found = true
 				}
@@ -236,12 +239,13 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 			if !found && voteVersion.Count > minimumNeededVoteVersions {
 				voteVersionIntervalResult := intervalVersionCounts{}
 				voteVersionIntervalResult.Count = make([]uint32, len(stakeVersionInfo.Intervals))
-				voteVersionIntervalResult.Count[i] = voteVersion.Count
+				voteVersionIntervalResult.Count[len(stakeVersionInfo.Intervals)-1-i] = voteVersion.Count
 				voteVersionIntervalResult.Version = voteVersion.Version
 				voteVersionIntervalResults = append(voteVersionIntervalResults, voteVersionIntervalResult)
 			}
 		}
 	}
+	voteVersionLabels[len(stakeVersionInfo.Intervals)-1] = "Current Interval"
 	hardForkInformation.StakeVersionIntervalResults = voteVersionIntervalResults
 	hardForkInformation.BlockHeight = height
 	hardForkInformation.BlockVersionEnforceThreshold = int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
@@ -250,7 +254,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.StakeVersionWindowLength = activeNetParams.StakeVersionInterval
 	hardForkInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval*5 - int64(missedVotesStakeInterval)
 	hardForkInformation.StakeVersionThreshold = toFixed(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)*100, 0)
-	hardForkInformation.StakeVersionIntervalLabels = []string{"Current Window", "2nd", "3rd", "4th"}
+	hardForkInformation.StakeVersionIntervalLabels = voteVersionLabels
 
 	if len(stakeVersionInfo.Intervals) > 2 {
 		// Get the stakeversion from that most recent full window
