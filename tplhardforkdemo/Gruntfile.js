@@ -9,13 +9,6 @@ module.exports = function(grunt) {
                         dest: '../public/',
                         filter: 'isFile'
                     },
-                    {
-                        expand: true,
-                        cwd: 'src/svg',
-                        src: ['sprites.svg'],
-                        dest: '../public/svg',
-                        filter: 'isFile'
-                    },
                     {   
                         expand: true,
                         cwd: 'bower_components/chart.js/dist',
@@ -32,9 +25,9 @@ module.exports = function(grunt) {
                     },
                     {   
                         expand: true,
-                        cwd: 'src/img',
-                        src: ['decred-logo.png'],
-                        dest: '../public/img',
+                        cwd: 'src/images',
+                        src: ['**/*'],
+                        dest: '../public/images',
                         filter: 'isFile'
                     },
                     {
@@ -95,7 +88,7 @@ module.exports = function(grunt) {
             },
 
             img: {
-                files: ['src/img/*.{png,jpg,gif}'],
+                files: ['src/images/*.{png,jpg,gif}'],
                 tasks: ['imagemin'],
                 options: {
                     livereload: true
