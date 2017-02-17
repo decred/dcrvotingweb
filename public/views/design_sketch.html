@@ -113,7 +113,7 @@
                                 <span class="label label-default">IN PROGRESS</span><br />
                                {{end}}
 			        <p class="textinset">
-                                <small><strong>Current Block:</strong> {{.BlockHeight}}<br /><strong>Static Window:</strong> {{.StakeVersionWindowLength}} Blocks<br /><strong>Upgrade treshold:</strong> {{.StakeVersionThreshold}}%<br /><strong>Blocks left:</strong> {{.VoteBlockLeft}}</small>
+                                <small><strong>Current Block:</strong> {{.BlockHeight}}<br /><strong>Static Interval:</strong> {{.StakeVersionWindowLength}} Blocks<br /><strong>Upgrade treshold:</strong> {{.StakeVersionThreshold}}%<br /><strong>Blocks left:</strong> {{.VoteBlockLeft}}</small>
                                 </p>
 				</div>
                         </div>
@@ -141,7 +141,7 @@
                                 </div>
                                 <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br /><span class="bigpercent">{{if .StakeVersionSuccess}}{{end}}</span><br /><br />{{if .StakeVersionSuccess}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
 				<p class="textinset">
-                                <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting Window:</strong><br />Block {{.VoteStartHeight}}-{{.VoteEndHeight}}</small>
+                                <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting interval:</strong><br />Block {{.VoteStartHeight}}-{{.VoteEndHeight}}</small>
                                 </p>
                                 </div>
                         </div>
