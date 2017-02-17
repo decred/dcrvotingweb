@@ -198,7 +198,7 @@
           <!-- 95% Treshold reached alertbox --><br />
 	  {{if .BlockVersionSuccess}}
           <div class="alert alert-success">
-            Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version(v{{.CurrentCalculatedBlockVersion}})
+             Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version(v{{.CurrentCalculatedBlockVersion}})
           </div>
           {{else}}
            <div class="alert alert-danger">
@@ -251,7 +251,7 @@
           </div>
           {{else}}
             <div class="alert alert-danger">
-              There are a total of {{.StakeVersionWindowVoteTotal}} votes in each interval. Of those {{.StakeVersionWindowVoteTotal}}, {{.VoteVersionThreshold}} are needed to signal a new version. There are currently {{.MostPopularStakeVersionCount}} votes signaling version v{{.MostPopularStakeVersion}}, with {{.StakeVersionVotesRemaining}} votes remaining
+             There are a total of {{.StakeVersionWindowVoteTotal}} votes in each interval. Of those {{.StakeVersionWindowVoteTotal}}, {{.VoteVersionThreshold}} are needed to signal a new version. There are currently {{.MostPopularStakeVersionCount}} votes signaling version v{{.MostPopularStakeVersion}}, with {{.StakeVersionVotesRemaining}} votes remaining
           </div>
           {{end}} 
  
