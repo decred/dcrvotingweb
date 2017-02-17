@@ -2,4 +2,6 @@
 vendor/
 tplhardforkdemo/node_modules/
 tplhardforkdemo/bower_components/
+tplhardforkdemo/.sass-cache/
+
 
