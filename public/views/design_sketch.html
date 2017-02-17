@@ -223,7 +223,6 @@
         <!-- BEGIN POW BAR LAST 144 BLOCKS -->
         <div class="col-md-5 text-right">
 	<strong>Block Version:</strong>
-	<strong>Upgrade Interval:</strong>
 	<table class="table table-condensed">
 	<tbody>
 	<tr><td>Current Block Version:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedBlockVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}</strong></td></tr>
@@ -273,7 +272,7 @@
 	<tr><td>Current Stake Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}</strong></td></tr>
 	<tr><td>Most Stake Version:</td><td><strong>v{{.MostPopularStakeVersion}}</strong></td></tr>
 	<tr><td>Most Popular:</td><td><strong>{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</strong></td></tr>
-	<tr><td>Reject Treshold:</td><td><strong>{{.StakeVersionThreshold}}%</strong></td></tr>
+	<tr><td>Upgrade Treshold:</td><td><strong>{{.StakeVersionThreshold}}%</strong></td></tr>
 	<tr><td>Static Window:</td><td><strong>{{.StakeVersionWindowLength}} Blocks</strong></td></tr>
 	</tbody>
 	</table>
