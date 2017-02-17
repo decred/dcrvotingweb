@@ -147,11 +147,11 @@
                         </div>
 			{{if and .StakeVersionSuccess .BlockVersionSuccess}}<div class="alert alert-success">
                             PoW v{{.MostPopularBlockVersion}} &hearts; PoS v{{.MostPopularStakeVersion}}<br />
-<strong>v{{.MostPopularBlockVersion}} locked in!</strong>Voting active.<br /><a href="#">Upgrade</a> your software if you have not yet.
+<strong>PoW and PoS miners have upgraded to v{{.MostPopularStakeVersion}}.  Voting will begin in X blocks.</strong>
                           </div>
                           {{else}}<div class="alert alert-danger">
-                            <span class="text-center">PoW v{{.CurrentCalculatedBlockVersion}} <strong>&#8623;</strong> PoS v{{.CurrentCalculatedStakeVersion}}</span><br />
- Voting not active. Voting will begin when PoW <strong>and</strong> PoS miners have upgraded to latest v{{.MostPopularBlockVersion}}.
+                            <span class="text-center">
+                              Voting will begin when PoW and PoS miners have upgraded to latest v4 and the next voting interval has been reached.
                           </div>
                           {{end}}
 		</div><!-- END CYRCLE OVERVIEW -->
