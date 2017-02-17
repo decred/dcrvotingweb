@@ -194,78 +194,19 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 			}
 		}
 	}
-	/*
-		blocksIntoStakeVersionWindow := (height - activeNetParams.StakeValidationHeight) % activeNetParams.StakeVersionInterval
-		// Request twice as many, so we can populate the rolling block version window's first
-		heightstakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
-			int32(blocksIntoStakeVersionWindow))
-		if err != nil {
-			fmt.Println(err)
-		}
-			stakeVersionsFound := make(map[uint32]*stakeVersions)
-			stakeVersionsHeights := make([]int64, len(heightstakeVersionResults.StakeVersions))
-			elementNum = 0
-			for i := len(heightstakeVersionResults.StakeVersions) - 1; i >= 0; i-- {
-				stakeVersion := heightstakeVersionResults.StakeVersions[i]
-				stakeVersionsHeights[elementNum] = stakeVersion.Height
-				for _, vote := range stakeVersion.VoterVersions {
-					_, ok := stakeVersionsFound[vote]
-					if !ok {
-						// Had not found this block version yet
-						stakeVersionsFound[vote] = &stakeVersions{}
-						stakeVersionsFound[vote].StaticWindowVoteCounts = make([]int, len(heightstakeVersionResults.StakeVersions))
-						// Need to populate "back" to fill in values for previously missed window
-						for k := 0; k < elementNum; k++ {
-							stakeVersionsFound[vote].StaticWindowVoteCounts[k] = 0
-						}
-						stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] = 1
-					} else {
-						if elementNum == 0 {
-							stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] = 1
-						} else {
-							stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] =
-								stakeVersionsFound[vote].StaticWindowVoteCounts[elementNum] + 1
-						}
-					}
-				}
-				for voteVersion := range stakeVersionsFound {
-					if elementNum > 0 {
-						stakeVersionsFound[voteVersion].StaticWindowVoteCounts[elementNum] +=
-							stakeVersionsFound[voteVersion].StaticWindowVoteCounts[elementNum-1]
-					}
-				}
-				elementNum++
-			}
-			numDataPoints := 24
-			dataTickLength := int(activeNetParams.StakeVersionInterval) / numDataPoints
-			dataTickHeights := make([]int64, numDataPoints)
-			for vote := range stakeVersionsFound {
-				dataTickedVoteCounts := make([]int, numDataPoints)
-				dataTicketNumber := 0
-				for elementNum, counts := range stakeVersionsFound[vote].StaticWindowVoteCounts {
-					if elementNum%dataTickLength == 0 {
-						dataTickedVoteCounts[dataTicketNumber] = counts
-						stakeVersionsFound[vote].CurrentTotalVotes = counts
-						dataTickHeights[dataTicketNumber] = stakeVersionsHeights[elementNum]
-						dataTicketNumber++
-					}
-				}
-				stakeVersionsFound[vote].StaticWindowVoteCounts = dataTickedVoteCounts
 
-			}
+	blocksIntoStakeVersionWindow := (height - activeNetParams.StakeValidationHeight) % activeNetParams.StakeVersionInterval
+	// Request twice as many, so we can populate the rolling block version window's first
+	heightstakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
+		int32(blocksIntoStakeVersionWindow))
+	if err != nil {
+		fmt.Println(err)
+	}
+	missedVotesStakeInterval := 0
+	for _, stakeVersionResult := range heightstakeVersionResults.StakeVersions {
+		missedVotesStakeInterval += int(activeNetParams.TicketsPerBlock) - len(stakeVersionResult.VoterVersions)
+	}
 
-			// Fill in heights for any that weren't populated
-			for i := range dataTickHeights {
-				if dataTickHeights[i] == 0 && i != 0 {
-					dataTickHeights[i] = dataTickHeights[i-1] + (int64(activeNetParams.StakeVersionInterval) / int64(numDataPoints))
-				} else if dataTickHeights[i] == 0 && i == 0 {
-					dataTickHeights[i] = height
-				}
-			}
-
-			// Add end of window height dataTick
-			dataTickHeights = append(dataTickHeights, dataTickHeights[len(dataTickHeights)-1]+int64(activeNetParams.StakeVersionInterval)/int64(numDataPoints))
-	*/
 	//hardForkInformation.StakeVersionHeights = dataTickHeights
 	//hardForkInformation.StakeVersions = stakeVersionsFound
 	numberOfIntervals := 4
@@ -307,7 +248,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.BlockVersionRejectThreshold = int(float64(activeNetParams.BlockRejectNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
 	hardForkInformation.BlockVersionWindowLength = activeNetParams.BlockUpgradeNumToCheck
 	hardForkInformation.StakeVersionWindowLength = activeNetParams.StakeVersionInterval
-	hardForkInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval * 5
+	hardForkInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval*5 - int64(missedVotesStakeInterval)
 	hardForkInformation.StakeVersionThreshold = toFixed(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)*100, 0)
 	hardForkInformation.StakeVersionIntervalLabels = []string{"Current Window", "2nd", "3rd", "4th"}
 
