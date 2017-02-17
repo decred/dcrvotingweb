@@ -1,0 +1,133 @@
+.accordionjs, .accordionjs * {
+  -webkit-box-sizing                    : border-box !important;
+  -moz-box-sizing                       : border-box !important;
+  box-sizing                            : border-box !important;
+}
+
+/*
+** The main <UL> element holding the tabs.
+*/
+.accordionjs {
+  font-family: Arial, Helvetica, sans-serif;
+  border: 1px solid #05132d;
+  border-radius: 8px;
+  margin-top: 0 auto;
+  padding: 0;
+  height: 600px;
+  width: 101%;
+  overflow: hidden;
+  list-style: none;
+}
+
+  .accordionjs > li {
+    background-color: #0c1e3e;
+    margin-right: -1200px;
+    margin-bottom: 0px;
+    padding-left: 0;
+  }
+
+/*
+** The tabs of the accordion are made up of 3 main elements.
+** 1) <input radiobox />
+** 2) <div /> text title of the box
+** 3) <i>  FontAwesome styled checkbox to show the state.
+*/
+.accordionjs-select {
+  cursor: pointer;
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  margin: 0;
+  z-index: 1;
+}
+
+/* BEGIN accordionjs-title rules */
+.accordionjs-title {
+}
+
+  .accordionjs-title span {
+      display: block;
+      position: absolute;
+      bottom: 0px;
+      width: 100%;
+      white-space: nowrap;
+      margin-bottom: 20px; 
+      margin-left: 0px;
+      line-height: 40px;
+      /* Slider effect */
+      transform: rotate(-90deg);
+      -o-transform: rotate(-90deg);
+      -moz-transform: rotate(-90deg);
+      -webkit-transform: rotate(-90deg);
+      -ms-writing-mode: lr-bt;
+      filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+  }
+
+  .accordionjs-title i {
+    color                               : #ffffff;
+    margin-right                        : 10px;
+    font-size                           : 18px;
+  }
+/* END accordionjs-title rules */
+
+/* BEGIN accordionjs-content rules */
+.accordionjs-content {
+    background-color: #0c1e3e;
+    color: #fff;
+    height: 404px;
+    width: 1104px
+    padding: 48px;
+    position: relative;
+    overflow: auto;
+}
+/* END accordionjs-content rules */
+
+.accordionjs > li,
+.accordionjs-title,
+.accordionjs-content,
+.accordionjs-separator {
+  float: left;
+}
+
+
+.accordionjs-select:checked ~ .accordionjs-separator {
+  margin-right: 1200px;
+  margin-bottom: 0px;
+}
+
+.accordionjs-title, .accordionjs-select  {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    width: 40px; 
+    height: 500px;
+    font-size: 15px;
+}
+
+/* Dark-Blue colour for currently active steps. */
+.accordionjs-select:hover ~ .accordionjs-title, .accordionjs-select:checked ~ .accordionjs-title {
+    background-color: #2971FF;
+}
+
+/* Dark-Red colour for disabled steps. */
+.accordionjs-select:disabled ~ .accordionjs-title {
+    background-color: #942E2E;
+}
+.accordionjs-title, .accordionjs-select:checked ~ .accordionjs-content {
+    margin-right: 1px;
+    margin-bottom: 1px;
+}
+
+/* Do not change following properties, they aren't 
+generated automatically and are common for each slider. */
+.accordionjs > li, .accordionjs-title {
+    position: relative;
+}
+.accordionjs-separator {
+    transition: margin 0.3s ease 0.1s;
+    -o-transition: margin 0.3s ease 0.1s;
+    -moz-transition: margin 0.3s ease 0.1s;
+    -webkit-transition: margin 0.3s ease 0.1s;
+}
+
+
