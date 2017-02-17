@@ -22,7 +22,7 @@
   <body>
     <!-- Fixed navbar -->
     <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
+      <div class="container wrapper">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
@@ -30,14 +30,17 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-<a class="navbar-brand" href="#"><img src="img/decred-logo.png" /><!--<svg class="svg-logo"><use xlink:href="svg/sprites.svg#svg-decred-logo" /></svg> --></a>
+     <a class="navbar-brand" href="#">
+        <svg class="svg-logo">
+        <use xlink:href="images/sprites.svg#svg-decred-logo" />
+        </svg>
+      </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="https://faucet.decred.org" title="Testnet Faucet" title="_blank">Testnet Faucet</a></li>
-            <li class="active"><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -90,7 +93,7 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br /><span class="bigpercent">{{.MostPopularStakeVersionPercentage}}%</span>
+                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br /><span class="bigpercent">{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</span>
 				<br />{{if .StakeVersionSuccess}}v{{.CurrentCalculatedStakeVersion}}{{else}}<span class="error">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}<br />
                                 {{if .StakeVersionSuccess}}
                                 <span class="label label-success">FINISHED</span><br />
@@ -104,11 +107,11 @@
                         </div>
                           {{if .StakeVersionSuccess}}
                           <div class="alert alert-success">
-                            Success! v{{.MostPopularStakeVersion}} had {{.MostPopularStakeVersionPercentage}}% of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
+                            Success! v{{.MostPopularStakeVersion}} had {{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}} of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
                           </div>
                           {{else}}
                            <div class="alert alert-danger">
-                            v{{.CurrentCalculatedStakeVersion}} is still the current vote version.  But v{{.MostPopularStakeVersion}} has received {{.MostPopularStakeVersionPercentage}}% of the votes in the latest static window.  Be prepared to upgrade if it reaches the threshold.
+                            v{{.CurrentCalculatedStakeVersion}} is still the current vote version.  But v{{.MostPopularStakeVersion}} has received {{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}} of the votes in the latest static window.  Be prepared to upgrade if it reaches the threshold.
                           </div>
                           {{end}}
                 </div>
@@ -145,7 +148,7 @@
 
 
 
-
+<div id="boxagenda" class="hidden">
 <div style="clear:both;">&nbsp;</div>
 <h4><span>Agenda</span></h4>
 <!-- BEGIN AGENDA OVERVIEW -->    
@@ -158,22 +161,6 @@
           </p>
         </div>
 
-
-        <!-- OVERALL STATISTICS -->
-<<<<<<< HEAD
-        <div class="col-md-6">
-          <blockquote>
-            Current Block Height: {{.BlockHeight}}
-            <br />
-            Network Block Version: v{{.CurrentCalculatedBlockVersion}}
-            <br />
-            Most popular block version (v{{.MostPopularBlockVersion}}) percentage: <span style="color:#2ED6A1;">{{.MostPopularBlockVersionPercentage}}%</span>
-            <br />
-            Network Stake Version: v{{.CurrentCalculatedStakeVersion}}
-            <br />
-            Most popular stake version (v{{.MostPopularStakeVersion}}) progress: <span style="color:#FD714A;">{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</span>
-          </blockquote>
-=======
         <div class="col-md-5 text-right">
 	<strong>Upgrade status:</strong>
 	<table class="table table-condensed">
@@ -181,11 +168,11 @@
 	<tr><td>Network <strong>Block</strong> Version:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedBlockVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}</strong></td></tr>
 	<tr><td>Most popular block version (v{{.MostPopularBlockVersion}}) percentage:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">{{.MostPopularBlockVersionPercentage}}%</span>{{else}}<span style="color:#FD714A">{{.MostPopularBlockVersionPercentage}}%</span>{{end}}</td></tr>
 	<tr><td>Network <strong>Stake</strong> Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}</strong></td></tr>
-	<tr><td>Most popular stake version (v{{.MostPopularStakeVersion}}) percentage:</td><td><span style="color:#FD714A;">{{.MostPopularStakeVersionPercentage}}%</span></td></tr>
+	<tr><td>Most popular stake version (v{{.MostPopularStakeVersion}}) percentage:</td><td><span style="color:#FD714A;">{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</span></td></tr>
 	</tbody>
 	</table>
->>>>>>> 52696a8... Cirles Process Indicator, Listing and sorting of TemplateVariables and Design rearangement
         </div>
+  </div><!-- BOX AGENDA END -->
 
 
 
@@ -197,7 +184,7 @@
 
 
 
-
+<div id="boxpow" class="hidden">
 <div style="clear:both;">&nbsp;</div>
       <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION TRESHOLD 95% -->
       <!-- BEGIN POW TRESHOLD CHART 144 BLOCKS WINDOW DATAPOINTS -->
@@ -244,10 +231,10 @@
 
           <canvas id="blockVersionsIndicator" width="400" height="510" style="display:none;"></canvas>
         </div>
-     
+  </div><!-- BOXPOW END -->
 
 
-
+<div id="boxpos" class="hidden">
 <div style="clear:both;">&nbsp;</div>
 <h4><span>Step 2 - PoS Version Upgrade</span></h4>
     
@@ -288,16 +275,16 @@
 	<tbody>
 	<tr><td>Current Votebit Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}v{{.CurrentCalculatedStakeVersion}}{{end}}</strong></td></tr>
 	<tr><td>Most Votebit Version:</td><td><strong>v{{.MostPopularStakeVersion}}</strong></td></tr>
-	<tr><td>Most Popular:</td><td><strong>{{.MostPopularStakeVersionPercentage}}%</strong></td></tr>
+	<tr><td>Most Popular:</td><td><strong>{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</strong></td></tr>
 	<tr><td>Reject Treshold:</td><td><strong>{{.StakeVersionThreshold}}%</strong></td></tr>
 	<tr><td>Static Window:</td><td><strong>{{.StakeVersionWindowLength}} Blocks</strong></td></tr>
 	</tbody>
 	</table>
           <canvas id="voteVersionsIndicator" width="400" height="510" style="display:none;"></canvas>
         </div>
-    
+  </div><!-- BOXPOS END -->
 
-
+<div id="boxstake" class="hidden">
 <div style="clear:both;">&nbsp;</div>
 <h4><span>Step 3 - Quorum</span></h4>
 
@@ -335,18 +322,6 @@
             <strong>Danger!</strong> We have yet not reached the minimum Quorum of 10% actively made votes.
           </div>
         </div>
-        <!-- OVERALL STATISTICS -->
-<<<<<<< HEAD
-        <div class="col-md-6">
-          <blockquote>Agenda ID: #{{.AgendaID}}
-            <br />
-            Agenda Title: {{.AgendaDescription}}
-            <br />
-            Voting Window: Block {{.VoteStartHeight}}-{{.VoteEndHeight}}
-            <br />
-            Blocks left for voting: {{.VoteBlockLeft}}
-            <br />
-=======
         <div class="col-md-5 text-right">
 	<p class="bg-primary" style="padding:15px;"><strong>{{.AgendaDescription}}</strong></p>
 	<table class="table table-condensed">
@@ -357,7 +332,6 @@
 	<tr><td>Estimated Vote Expiration Block:</td><td><strong>{{.VoteExpirationBlock}}</strong></td></tr>
 	</tbody>
 	</table>
->>>>>>> 52696a8... Cirles Process Indicator, Listing and sorting of TemplateVariables and Design rearangement
             <h3>Voting Progress:</h3>
             <canvas id="voteProgress" width="100" height="100" style="display:none"></canvas>
           </blockquote>
@@ -365,23 +339,7 @@
       </div>
       {{end}}
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</div><!-- BOXSTAKE END -->
 
 
 </div><!-- end wrapper -->
@@ -390,10 +348,10 @@
 
 <!-- CHARTS JS -->
  <!-- blockVersions line chart-->
+<!-- blockVersions line chart-->
   <script>
   
     var blockVersionGraphColors = ['23,12,220','244,100,1','75,192,192','41,113,255','123,22,255','22,255,122', '28,97,21', '100,175,183', '139,177,22', '112,29,239']
-
     var blockVersionsLineConfig = {
       type: 'line',
       data: {
@@ -451,7 +409,6 @@
     };
     var ctx = document.getElementById("blockVersions");
     var myChart = new Chart(ctx, blockVersionsLineConfig);
-
     // blockVersions most recent bar chart
     var blockVersionsBarConfig = {
       type: 'bar',
@@ -497,32 +454,6 @@
           },
           {{end}}
         ]
-<<<<<<< HEAD
-=======
-      },
-      options: {
-        title: {
-          display: true,
-          text: 'Vote Versions / SVI / Stake version Interval',
-          fontColor: '#FFF'
-        },
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero:true,
-              fontColor: '#FFF',
-              suggestedMin: 0,
-      
-            }
-          }],
-          xAxes: [{
-            ticks: {
-              beginAtZero:true,
-              fontColor: '#FFF'
-            }
-          }]
-        }
->>>>>>> 52696a8... Cirles Process Indicator, Listing and sorting of TemplateVariables and Design rearangement
       }
     };
     var cty = document.getElementById("voteVersions");
@@ -593,7 +524,6 @@
     };
     var cta = document.getElementById("voteQuorum");
     new Chart(cta, quorumHorizontalConfig);
-
     var quorumDonutConfig = {
       type: 'doughnut',
       data: {
@@ -618,13 +548,14 @@
     {{end}}
   </script>
 
+
 <!-- CIRCLE PROGRESS INDICATORS -->
 <script>
 $('head style[type="text/css"]').attr('type', 'text/less');
 less.refreshStyles();
 var transform_styles = ['-webkit-transform', '-ms-transform', 'transform'];
 var pow_percent = '{{.MostPopularBlockVersionPercentage}}';
-var pos_percent = '{{.MostPopularStakeVersionPercentage}}';
+var pos_percent = '{{.MostPopularBlockVersionPercentage}}';
 var stake_percent = '75';
 
 window.circle1 = function() {
