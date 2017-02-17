@@ -241,7 +241,7 @@
 <div id="boxpos" class="hidden">
 <div style="clear:both;">&nbsp;</div>
 <h4><span>Step 2 - PoS Version Upgrade</span></h4>
-    
+						<div class="row">
         <div class="col-md-10">
           <h3>Stake Version (PoS){{if .StakeVersionSuccess}}
                                 <span class="label label-success">FINISHED</span>
@@ -261,8 +261,6 @@
  
           <!-- SECOND CHART VOTE VERSIONS / SVI -->
       
-            <canvas id="voteVersions" width="400" height="200"></canvas>
-       
         </div>
         <!-- BEGIN POW BAR LAST 144 BLOCKS -->
         <div class="col-md-5 text-right">
@@ -276,8 +274,14 @@
 	<tr><td>Static Interval:</td><td><strong>{{.StakeVersionWindowLength}} Blocks</strong></td></tr>
 	</tbody>
 	</table>
-          <canvas id="voteVersionsIndicator" width="400" height="380"></canvas>
         </div>
+							</div> <!-- end row -->
+							<div class="row">
+								<div class="col-md-12">
+            <canvas id="voteVersions" width="400" height="200"></canvas>
+								</div>
+							</div>
+       
   </div><!-- BOXPOS END -->
 
 <div id="boxstake" class="hidden">
@@ -490,8 +494,8 @@
         }
       }
     };
-    var ctx = document.getElementById("voteVersionsIndicator").getContext("2d");
-    new Chart(ctx, voteVersionBarConfig);
+    //var ctx = document.getElementById("voteVersionsIndicator").getContext("2d");
+    //new Chart(ctx, voteVersionBarConfig);
     {{if .Quorum}}
     var quorumHorizontalConfig = {
       type: 'horizontalBar',
