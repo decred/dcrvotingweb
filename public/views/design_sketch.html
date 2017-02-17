@@ -81,7 +81,7 @@
                                 <span class="label label-default">IN PROGRESS</span>
                                 {{end}}
 				<p class="textinset">
-                                <small><strong>Current Version:</strong>  v{{.MostPopularBlockVersion}}<br /><strong>Rolling Window:</strong> {{.BlockVersionWindowLength}} Blocks<br /><strong>Reject treshold:</strong> {{.BlockVersionRejectThreshold}}%</small>
+                                <small><strong>Current Version:</strong>  v{{.MostPopularBlockVersion}}<br /><strong>Rolling Window:</strong> {{.BlockVersionWindowLength}} Blocks<br /><strong>Reject Threshold:</strong> {{.BlockVersionRejectThreshold}}%</small>
                                 </p> 
 				</div>
                         </div>
@@ -113,7 +113,7 @@
                                 <span class="label label-default">IN PROGRESS</span><br />
                                {{end}}
 			        <p class="textinset">
-                                <small><strong>Current Block:</strong> {{.BlockHeight}}<br /><strong>Static Interval:</strong> {{.StakeVersionWindowLength}} Blocks<br /><strong>Upgrade treshold:</strong> {{.StakeVersionThreshold}}%<br /><strong>Blocks left:</strong> {{.VoteBlockLeft}}</small>
+                                <small><strong>Current Block:</strong> {{.BlockHeight}}<br /><strong>Static Interval:</strong> {{.StakeVersionWindowLength}} Blocks<br /><strong>Upgrade Threshold:</strong> {{.StakeVersionThreshold}}%<br /><strong>Blocks left:</strong> {{.VoteBlockLeft}}</small>
                                 </p>
 				</div>
                         </div>
@@ -198,8 +198,8 @@
 
 <div id="boxpow" class="hidden">
 <div style="clear:both;">&nbsp;</div>
-      <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION TRESHOLD 95% -->
-      <!-- BEGIN POW TRESHOLD CHART 144 BLOCKS WINDOW DATAPOINTS -->
+      <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION THRESHOLD 95% -->
+      <!-- BEGIN POW THRESHOLD CHART 144 BLOCKS WINDOW DATAPOINTS -->
 <h4><span>Step 1 - PoW Version Upgrade</span></h4>
         <div class="col-md-10">
           <h3>Block Version (PoW) {{if .BlockVersionSuccess}}
@@ -207,7 +207,7 @@
                                 {{else}}
                                 <span class="label label-default">IN PROGRESS</span>
                                 {{end}}</h3>
-          <!-- 95% Treshold reached alertbox --><br />
+          <!-- 95% Threshold reached alertbox --><br />
 	  {{if .BlockVersionSuccess}}
           <div class="alert alert-success">
              Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version(v{{.CurrentCalculatedBlockVersion}})
@@ -228,7 +228,7 @@
 	<tr><td>Current Block Version:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedBlockVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}</strong></td></tr>
 	<tr><td>Most Popular Block Version:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedBlockVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}</strong></td></tr>
 	<tr><td>Most Popular:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53"> {{.MostPopularBlockVersionPercentage}}%</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}</strong></td></tr>
-	<tr><td>Reject Treshold:</td><td><strong>{{.BlockVersionRejectThreshold}}%</strong></td></tr>
+	<tr><td>Reject Threshold:</td><td><strong>{{.BlockVersionRejectThreshold}}%</strong></td></tr>
 	<tr><td>Rolling Window:</td><td><strong>{{.BlockVersionWindowLength}} Blocks</strong></td></tr>
 	</tbody>
 	</table>
@@ -241,14 +241,14 @@
 <div id="boxpos" class="hidden">
 <div style="clear:both;">&nbsp;</div>
 <h4><span>Step 2 - PoS Version Upgrade</span></h4>
-    
+						<div class="row">
         <div class="col-md-10">
           <h3>Stake Version (PoS){{if .StakeVersionSuccess}}
                                 <span class="label label-success">FINISHED</span>
                                 {{else}}
                                 <span class="label label-default">IN PROGRESS</span>
                                 {{end}}</h3>
-          <!-- 95% Treshold reached alertbox --><br />
+          <!-- 95% Threshold reached alertbox --><br />
           {{if .StakeVersionSuccess}}
           <div class="alert alert-success">
             Success! v{{.MostPopularStakeVersion}} had {{.MostPopularStakeVersionCount}} of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
@@ -261,8 +261,6 @@
  
           <!-- SECOND CHART VOTE VERSIONS / SVI -->
       
-            <canvas id="voteVersions" width="400" height="200"></canvas>
-       
         </div>
         <!-- BEGIN POW BAR LAST 144 BLOCKS -->
         <div class="col-md-5 text-right">
@@ -272,19 +270,25 @@
 	<tr><td>Current Stake Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}</strong></td></tr>
 	<tr><td>Most Stake Version:</td><td><strong>v{{.MostPopularStakeVersion}}</strong></td></tr>
 	<tr><td>Most Popular:</td><td><strong>{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</strong></td></tr>
-	<tr><td>Upgrade Treshold:</td><td><strong>{{.StakeVersionThreshold}}%</strong></td></tr>
+	<tr><td>Upgrade Threshold:</td><td><strong>{{.StakeVersionThreshold}}%</strong></td></tr>
 	<tr><td>Static Interval:</td><td><strong>{{.StakeVersionWindowLength}} Blocks</strong></td></tr>
 	</tbody>
 	</table>
-          <canvas id="voteVersionsIndicator" width="400" height="380"></canvas>
         </div>
+							</div> <!-- end row -->
+							<div class="row">
+								<div class="col-md-12">
+            <canvas id="voteVersions" width="400" height="200"></canvas>
+								</div>
+							</div>
+       
   </div><!-- BOXPOS END -->
 
 <div id="boxstake" class="hidden">
 <div style="clear:both;">&nbsp;</div>
 <h4><span>Step 3 - Quorum</span></h4>
 
-     <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION TRESHOLD 95% -->
+     <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION THRESHOLD 95% -->
       {{if .Quorum}}
       <!-- INTRODUCTION TEXT -->
   
@@ -298,7 +302,7 @@
             After {{.BlockVersionRejectThreshold}}% of blocks in a rolling window 
             of {{.BlockVersionWindowLength}} blocks are the latest block version 
             <strong>and</strong> {{.StakeVersionThreshold}}% of the vote versions in a fixed 
-            {{.RuleChangeActivationWindow}} block interval have the latest vote 
+            {{.StakeVersionWindowLength}} block interval have the latest vote 
             version, voting on a new agenda will begin.
           </p>
           <p>
@@ -490,8 +494,8 @@
         }
       }
     };
-    var ctx = document.getElementById("voteVersionsIndicator").getContext("2d");
-    new Chart(ctx, voteVersionBarConfig);
+    //var ctx = document.getElementById("voteVersionsIndicator").getContext("2d");
+    //new Chart(ctx, voteVersionBarConfig);
     {{if .Quorum}}
     var quorumHorizontalConfig = {
       type: 'horizontalBar',
