@@ -64,6 +64,7 @@ type hardForkInfo struct {
 	CurrentCalculatedStakeVersion     uint32
 	MostPopularStakeVersion           uint32
 	MostPopularStakeVersionCount      uint32
+	MostPopularStakeVersionPercentage float64
 	RuleChangeActivationQuorum        uint32
 	RuleChangeActivationMultiplier    uint32
 	RuleChangeActivationDivisor       uint32
@@ -330,6 +331,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 		hardForkInformation.StakeVersionSuccess = true
 	}
 	hardForkInformation.MostPopularStakeVersionCount = mostPopularVersionCount
+	hardForkInformation.MostPopularStakeVersionPercentage = toFixed(float64(mostPopularVersionCount)/float64(hardForkInformation.StakeVersionWindowVoteTotal)*100, 2)
 	hardForkInformation.MostPopularStakeVersion = mostPopularVersion
 	hardForkInformation.VoteVersionThreshold = voteVersionThreshold
 
