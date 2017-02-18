@@ -276,7 +276,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 		}
 	}
 	voteVersionThreshold := int32(hardForkInformation.StakeVersionWindowVoteTotal) * activeNetParams.StakeMajorityMultiplier / activeNetParams.StakeMajorityDivisor
-	if mostPopularVersionCount > uint32(voteVersionThreshold) {
+	if mostPopularVersion <= hardForkInformation.CurrentCalculatedStakeVersion {
 		hardForkInformation.StakeVersionSuccess = true
 	}
 	hardForkInformation.MostPopularStakeVersionCount = mostPopularVersionCount
