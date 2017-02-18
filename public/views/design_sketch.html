@@ -86,7 +86,7 @@
 				</div>
                         </div>
                           {{if .BlockVersionSuccess}}<div class="alert alert-success">
-                            Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version(v{{.CurrentCalculatedBlockVersion}})
+                            Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version (v{{.CurrentCalculatedBlockVersion}})
                           </div>
                           {{else}}<div class="alert alert-danger">
                             v{{.CurrentCalculatedBlockVersion}} is still the current block version.  But v{{.MostPopularBlockVersion}} has received {{.MostPopularBlockVersionPercentage}}% of the votes in the latest rolling window.  Be prepared to upgrade if it reaches the threshold.
@@ -147,7 +147,7 @@
                         </div>
 			{{if and .StakeVersionSuccess .BlockVersionSuccess}}<div class="alert alert-success">
                             PoW v{{.MostPopularBlockVersion}} &hearts; PoS v{{.MostPopularStakeVersion}}<br />
-<strong>PoW and PoS miners have upgraded to v{{.MostPopularStakeVersion}}.  Voting will begin in X blocks.</strong>
+<strong>PoW and PoS miners have upgraded to v{{.MostPopularStakeVersion}}.  Voting will begin in {{.VoteBlockLeft}} blocks.</strong>
                           </div>
                           {{else}}<div class="alert alert-danger">
                             <span class="text-center">
@@ -165,7 +165,7 @@
 <h4><span>Agenda</span></h4>
 <!-- BEGIN AGENDA OVERVIEW -->    
         <div class="col-md-10">
-	<p class="bg-primary" style="padding:15px;"><strong>{{.AgendaDescription}}</strong> | <strong>Agenda ID:</strong>  #{{.AgendaID}}</p>
+	<p class="bg-primary inco" style="padding:15px;"><strong>{{.AgendaDescription}}</strong> | <strong>Agenda ID:</strong>  #{{.AgendaID}}</p>
 	
           <p class="bg-info" style="background-color:#2971FF;padding:15px;">
             Once the majority of the PoW miners have upgraded ({{.BlockVersionRejectThreshold}}% of the {{.BlockVersionWindowLength}} most recent blocks are at the latest version) 
@@ -198,16 +198,15 @@
 
 <div id="boxpow" class="hidden">
 <div style="clear:both;">&nbsp;</div>
-      <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION THRESHOLD 95% -->
-      <!-- BEGIN POW THRESHOLD CHART 144 BLOCKS WINDOW DATAPOINTS -->
 <h4><span>Step 1 - PoW Version Upgrade</span></h4>
+      <div class="row">
         <div class="col-md-10">
           <h3>Block Version (PoW) {{if .BlockVersionSuccess}}
                                 <span class="label label-success">FINISHED</span>
                                 {{else}}
                                 <span class="label label-default">IN PROGRESS</span>
                                 {{end}}</h3>
-          <!-- 95% Threshold reached alertbox --><br />
+                                <!-- 95% Threshold reached alertbox --><br />
 	  {{if .BlockVersionSuccess}}
           <div class="alert alert-success">
              Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version(v{{.CurrentCalculatedBlockVersion}})
@@ -217,10 +216,8 @@
             v{{.CurrentCalculatedBlockVersion}} is still the current block version.  But v{{.MostPopularBlockVersion}} has received {{.MostPopularBlockVersionPercentage}}% of the votes in the latest rolling window.  Be prepared to upgrade if it reaches the threshold.
           </div>
           {{end}}
-          <!-- FIRST CHART -->
-          <canvas id="blockVersions" width="400" height="200"></canvas>
+          <!-- FIRST CHART --><canvas id="blockVersions" width="400" height="200"></canvas>
         </div>
-        <!-- BEGIN POW BAR LAST 144 BLOCKS -->
         <div class="col-md-5 text-right">
 	<strong>Block Version:</strong>
 	<table class="table table-condensed">
@@ -232,8 +229,8 @@
 	<tr><td>Rolling Window:</td><td><strong>{{.BlockVersionWindowLength}} Blocks</strong></td></tr>
 	</tbody>
 	</table>
-
-          <canvas id="blockVersionsIndicator" width="400" height="330"></canvas>
+  <!-- BEGIN POW BAR LAST 144 BLOCKS --><canvas id="blockVersionsIndicator" width="400" height="380"></canvas>
+        </div>
         </div>
   </div><!-- BOXPOW END -->
 
@@ -260,7 +257,7 @@
           {{end}} 
  
           <!-- SECOND CHART VOTE VERSIONS / SVI -->
-      
+      <canvas id="voteVersions" width="400" height="200"></canvas>
         </div>
         <!-- BEGIN POW BAR LAST 144 BLOCKS -->
         <div class="col-md-5 text-right">
@@ -274,13 +271,9 @@
 	<tr><td>Static Interval:</td><td><strong>{{.StakeVersionWindowLength}} Blocks</strong></td></tr>
 	</tbody>
 	</table>
+  <canvas id="voteVersionsIndicator" width="400" height="380"></canvas>
         </div>
 							</div> <!-- end row -->
-							<div class="row">
-								<div class="col-md-12">
-            <canvas id="voteVersions" width="400" height="200"></canvas>
-								</div>
-							</div>
        
   </div><!-- BOXPOS END -->
 
@@ -291,12 +284,12 @@
      <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION THRESHOLD 95% -->
       {{if .Quorum}}
       <!-- INTRODUCTION TEXT -->
-  
+      <div class="row">
         <div class="col-md-10">
           <h3>Stake Voting{{if and .StakeVersionSuccess .BlockVersionSuccess}}
                                 <span class="label label-success">VOTING STARTED</span>
                                 {{else}}
-                                <span class="label label-default">VOTING NOT STARTED</span>
+                                <span class="label label-warning">NOT STARTED</span>
                                 {{end}}</h3>
           <p>
             After {{.BlockVersionRejectThreshold}}% of blocks in a rolling window 
@@ -327,7 +320,7 @@
           </div>{{end}}
         </div>
         <div class="col-md-5 text-right">
-	<p class="bg-primary" style="padding:15px;"><strong>{{.AgendaDescription}}</strong></p>
+	<p class="bg-primary inco" style="padding:15px;font-size:12px;">{{.AgendaDescription}}</p>
 	<table class="table table-condensed">
 	<tbody>
 	<tr><td>Agenda ID:</td><td><strong>#{{.AgendaID}}</strong></td></tr>
@@ -337,10 +330,11 @@
 	</tbody>
 	</table>
             {{if and .StakeVersionSuccess .BlockVersionSuccess}}<h3>Voting Progress:</h3>{{end}}
-            <canvas id="voteProgress" width="100" height="100" {{if and .StakeVersionSuccess .BlockVersionSuccess}}{{else}}style="display:none"{{end}}></canvas>
+            <canvas id="voteProgress" width="100" height="100" {{if and .StakeVersionSuccess .BlockVersionSuccess}}{{else}}style="display:none;"{{end}}></canvas>
           </blockquote>
         </div>
       </div>
+    </div>
       {{end}}
 </div>
 </div><!-- BOXSTAKE END -->
@@ -353,7 +347,7 @@
  <!-- blockVersions line chart-->
 <!-- blockVersions line chart-->
   <script>
-  
+    Chart.defaults.global.defaultFontColor = '#fff';
     var blockVersionGraphColors = ['23,12,220','244,100,1','75,192,192','41,113,255','123,22,255','22,255,122', '28,97,21', '100,175,183', '139,177,22', '112,29,239']
     var blockVersionsLineConfig = {
       type: 'line',
@@ -494,8 +488,8 @@
         }
       }
     };
-    //var ctx = document.getElementById("voteVersionsIndicator").getContext("2d");
-    //new Chart(ctx, voteVersionBarConfig);
+    var ctx = document.getElementById("voteVersionsIndicator").getContext("2d");
+    new Chart(ctx, voteVersionBarConfig);
     {{if .Quorum}}
     var quorumHorizontalConfig = {
       type: 'horizontalBar',
@@ -509,8 +503,9 @@
           }, {
           type: 'horizontalBar',
           label: 'Abstained',
+          labelFontColor : "#fff",
           data: [{{.QuorumAbstainedPercentage}}],
-          backgroundColor: '#FFFFFF'
+          backgroundColor: '#0C1E3E'
         }] 
       },
       options: {
@@ -534,14 +529,19 @@
         datasets: [{
           data: {{.ChoicePercentages}},
           backgroundColor: [
-            "#FFFFFF",
-            "#41BF53",
-            "#69D3F5"
+            "#0C1E3E",
+            "#FD714A",
+            "#41BF53"
           ],
           hoverBackgroundColor: [
-            "#0C1E3E",
-            "#2ED6A1",
-            "#2971FF"
+            "#05235A",
+            "#fa3804",
+            "#74DE83"
+          ],
+          borderColor: [
+            "#5bc0de",
+            "#ff0000",
+            "#00ff00"
           ]
         }]
       }
