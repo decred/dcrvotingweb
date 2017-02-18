@@ -219,7 +219,10 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 		fmt.Println(err)
 		return
 	}
-
+	if len(stakeVersionInfo.Intervals) == 0 {
+		fmt.Println("StakeVersion info did not return usable information, intervals empty")
+		return
+	}
 	hardForkInformation.StakeVersionsIntervals = stakeVersionInfo.Intervals
 	minimumNeededVoteVersions := uint32(100)
 	// Hacky way of populating the Vote Version bar graph
