@@ -317,7 +317,7 @@
           </p>
           {{if and .StakeVersionSuccess .BlockVersionSuccess}}<h3>Quorum:</h3>{{end}}
           <!-- QUORUM HORIZONTAL BARCHART -->
-          <canvas id="voteQuorum" width="400" height="100" ></canvas>
+          <canvas id="voteQuorum" width="400" height="100" {{if and .StakeVersionSuccess .BlockVersionSuccess}}{{else}}style="display:none;"{{end}}></canvas>
           {{if and .StakeVersionSuccess .BlockVersionSuccess}}<div class="alert alert-danger">
             <strong>Danger!</strong> We have yet not reached the minimum Quorum of 10% actively made votes.
           </div>{{end}}
