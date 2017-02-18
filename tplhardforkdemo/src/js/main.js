@@ -32,4 +32,14 @@ $(document).keydown(function(event){
         $('#boxpos').addClass( "hidden" );
         $('#boxpow').addClass( "hidden" );
     }
+    if(keycode === 37){
+        $('#boxstake').removeClass("hidden");
+        $('#boxpos').removeClass( "hidden" );
+        $('#boxpow').removeClass( "hidden" );
+    }
+    if(keycode === 39){
+        $('#boxstake').addClass("hidden");
+        $('#boxpos').addClass( "hidden" );
+        $('#boxpow').addClass( "hidden" );
+    }
 });
