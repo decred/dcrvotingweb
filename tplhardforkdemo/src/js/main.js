@@ -13,3 +13,23 @@ $('#boxstake').toggleClass("hidden");
 $('#boxpos').addClass( "hidden" );
 $('#boxpow').addClass( "hidden" );
 });
+$(document).keydown(function(event){
+    var display = "0";
+    var keycode = (event.keyCode ? event.keyCode : event.which);
+    if(keycode === 49){
+        $('#boxpow').toggleClass("hidden");
+        $('#boxpos').addClass( "hidden" );
+        $('#boxstake').addClass( "hidden" );
+    }
+    if(keycode === 50){
+        $('#boxpos').toggleClass("hidden");
+        $('#boxpow').addClass( "hidden" );
+        $('#boxstake').addClass( "hidden" );
+        console.log('key 2 pressed')
+    }
+    if(keycode === 51){
+        $('#boxstake').toggleClass("hidden");
+        $('#boxpos').addClass( "hidden" );
+        $('#boxpow').addClass( "hidden" );
+    }
+});
