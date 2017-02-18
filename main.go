@@ -137,7 +137,11 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 		fmt.Println(err)
 		return
 	}
-
+	block, err := dcrdClient.GetBlockVerbose(hash, false)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	blockVersionsFound := make(map[int32]*blockVersions)
 	blockVersionsHeights := make([]int64, activeNetParams.BlockUpgradeNumToCheck)
 	elementNum := 0
@@ -256,11 +260,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.StakeVersionThreshold = toFixed(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)*100, 0)
 	hardForkInformation.StakeVersionIntervalLabels = voteVersionLabels
 
-	if len(stakeVersionInfo.Intervals) > 2 {
-		// Get the stakeversion from that most recent full window
-		// XXX THIS IS NOT QUITE RIGHT
-		hardForkInformation.CurrentCalculatedStakeVersion = stakeVersionInfo.Intervals[1].PoSVersions[0].Version
-	}
+	hardForkInformation.CurrentCalculatedStakeVersion = block.StakeVersion
 
 	mostPopularVersion := uint32(0)
 	mostPopularVersionCount := uint32(0)
