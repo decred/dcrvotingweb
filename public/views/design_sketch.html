@@ -260,7 +260,7 @@
           {{end}} 
  
           <!-- SECOND CHART VOTE VERSIONS / SVI -->
-      
+      <canvas id="voteVersions" width="400" height="200"></canvas>
         </div>
         <!-- BEGIN POW BAR LAST 144 BLOCKS -->
         <div class="col-md-5 text-right">
@@ -274,13 +274,9 @@
 	<tr><td>Static Interval:</td><td><strong>{{.StakeVersionWindowLength}} Blocks</strong></td></tr>
 	</tbody>
 	</table>
+  <canvas id="voteVersionsIndicator" width="400" height="380"></canvas>
         </div>
 							</div> <!-- end row -->
-							<div class="row">
-								<div class="col-md-12">
-            <canvas id="voteVersions" width="400" height="200"></canvas>
-								</div>
-							</div>
        
   </div><!-- BOXPOS END -->
 
@@ -296,7 +292,7 @@
           <h3>Stake Voting{{if and .StakeVersionSuccess .BlockVersionSuccess}}
                                 <span class="label label-success">VOTING STARTED</span>
                                 {{else}}
-                                <span class="label label-default">VOTING NOT STARTED</span>
+                                <span class="label label-warning">VOTING NOT STARTED</span>
                                 {{end}}</h3>
           <p>
             After {{.BlockVersionRejectThreshold}}% of blocks in a rolling window 
@@ -321,7 +317,7 @@
           </p>
           {{if and .StakeVersionSuccess .BlockVersionSuccess}}<h3>Quorum:</h3>{{end}}
           <!-- QUORUM HORIZONTAL BARCHART -->
-          <canvas id="voteQuorum" width="400" height="100" {{if and .StakeVersionSuccess .BlockVersionSuccess}}{{else}}style="display:none;"{{end}}></canvas>
+          <canvas id="voteQuorum" width="400" height="100" ></canvas>
           {{if and .StakeVersionSuccess .BlockVersionSuccess}}<div class="alert alert-danger">
             <strong>Danger!</strong> We have yet not reached the minimum Quorum of 10% actively made votes.
           </div>{{end}}
@@ -337,7 +333,7 @@
 	</tbody>
 	</table>
             {{if and .StakeVersionSuccess .BlockVersionSuccess}}<h3>Voting Progress:</h3>{{end}}
-            <canvas id="voteProgress" width="100" height="100" ></canvas>
+            <canvas id="voteProgress" width="100" height="100" {{if and .StakeVersionSuccess .BlockVersionSuccess}}{{else}}style="display:none;"{{end}}></canvas>
           </blockquote>
         </div>
       </div>
@@ -494,8 +490,8 @@
         }
       }
     };
-    //var ctx = document.getElementById("voteVersionsIndicator").getContext("2d");
-    //new Chart(ctx, voteVersionBarConfig);
+    var ctx = document.getElementById("voteVersionsIndicator").getContext("2d");
+    new Chart(ctx, voteVersionBarConfig);
     {{if .Quorum}}
     var quorumHorizontalConfig = {
       type: 'horizontalBar',
@@ -511,7 +507,7 @@
           label: 'Abstained',
           labelFontColor : "#fff",
           data: [{{.QuorumAbstainedPercentage}}],
-          backgroundColor: '#FFFFFF'
+          backgroundColor: '#0C1E3E'
         }] 
       },
       options: {
