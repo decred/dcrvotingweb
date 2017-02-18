@@ -198,16 +198,15 @@
 
 <div id="boxpow" class="hidden">
 <div style="clear:both;">&nbsp;</div>
-      <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION THRESHOLD 95% -->
-      <!-- BEGIN POW THRESHOLD CHART 144 BLOCKS WINDOW DATAPOINTS -->
 <h4><span>Step 1 - PoW Version Upgrade</span></h4>
+      <div class="row">
         <div class="col-md-10">
           <h3>Block Version (PoW) {{if .BlockVersionSuccess}}
                                 <span class="label label-success">FINISHED</span>
                                 {{else}}
                                 <span class="label label-default">IN PROGRESS</span>
                                 {{end}}</h3>
-          <!-- 95% Threshold reached alertbox --><br />
+                                <!-- 95% Threshold reached alertbox --><br />
 	  {{if .BlockVersionSuccess}}
           <div class="alert alert-success">
              Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version(v{{.CurrentCalculatedBlockVersion}})
@@ -217,10 +216,8 @@
             v{{.CurrentCalculatedBlockVersion}} is still the current block version.  But v{{.MostPopularBlockVersion}} has received {{.MostPopularBlockVersionPercentage}}% of the votes in the latest rolling window.  Be prepared to upgrade if it reaches the threshold.
           </div>
           {{end}}
-          <!-- FIRST CHART -->
-          <canvas id="blockVersions" width="400" height="200"></canvas>
+          <!-- FIRST CHART --><canvas id="blockVersions" width="400" height="200"></canvas>
         </div>
-        <!-- BEGIN POW BAR LAST 144 BLOCKS -->
         <div class="col-md-5 text-right">
 	<strong>Block Version:</strong>
 	<table class="table table-condensed">
@@ -232,8 +229,8 @@
 	<tr><td>Rolling Window:</td><td><strong>{{.BlockVersionWindowLength}} Blocks</strong></td></tr>
 	</tbody>
 	</table>
-
-          <canvas id="blockVersionsIndicator" width="400" height="330"></canvas>
+  <!-- BEGIN POW BAR LAST 144 BLOCKS --><canvas id="blockVersionsIndicator" width="400" height="330"></canvas>
+        </div>
         </div>
   </div><!-- BOXPOW END -->
 
@@ -287,7 +284,7 @@
      <!-- BEGIN STEP 1 BLOCK AND VOTEBIT VERSION THRESHOLD 95% -->
       {{if .Quorum}}
       <!-- INTRODUCTION TEXT -->
-  
+      <div class="row">
         <div class="col-md-10">
           <h3>Stake Voting{{if and .StakeVersionSuccess .BlockVersionSuccess}}
                                 <span class="label label-success">VOTING STARTED</span>
@@ -337,6 +334,7 @@
           </blockquote>
         </div>
       </div>
+    </div>
       {{end}}
 </div>
 </div><!-- BOXSTAKE END -->
