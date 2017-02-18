@@ -86,7 +86,7 @@
 				</div>
                         </div>
                           {{if .BlockVersionSuccess}}<div class="alert alert-success">
-                            Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version(v{{.CurrentCalculatedBlockVersion}})
+                            Success! v{{.MostPopularBlockVersion}} had {{.MostPopularBlockVersionPercentage}}% of votes in the latest rolling window and therefore it is the current network block version (v{{.CurrentCalculatedBlockVersion}})
                           </div>
                           {{else}}<div class="alert alert-danger">
                             v{{.CurrentCalculatedBlockVersion}} is still the current block version.  But v{{.MostPopularBlockVersion}} has received {{.MostPopularBlockVersionPercentage}}% of the votes in the latest rolling window.  Be prepared to upgrade if it reaches the threshold.
