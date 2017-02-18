@@ -146,8 +146,8 @@
                                 </div>
                         </div>
 			{{if and .StakeVersionSuccess .BlockVersionSuccess}}<div class="alert alert-success">
-                            PoW v{{.MostPopularBlockVersion}} &hearts; PoS v{{.MostPopularStakeVersion}}<br />
-<strong>PoW and PoS miners have upgraded to v{{.MostPopularStakeVersion}}.  Voting will begin in {{.VoteBlockLeft}} blocks.</strong>
+                            PoW v{{.CurrentCalculatedBlockVersion}} &hearts; PoS v{{.CurrentCalculatedStakeVersion}}<br />
+<strong>PoW and PoS miners have upgraded to v{{.CurrentCalculatedStakeVersion}}.  There are {{.VoteBlockLeft}} blocks left in the vote.</strong>
                           </div>
                           {{else}}<div class="alert alert-danger">
                             <span class="text-center">
