@@ -105,7 +105,7 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br /><span class="bigpercent">{{.MostPopularStakeVersionPercentage}}%</span>
+                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br /><span class="bigpercent">{{if .StakeVersionSuccess}}{{else}}{{.MostPopularStakeVersionPercentage}}%{{end}}</span>
 				<br />{{if .StakeVersionSuccess}}v{{.CurrentCalculatedStakeVersion}}{{else}}<span class="error">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}<br />
                                 {{if .StakeVersionSuccess}}
                                 <span class="label label-success">FINISHED</span><br />
@@ -558,7 +558,7 @@ $('head style[type="text/css"]').attr('type', 'text/less');
 less.refreshStyles();
 var transform_styles = ['-webkit-transform', '-ms-transform', 'transform'];
 var pow_percent = '{{.MostPopularBlockVersionPercentage}}';
-var pos_percent = '{{.MostPopularStakeVersionPercentage}}';
+var pos_percent = '{{if .StakeVersionSuccess}}100{{else}}{{.MostPopularStakeVersionPercentage}}{{end}}';
 var stake_percent = '0';
 
 window.circle1 = function() {
