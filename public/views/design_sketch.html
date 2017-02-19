@@ -139,19 +139,24 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br /><span class="bigpercent">{{if .VotingStarted}}{{end}}</span><br /><br />{{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
+                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br />{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset">START IN {{.VoteBlockLeft}} blocks</span>{{end}}<span class="bigpercent">{{if .VotingStarted}}{{end}}</span><br /><br />{{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
 				<p class="textinset">
                                 <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting interval:</strong><br />Block {{.VoteStartHeight}}-{{.VoteEndHeight}}</small>
                                 </p>
                                 </div>
                         </div>
-			{{if and .StakeVersionSuccess .BlockVersionSuccess}}<div class="alert alert-success">
+			{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<div class="alert alert-success">
                             PoW v{{.CurrentCalculatedBlockVersion}} &hearts; PoS v{{.CurrentCalculatedStakeVersion}}<br />
-<strong>PoW and PoS miners have upgraded to v{{.CurrentCalculatedStakeVersion}}.  There are {{.VoteBlockLeft}} blocks left in the vote.</strong>
+<strong>PoW and PoS miners have upgraded to v{{.CurrentCalculatedStakeVersion}}.  The vote will start in {{.VoteBlockLeft}} blocks.</strong>
                           </div>
                           {{else}}<div class="alert alert-danger">
                             <span class="text-center">
                               Voting will begin when PoW and PoS miners have upgraded to latest v4 and the next voting interval has been reached.
+                          </div>
+                          {{end}}
+                          {{if .VotingStarted}}<div class="alert alert-success">
+                            PoW v{{.CurrentCalculatedBlockVersion}} &hearts; PoS v{{.CurrentCalculatedStakeVersion}}<br />
+<strong>PoW and PoS miners have upgraded to v{{.CurrentCalculatedStakeVersion}}.  There are {{.VoteBlockLeft}} blocks left in the vote.</strong>
                           </div>
                           {{end}}
 		</div><!-- END CYRCLE OVERVIEW -->
@@ -558,7 +563,7 @@ $('head style[type="text/css"]').attr('type', 'text/less');
 less.refreshStyles();
 var transform_styles = ['-webkit-transform', '-ms-transform', 'transform'];
 var pow_percent = '{{.MostPopularBlockVersionPercentage}}';
-var pos_percent = '{{.MostPopularStakeVersionPercentage}}';
+var pos_percent = '{{if .StakeVersionSuccess}}100{{else}}{{.MostPopularStakeVersionPercentage}}{{end}}';
 var stake_percent = '0';
 
 window.circle1 = function() {
