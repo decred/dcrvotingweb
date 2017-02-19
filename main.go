@@ -345,9 +345,9 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.VoteEndHeight = getVoteInfo.EndHeight
 	hardForkInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
 	hardForkInformation.TotalVotes = getVoteInfo.TotalVotes
-	hardForkInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "defined"
+	hardForkInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "started"
 	hardForkInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "started"
-	hardForkInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
+	hardForkInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "defined"
 	hardForkInformation.VotingFailed = getVoteInfo.Agendas[0].Status == "failed"
 
 	/// XXX need to calculate expiration block
