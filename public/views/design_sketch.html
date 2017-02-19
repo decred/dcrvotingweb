@@ -105,7 +105,7 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br /><span class="bigpercent">{{if .StakeVersionSuccess}}{{else}}{{.MostPopularStakeVersionPercentage}}%{{end}}</span>
+                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br /><span class="bigpercent">{{if .StakeVersionSuccess}}100%{{else}}{{.MostPopularStakeVersionPercentage}}%{{end}}</span>
 				<br />{{if .StakeVersionSuccess}}v{{.CurrentCalculatedStakeVersion}}{{else}}<span class="error">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}<br />
                                 {{if .StakeVersionSuccess}}
                                 <span class="label label-success">FINISHED</span><br />
@@ -248,7 +248,7 @@
           <!-- 95% Threshold reached alertbox --><br />
           {{if .StakeVersionSuccess}}
           <div class="alert alert-success">
-            Success! v{{.MostPopularStakeVersion}} had {{.MostPopularStakeVersionCount}} of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
+            Success! v{{.CurrentCalculatedStakeVersion}} had the sufficient number of votes in the latest static interval and therefore it is the current network stake version.
           </div>
           {{else}}
             <div class="alert alert-danger">
