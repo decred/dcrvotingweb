@@ -139,8 +139,14 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br />{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset">START IN {{.VoteBlockLeft}} BLOCKS</span>{{end}}<span class="bigpercentvoting">{{if .VotingStarted}}{{end}}</span><br />{{if .VotingStarted}}<strong>Total Votes:</strong> {{.TotalVotes}}{{end}}<br /><br />{{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
-				<p class="textinset">
+                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br />
+                                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset">START IN {{.VoteBlockLeft}} BLOCKS</span>{{end}}
+                                {{if .VotingStarted}}<small>{{.AgendaChoice3Count}} YES | {{.AgendaChoice2Count}} NO
+                                  <br /><span style="font-width:0.6em;">Quorum: {{.QuorumVotedPercentage}}%<br />Abstain: {{.QuorumAbstainedPercentage}}%</small>{{end}}
+                                <span class="bigpercentvoting">{{if .VotingStarted}}{{end}}</span><br />
+                                {{if .VotingStarted}}<strong>Total Votes:</strong> {{.TotalVotes}}{{end}}<br /><br />
+                                {{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
+				                        <p class="textinset">
                                 <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting interval:</strong><br />Block {{.VoteStartHeight}}-{{.VoteEndHeight}}</small>
                                 </p>
                                 </div>
@@ -148,8 +154,8 @@
 			{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<div class="alert alert-success">
                             PoW v{{.CurrentCalculatedBlockVersion}} &hearts; PoS v{{.CurrentCalculatedStakeVersion}}<br />
 <strong>PoW and PoS miners have upgraded to v{{.CurrentCalculatedStakeVersion}}.  The vote will start in {{.VoteBlockLeft}} blocks.</strong>
-                          </div>
-                          {{else}}<div class="alert alert-danger">
+                          </div>{{end}}
+                          {{if not .StakeVersionSuccess }}<div class="alert alert-danger">
                             <span class="text-center">
                               Voting will begin when PoW and PoS miners have upgraded to latest v4 and the next voting interval has been reached.
                           </div>
