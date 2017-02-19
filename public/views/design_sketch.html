@@ -113,13 +113,13 @@
                                 <span class="label label-default">IN PROGRESS</span><br />
                                {{end}}
 			        <p class="textinset">
-                                <small><strong>Current Block:</strong> {{.BlockHeight}}<br /><strong>Static Interval:</strong> {{.StakeVersionWindowLength}} Blocks<br /><strong>Upgrade Threshold:</strong> {{.StakeVersionThreshold}}%<br /><strong>Blocks left:</strong> {{.VoteBlockLeft}}</small>
+                                <small><strong>Current Block:</strong> {{.BlockHeight}}<br /><strong>Static Interval:</strong> {{.StakeVersionWindowLength}} Blocks<br /><strong>Upgrade Threshold:</strong> {{.StakeVersionThreshold}}%<br /></small>
                                 </p>
 				</div>
                         </div>
                           {{if .StakeVersionSuccess}}
                           <div class="alert alert-success">
-                            Success! v{{.MostPopularStakeVersion}} had {{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}} of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
+                            Success! v{{.CurrentCalculatedStakeVersion}} has been set as the current stake version.
                           </div>
                           {{else}}
                            <div class="alert alert-danger">
