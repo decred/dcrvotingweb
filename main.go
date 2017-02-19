@@ -79,6 +79,7 @@ type hardForkInfo struct {
 	QuorumExpirationDate      string
 	AgendaID                  string
 	AgendaDescription         string
+	VotingStarted             bool
 	VoteStartHeight           int64
 	VoteEndHeight             int64
 	VoteBlockLeft             int64
@@ -309,7 +310,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.VoteEndHeight = getVoteInfo.EndHeight
 	hardForkInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
 	hardForkInformation.TotalVotes = getVoteInfo.TotalVotes
-
+	hardForkInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "started"
 	/// XXX need to calculate expiration block
 	hardForkInformation.VoteExpirationBlock = int64(210001)
 

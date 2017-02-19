@@ -139,7 +139,7 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br /><span class="bigpercent">{{if .StakeVersionSuccess}}{{end}}</span><br /><br />{{if .StakeVersionSuccess}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
+                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br /><span class="bigpercent">{{if .VotingStarted}}{{end}}</span><br /><br />{{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
 				<p class="textinset">
                                 <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting interval:</strong><br />Block {{.VoteStartHeight}}-{{.VoteEndHeight}}</small>
                                 </p>
@@ -286,7 +286,7 @@
       <!-- INTRODUCTION TEXT -->
       <div class="row">
         <div class="col-md-10">
-          <h3>Stake Voting{{if and .StakeVersionSuccess .BlockVersionSuccess}}
+          <h3>Stake Voting{{if .VotingStarted}}
                                 <span class="label label-success">VOTING STARTED</span>
                                 {{else}}
                                 <span class="label label-warning">NOT STARTED</span>
@@ -312,10 +312,10 @@
             quorum, and this means that the issue will be up for vote again during 
             the next voting period, until it passes its expiration date of {{.QuorumExpirationDate}}.
           </p>
-          {{if and .StakeVersionSuccess .BlockVersionSuccess}}<h3>Quorum:</h3>{{end}}
+          {{if .VotingStarted}}<h3>Quorum:</h3>{{end}}
           <!-- QUORUM HORIZONTAL BARCHART -->
-          <canvas id="voteQuorum" width="400" height="100" {{if and .StakeVersionSuccess .BlockVersionSuccess}}{{else}}style="display:none;"{{end}}></canvas>
-          {{if and .StakeVersionSuccess .BlockVersionSuccess}}<div class="alert alert-danger">
+          <canvas id="voteQuorum" width="400" height="100" {{if .VotingStarted}}{{else}}style="display:none;"{{end}}></canvas>
+          {{if .VotingStarted}}<div class="alert alert-danger">
             <strong>Danger!</strong> We have yet not reached the minimum Quorum of 10% actively made votes.
           </div>{{end}}
         </div>
@@ -325,12 +325,12 @@
 	<tbody>
 	<tr><td>Agenda ID:</td><td><strong>#{{.AgendaID}}</strong></td></tr>
 	<tr><td>Voting Interval:</td><td><strong>{{.VoteStartHeight}}-{{.VoteEndHeight}}</strong></td></tr>
-	<tr><td>Blocks left for voting:</td><td><strong>{{.VoteBlockLeft}}</strong></td></tr>
+	<tr><td>Blocks left {{if .VotingStarted}}for{{else}}until{{end}} voting:</td><td><strong>{{.VoteBlockLeft}}</strong></td></tr>
   <!--<tr><td>Estimated Vote Expiration Block:</td><td><strong>{{.VoteExpirationBlock}}</strong></td></tr>-->
 	</tbody>
 	</table>
-            {{if and .StakeVersionSuccess .BlockVersionSuccess}}<h3>Voting Progress:</h3>{{end}}
-            <canvas id="voteProgress" width="100" height="100" {{if and .StakeVersionSuccess .BlockVersionSuccess}}{{else}}style="display:none;"{{end}}></canvas>
+            {{if .VotingStarted}}<h3>Voting Progress:</h3>{{end}}
+            <canvas id="voteProgress" width="100" height="100" {{if .VotingStarted}}{{else}}style="display:none;"{{end}}></canvas>
           </blockquote>
         </div>
       </div>
