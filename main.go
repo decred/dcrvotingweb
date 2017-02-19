@@ -320,8 +320,8 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
 	hardForkInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(hardForkInformation.RuleChangeActivationWindowVotes) * 100
 	hardForkInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
-	hardForkInformation.QuorumVotedPercentage = toFixed(float64(getVoteInfo.Agendas[0].QuorumProgress), 2)
-	hardForkInformation.QuorumAbstainedPercentage = (float64(1) - getVoteInfo.Agendas[0].QuorumProgress) * 100
+	hardForkInformation.QuorumVotedPercentage = toFixed(float64(getVoteInfo.Agendas[0].QuorumProgress*100), 2)
+	hardForkInformation.QuorumAbstainedPercentage = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
 	hardForkInformation.AgendaID = getVoteInfo.Agendas[0].Id
 	hardForkInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
 	// XX instread of static linking there should be itteration trough the Choices array
@@ -345,8 +345,8 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.VoteEndHeight = getVoteInfo.EndHeight
 	hardForkInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
 	hardForkInformation.TotalVotes = getVoteInfo.TotalVotes
-	hardForkInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "defined"
-	hardForkInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "started"
+	hardForkInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "started"
+	hardForkInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "defined"
 	hardForkInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
 	hardForkInformation.VotingFailed = getVoteInfo.Agendas[0].Status == "failed"
 
