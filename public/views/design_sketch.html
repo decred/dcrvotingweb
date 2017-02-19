@@ -149,7 +149,9 @@
                                 {{.AgendaChoice1Count}} {{.AgendaChoice1Id}}<br />
                                  Quorum Progress: {{.QuorumVotedPercentage }}%</p></span>{{end}}
                                 <!-- <span class="bigpercentvoting">{{if .VotingStarted}}{{end}}</span><br /> -->
-                                {{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
+                                {{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{end}}
+                                {{if .VotingLockedin}}<p class="textinset"><br /><br /><br /><br /></p><span class="label label-success">LOCKED IN</span>{{end}}
+                                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
 				                        <p class="textinset">
                                 <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting interval:</strong><br />Block {{.VoteStartHeight}}-{{.VoteEndHeight}}</small>
                                 </p>
@@ -611,7 +613,7 @@ less.refreshStyles();
 var transform_styles = ['-webkit-transform', '-ms-transform', 'transform'];
 var pow_percent = '{{.MostPopularBlockVersionPercentage}}';
 var pos_percent = '{{if .StakeVersionSuccess}}100{{else}}{{.MostPopularStakeVersionPercentage}}{{end}}';
-var stake_percent = '{{if .VotingStarted}}{{.QuorumVotedPercentage}}{{else}}0{{end}}';
+var stake_percent = '{{if .VotingStarted}}{{.QuorumVotedPercentage}}{{else}}0{{end}}{{if .VotingLockedin}}100{{end}}';
 
 window.circle1 = function() {
 	var rotation = Math.floor(pow_percent * 1.8);
