@@ -74,14 +74,14 @@
                                         <div class="shadow"></div>
                                 </div>
                                 <div class="inset text-center" style="padding-top:12px"><strong>PoW</strong><br /><span class="bigpercent">{{.MostPopularBlockVersionPercentage}}%</span>
-				<br />{{if .BlockVersionSuccess}}v{{.CurrentCalculatedBlockVersion}}{{else}}<span class="error">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}<br />
+				<br />{{if .BlockVersionSuccess}}Block v{{.CurrentCalculatedBlockVersion}}{{else}}<span class="error">Block v{{.CurrentCalculatedBlockVersion}}</span>{{end}}<br />
                                 {{if .BlockVersionSuccess}}
                                 <span class="label label-success">UPGRADED</span>
                                 {{else}}
                                 <span class="label label-default">IN PROGRESS</span>
                                 {{end}}
 				<p class="textinset">
-                                <small><strong>Current Version:</strong>  v{{.MostPopularBlockVersion}}<br /><strong>Rolling Window:</strong> {{.BlockVersionWindowLength}} Blocks<br /><strong>Reject Threshold:</strong> {{.BlockVersionRejectThreshold}}%</small>
+                                <small><strong>Current Version:</strong> v{{.MostPopularBlockVersion}}<br /><strong>Rolling Window:</strong> {{.BlockVersionWindowLength}} Blocks<br /><strong>Reject Threshold:</strong> {{.BlockVersionRejectThreshold}}%</small>
                                 </p> 
 				</div>
                         </div>
@@ -105,9 +105,13 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
+                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br />
+                                <span class="bigpercent">{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}{{.MostPopularStakeVersionCount}} <span style="font-size:0.4em">Votes</span>{{end}}
+                                {{if not .StakeVersionSuccess}}{{.MostPopularStakeVersionPercentage}}%{{end}}
+                                {{if .VotingStarted}}{{.MostPopularStakeVersionCount}} <span style="font-size:0.4em">Votes</span>{{end}}
+                                </span>
+				<br />{{if .StakeVersionSuccess}}Stake v{{.CurrentCalculatedStakeVersion}}{{else}}<span class="error">Stake v{{.CurrentCalculatedStakeVersion}}</span>{{end}}<br />
 
-                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br /><span class="bigpercent">{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}{{.MostPopularStakeVersionCount}} <span style="font-size:0.4em">Votes</span>{{else}}{{.MostPopularStakeVersionPercentage}}%{{end}}</span>
-				<br />{{if .StakeVersionSuccess}}v{{.CurrentCalculatedStakeVersion}}{{else}}<span class="error">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}<br />
                                 {{if .StakeVersionSuccess}}
                                 <span class="label label-success">UPGRADED</span><br />
                                 {{else}}
@@ -141,11 +145,11 @@
                                         <div class="shadow"></div>
                                 </div>
                                 <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br />
-                                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset">START IN {{.VoteBlockLeft}} BLOCKS</span>{{end}}
-                                {{if .VotingStarted}}<small>{{.AgendaChoice3Count}} YES | {{.AgendaChoice2Count}} NO
-                                  <br /><span style="font-width:0.6em;">Quorum: {{.QuorumVotedPercentage}}%<br />Abstain: {{.QuorumAbstainedPercentage}}%</small>{{end}}
-                                <span class="bigpercentvoting">{{if .VotingStarted}}{{end}}</span><br />
-                                {{if .VotingStarted}}<strong>Total Votes:</strong> {{.TotalVotes}}{{end}}<br /><br />
+                                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset">START IN {{.VoteBlockLeft}} BLOCKS</span><br /><br /><br />{{end}}
+                                {{if .VotingStarted}}<span class="textinset" style="font-size:1em;"><p><span style="color:#41BF53"><strong>{{.AgendaChoice3Count}} {{.AgendaChoice3Id}}</strong></span> | <span style="color:#FD714A"><strong>{{.AgendaChoice2Count}} {{.AgendaChoice2Id}}</strong></span><br />
+                                {{.AgendaChoice1Count}} {{.AgendaChoice1Id}}<br />
+                                 Quorum Progress: {{.QuorumVotedPercentage }}%</p></span>{{end}}
+                                <!-- <span class="bigpercentvoting">{{if .VotingStarted}}{{end}}</span><br /> -->
                                 {{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
 				                        <p class="textinset">
                                 <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting interval:</strong><br />Block {{.VoteStartHeight}}-{{.VoteEndHeight}}</small>
@@ -606,7 +610,7 @@ less.refreshStyles();
 var transform_styles = ['-webkit-transform', '-ms-transform', 'transform'];
 var pow_percent = '{{.MostPopularBlockVersionPercentage}}';
 var pos_percent = '{{if .StakeVersionSuccess}}100{{else}}{{.MostPopularStakeVersionPercentage}}{{end}}';
-var stake_percent = '0';
+var stake_percent = '{{if .VotingStarted}}{{.QuorumVotedPercentage}}{{else}}0{{end}}';
 
 window.circle1 = function() {
 	var rotation = Math.floor(pow_percent * 1.8);
