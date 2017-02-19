@@ -79,6 +79,21 @@ type hardForkInfo struct {
 	QuorumExpirationDate      string
 	AgendaID                  string
 	AgendaDescription         string
+	AgendaChoice1Id           string
+	AgendaChoice1Description  string
+	AgendaChoice1Count        uint32
+	AgendaChoice1IsIgnore     bool
+	AgendaChoice1Bits         uint16
+	AgendaChoice2Id           string
+	AgendaChoice2Description  string
+	AgendaChoice2Count        uint32
+	AgendaChoice2IsIgnore     bool
+	AgendaChoice2Bits         uint16
+	AgendaChoice3Id           string
+	AgendaChoice3Description  string
+	AgendaChoice3Count        uint32
+	AgendaChoice3IsIgnore     bool
+	AgendaChoice3Bits         uint16
 	VotingStarted             bool
 	VotingDefined             bool
 	VotingLockedin            bool
@@ -309,6 +324,23 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.QuorumAbstainedPercentage = (float64(1) - getVoteInfo.Agendas[0].QuorumProgress) * 100
 	hardForkInformation.AgendaID = getVoteInfo.Agendas[0].Id
 	hardForkInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
+	// XX instread of static linking there should be itteration trough the Choices array
+	hardForkInformation.AgendaChoice1Id = getVoteInfo.Agendas[0].Choices[0].Id
+	hardForkInformation.AgendaChoice1Description = getVoteInfo.Agendas[0].Choices[0].Description
+	hardForkInformation.AgendaChoice1Count = getVoteInfo.Agendas[0].Choices[0].Count
+	hardForkInformation.AgendaChoice1IsIgnore = getVoteInfo.Agendas[0].Choices[0].IsIgnore
+	hardForkInformation.AgendaChoice1Bits = getVoteInfo.Agendas[0].Choices[0].Bits
+	hardForkInformation.AgendaChoice2Id = getVoteInfo.Agendas[0].Choices[1].Id
+	hardForkInformation.AgendaChoice2Description = getVoteInfo.Agendas[0].Choices[1].Description
+	hardForkInformation.AgendaChoice2Count = getVoteInfo.Agendas[0].Choices[1].Count
+	hardForkInformation.AgendaChoice2IsIgnore = getVoteInfo.Agendas[0].Choices[1].IsIgnore
+	hardForkInformation.AgendaChoice2Bits = getVoteInfo.Agendas[0].Choices[1].Bits
+	hardForkInformation.AgendaChoice3Id = getVoteInfo.Agendas[0].Choices[2].Id
+	hardForkInformation.AgendaChoice3Description = getVoteInfo.Agendas[0].Choices[2].Description
+	hardForkInformation.AgendaChoice3Count = getVoteInfo.Agendas[0].Choices[2].Count
+	hardForkInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsIgnore
+	hardForkInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
+
 	hardForkInformation.VoteStartHeight = getVoteInfo.StartHeight
 	hardForkInformation.VoteEndHeight = getVoteInfo.EndHeight
 	hardForkInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
@@ -317,6 +349,7 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "defined"
 	hardForkInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
 	hardForkInformation.VotingFailed = getVoteInfo.Agendas[0].Status == "failed"
+
 	/// XXX need to calculate expiration block
 	hardForkInformation.VoteExpirationBlock = int64(210001)
 
