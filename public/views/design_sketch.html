@@ -74,9 +74,9 @@
                                         <div class="shadow"></div>
                                 </div>
                                 <div class="inset text-center" style="padding-top:12px"><strong>PoW</strong><br /><span class="bigpercent">{{.MostPopularBlockVersionPercentage}}%</span>
-				<br />{{if .BlockVersionSuccess}}v{{.CurrentCalculatedBlockVersion}}{{else}}<span class="error">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}<br />
+				<br />{{if .BlockVersionSuccess}}Block v{{.CurrentCalculatedBlockVersion}}{{else}}<span class="error">Block v{{.CurrentCalculatedBlockVersion}}</span>{{end}}<br />
                                 {{if .BlockVersionSuccess}}
-                                <span class="label label-success">FINISHED</span>
+                                <span class="label label-success">UPGRADED</span>
                                 {{else}}
                                 <span class="label label-default">IN PROGRESS</span>
                                 {{end}}
@@ -106,13 +106,21 @@
                                         <div class="shadow"></div>
                                 </div>
                                 <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br />
+<<<<<<< HEAD
                                 <span class="bigpercent">{{if .VotingStarted}}{{.MostPopularStakeVersionCount}} <span style="font-size:0.4em">Votes</span>{{end}}
                                 {{if not .StakeVersionSuccess}}{{.MostPopularStakeVersionPercentage}}%{{end}}
                                 </span>
 				<br />{{if .StakeVersionSuccess}}v{{.CurrentCalculatedStakeVersion}}{{else}}<span class="error">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}<br />
 
+=======
+                                <span class="bigpercent">{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}{{.MostPopularStakeVersionCount}} <span style="font-size:0.4em">Votes</span>{{end}}
+                                {{if not .StakeVersionSuccess}}{{.MostPopularStakeVersionPercentage}}%{{end}}
+                                {{if .VotingStarted}}{{.MostPopularStakeVersionCount}} <span style="font-size:0.4em">Votes</span>{{end}}
+                                </span>
+				<br />{{if .StakeVersionSuccess}}Stake v{{.CurrentCalculatedStakeVersion}}{{else}}<span class="error">Stake v{{.CurrentCalculatedStakeVersion}}</span>{{end}}<br />
+>>>>>>> 6dddbe89d163cb5f3f0614bef12f4ace8ec50768
                                 {{if .StakeVersionSuccess}}
-                                <span class="label label-success">FINISHED</span><br />
+                                <span class="label label-success">UPGRADED</span><br />
                                 {{else}}
                                 <span class="label label-default">IN PROGRESS</span><br />
                                {{end}}
@@ -144,7 +152,11 @@
                                         <div class="shadow"></div>
                                 </div>
                                 <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br />
+<<<<<<< HEAD
                                 {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset"><strong>START IN<br />{{.VoteBlockLeft}} BLOCKS</strong></span><br /><br />{{end}}
+=======
+                                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset">START IN {{.VoteBlockLeft}} BLOCKS</span><br /><br /><br />{{end}}
+>>>>>>> 6dddbe89d163cb5f3f0614bef12f4ace8ec50768
                                 {{if .VotingStarted}}<span class="textinset" style="font-size:1em;"><p><span style="color:#41BF53"><strong>{{.AgendaChoice3Count}} {{.AgendaChoice3Id}}</strong></span> | <span style="color:#FD714A"><strong>{{.AgendaChoice2Count}} {{.AgendaChoice2Id}}</strong></span><br />
                                 {{.AgendaChoice1Count}} {{.AgendaChoice1Id}}<br />
                                  Quorum Progress: {{.QuorumVotedPercentage }}%</p></span>{{end}}
@@ -265,7 +277,11 @@
           <!-- 95% Threshold reached alertbox --><br />
           {{if .StakeVersionSuccess}}
           <div class="alert alert-success">
+<<<<<<< HEAD
             Success! v{{.CurrentCalculatedStakeVersion}} had the sufficient number of votes in the latest static interval and therefore it is the current network stake version.
+=======
+            Success! v{{.CurrentCalculatedStakeVersion}} had {{.MostPopularStakeVersionCount}} of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
+>>>>>>> 6dddbe89d163cb5f3f0614bef12f4ace8ec50768
           </div>
           {{else}}
             <div class="alert alert-danger">
