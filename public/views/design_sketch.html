@@ -76,7 +76,7 @@
                                 <div class="inset text-center" style="padding-top:12px"><strong>PoW</strong><br /><span class="bigpercent">{{.MostPopularBlockVersionPercentage}}%</span>
 				<br />{{if .BlockVersionSuccess}}v{{.CurrentCalculatedBlockVersion}}{{else}}<span class="error">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}<br />
                                 {{if .BlockVersionSuccess}}
-                                <span class="label label-success">FINISHED</span>
+                                <span class="label label-success">UPGRADED</span>
                                 {{else}}
                                 <span class="label label-default">IN PROGRESS</span>
                                 {{end}}
@@ -105,10 +105,11 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br /><span class="bigpercent">{{if .StakeVersionSuccess}}100%{{else}}{{.MostPopularStakeVersionPercentage}}%{{end}}</span>
+
+                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br /><span class="bigpercent">{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}{{.MostPopularStakeVersionCount}} <span style="font-size:0.4em">Votes</span>{{else}}{{.MostPopularStakeVersionPercentage}}%{{end}}</span>
 				<br />{{if .StakeVersionSuccess}}v{{.CurrentCalculatedStakeVersion}}{{else}}<span class="error">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}<br />
                                 {{if .StakeVersionSuccess}}
-                                <span class="label label-success">FINISHED</span><br />
+                                <span class="label label-success">UPGRADED</span><br />
                                 {{else}}
                                 <span class="label label-default">IN PROGRESS</span><br />
                                {{end}}
@@ -139,7 +140,7 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br />{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset">START IN {{.VoteBlockLeft}} BLOCKS</span>{{end}}<span class="bigpercent">{{if .VotingStarted}}{{end}}</span><br /><br />{{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
+                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br />{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset">START IN {{.VoteBlockLeft}} BLOCKS</span>{{end}}<span class="bigpercentvoting">{{if .VotingStarted}}{{end}}</span><br />{{if .VotingStarted}}<strong>Total Votes:</strong> {{.TotalVotes}}{{end}}<br /><br />{{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
 				<p class="textinset">
                                 <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting interval:</strong><br />Block {{.VoteStartHeight}}-{{.VoteEndHeight}}</small>
                                 </p>
@@ -253,7 +254,11 @@
           <!-- 95% Threshold reached alertbox --><br />
           {{if .StakeVersionSuccess}}
           <div class="alert alert-success">
+<<<<<<< HEAD
             Success! v{{.CurrentCalculatedStakeVersion}} had the sufficient number of votes in the latest static interval and therefore it is the current network stake version.
+=======
+            Success! v{{.CurrentCalculatedStakeVersion}} had {{.MostPopularStakeVersionCount}} of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
+>>>>>>> aa7c7fe... Circle State VotingDefined,VotingStarted switches
           </div>
           {{else}}
             <div class="alert alert-danger">
@@ -270,7 +275,7 @@
 	<table class="table table-condensed">
 	<tbody> 
 	<tr><td>Current Stake Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}</strong></td></tr>
-	<tr><td>Most Stake Version:</td><td><strong>v{{.MostPopularStakeVersion}}</strong></td></tr>
+	<tr><td>Most Stake Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}v{{.MostPopularStakeVersion}}{{end}}</strong></td></tr>
 	<tr><td>Most Popular:</td><td><strong>{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</strong></td></tr>
 	<tr><td>Upgrade Threshold:</td><td><strong>{{.StakeVersionThreshold}}%</strong></td></tr>
 	<tr><td>Static Interval:</td><td><strong>{{.StakeVersionWindowLength}} Blocks</strong></td></tr>
