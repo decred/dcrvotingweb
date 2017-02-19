@@ -139,7 +139,7 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br />{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset">START IN {{.VoteBlockLeft}} blocks</span>{{end}}<span class="bigpercent">{{if .VotingStarted}}{{end}}</span><br /><br />{{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
+                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br />{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset">START IN {{.VoteBlockLeft}} BLOCKS</span>{{end}}<span class="bigpercent">{{if .VotingStarted}}{{end}}</span><br /><br />{{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
 				<p class="textinset">
                                 <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting interval:</strong><br />Block {{.VoteStartHeight}}-{{.VoteEndHeight}}</small>
                                 </p>
