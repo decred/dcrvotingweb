@@ -356,6 +356,7 @@
   <!--<tr><td>Estimated Vote Expiration Block:</td><td><strong>{{.VoteExpirationBlock}}</strong></td></tr>-->
 	</tbody>
 	</table>
+  {{if .VotingStarted}}
   <strong>Agenda Choices:</strong>
   <table class="table table-condensed">
   <thead><tr><th></th><th>Choice 1</th></tr></thead>
@@ -386,6 +387,7 @@
   <tr><td>Vote Bit:</td><td><strong>{{.AgendaChoice3Bits}}</strong></td></tr>
 	</tbody>
 	</table>
+  {{end}}
         </div>
       </div>
     </div>
