@@ -13,7 +13,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/decred/dcrd/chaincfg"
 	"github.com/decred/dcrd/dcrjson"
@@ -66,12 +65,12 @@ type templateFields struct {
 	BlockVersionMostPopularPercentage float64
 
 	// StakeVersion Information
-
-	// StakeVersionThreshold
+	//
+	// StakeVersionThreshold is the activeNetParams of
 	StakeVersionThreshold float64
-	// StakeVersionWindowLength
+	// StakeVersionWindowLength is the activeNetParams of
 	StakeVersionWindowLength int64
-	//StakeVersionWindowVoteTotal
+	//StakeVersionWindowVoteTotal is the activeNetParams of
 	StakeVersionWindowVoteTotal int64
 	//StakeVersionWindowStartHeight
 	StakeVersionWindowStartHeight int64
@@ -102,15 +101,15 @@ type templateFields struct {
 
 	// Quorum and Rule Change Information
 
-	// RuleChangeActivationThreshold
+	// RuleChangeActivationThreshold is the activeNetParams of
 	RuleChangeActivationThreshold int32
-	// RuleChangeActivationQuorum
+	// RuleChangeActivationQuorum is the activeNetParams of
 	RuleChangeActivationQuorum uint32
-	// RuleChangeActivationMultiplier
+	// RuleChangeActivationMultiplier is the activeNetParams of
 	RuleChangeActivationMultiplier uint32
-	// RuleChangeActivationDivisor
+	// RuleChangeActivationDivisor is the activeNetParams of
 	RuleChangeActivationDivisor uint32
-	// RuleChangeActivationWindow
+	// RuleChangeActivationWindow is the activeNetParams of
 	RuleChangeActivationWindow uint32
 	// RuleChangeActivationWindowVotes
 	RuleChangeActivationWindowVotes uint32
@@ -119,7 +118,7 @@ type templateFields struct {
 	// received (>10%)
 	Quorum bool
 	// QuorumPercentage
-	QuorumPercentage float64
+	QuorumThreshold float64
 	// QuorumVotes
 	QuorumVotes int
 	// QuorumVotedPercentage
@@ -128,38 +127,13 @@ type templateFields struct {
 	QuorumAbstainedPercentage float64
 	// QuorumExpirationDate
 	QuorumExpirationDate string
-
-	AgendaID                 string
-	AgendaDescription        string
-	AgendaChoice1Id          string
-	AgendaChoice1Description string
-	AgendaChoice1Count       uint32
-	AgendaChoice1IsIgnore    bool
-	AgendaChoice1Bits        uint16
-	AgendaChoice1Progress    float64
-	AgendaChoice2Id          string
-	AgendaChoice2Description string
-	AgendaChoice2Count       uint32
-	AgendaChoice2IsIgnore    bool
-	AgendaChoice2Bits        uint16
-	AgendaChoice2Progress    float64
-	AgendaChoice3Id          string
-	AgendaChoice3Description string
-	AgendaChoice3Count       uint32
-	AgendaChoice3IsIgnore    bool
-	AgendaChoice3Bits        uint16
-	AgendaChoice3Progress    float64
-	VotingStarted            bool
-	VotingDefined            bool
-	VotingLockedin           bool
-	VotingFailed             bool
-	VoteStartHeight          int64
-	VoteEndHeight            int64
-	VoteBlockLeft            int64
-	TotalVotes               uint32
-	VoteExpirationBlock      int64
-	ChoiceIds                []string
-	ChoicePercentages        []float64
+	GetVoteInfoResult    *dcrjson.GetVoteInfoResult
+	VotingStarted        bool
+	VotingDefined        bool
+	VotingLockedin       bool
+	VotingFailed         bool
+	ChoiceIds            []string
+	ChoicePercentages    []float64
 }
 
 // Contains a certain block version's count of blocks in the
@@ -173,7 +147,23 @@ type intervalVersionCounts struct {
 	Count   []uint32
 }
 
-var templateInformation = &templateFields{}
+// Set all activeNetParams fields since they don't change at runtime
+var templateInformation = &templateFields{
+	// BlockVersion params
+	BlockVersionEnforceThreshold: int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
+	BlockVersionRejectThreshold:  int(float64(activeNetParams.BlockRejectNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
+	BlockVersionWindowLength:     activeNetParams.BlockUpgradeNumToCheck,
+	// StakeVersion params
+	StakeVersionWindowLength: activeNetParams.StakeVersionInterval,
+	StakeVersionThreshold:    toFixed(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)*100, 0),
+	// RuleChange params
+	RuleChangeActivationQuorum:      activeNetParams.RuleChangeActivationQuorum,
+	RuleChangeActivationMultiplier:  activeNetParams.RuleChangeActivationMultiplier,
+	RuleChangeActivationDivisor:     activeNetParams.RuleChangeActivationDivisor,
+	RuleChangeActivationWindow:      activeNetParams.RuleChangeActivationInterval,
+	RuleChangeActivationWindowVotes: activeNetParams.RuleChangeActivationInterval * uint32(activeNetParams.TicketsPerBlock),
+	QuorumThreshold:                 float64(activeNetParams.RuleChangeActivationQuorum) / float64(activeNetParams.RuleChangeActivationInterval*uint32(activeNetParams.TicketsPerBlock)) * 100,
+}
 
 var funcMap = template.FuncMap{
 	"minus": minus,
@@ -206,7 +196,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 	// Request twice as many, so we can populate the rolling block version window's first
 	stakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
-		int32(activeNetParams.BlockUpgradeNumToCheck*2))
+		int32(templateInformation.BlockVersionWindowLength*2))
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -217,10 +207,10 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		return
 	}
 	blockVersionsFound := make(map[int32]*blockVersions)
-	blockVersionsHeights := make([]int64, activeNetParams.BlockUpgradeNumToCheck)
+	blockVersionsHeights := make([]int64, templateInformation.BlockVersionWindowLength)
 	elementNum := 0
 	for i := len(stakeVersionResults.StakeVersions)/2 - 1; i >= 0; i-- {
-		windowEnd := i + int(activeNetParams.BlockUpgradeNumToCheck)
+		windowEnd := i + int(templateInformation.BlockVersionWindowLength)
 		blockVersionsHeights[elementNum] = stakeVersionResults.StakeVersions[i].Height
 		stakeVersionsWindow := stakeVersionResults.StakeVersions[i:windowEnd]
 		for _, stakeVersion := range stakeVersionsWindow {
@@ -228,7 +218,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 			if !ok {
 				// Had not found this block version yet
 				blockVersionsFound[stakeVersion.BlockVersion] = &blockVersions{}
-				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks = make([]int, activeNetParams.BlockUpgradeNumToCheck)
+				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks = make([]int, templateInformation.BlockVersionWindowLength)
 				// Need to populate "back" to fill in values for previously missed window
 				for k := 0; k < elementNum; k++ {
 					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[k] = 0
@@ -254,7 +244,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 			// Show Green
 			templateInformation.BlockVersionCurrent = i
 			templateInformation.BlockVersionMostPopular = i
-			templateInformation.BlockVersionMostPopularPercentage = toFixed(float64(tipBlockVersionCount)/float64(activeNetParams.BlockUpgradeNumToCheck)*100, 2)
+			templateInformation.BlockVersionMostPopularPercentage = toFixed(float64(tipBlockVersionCount)/float64(templateInformation.BlockVersionWindowLength)*100, 2)
 			templateInformation.BlockVersionSuccess = true
 			MostPopularBlockVersionCount = tipBlockVersionCount
 		}
@@ -262,7 +252,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 			// Show Red
 			MostPopularBlockVersionCount = tipBlockVersionCount
 			templateInformation.BlockVersionMostPopular = i
-			templateInformation.BlockVersionMostPopularPercentage = toFixed(float64(tipBlockVersionCount)/float64(activeNetParams.BlockUpgradeNumToCheck)*100, 2)
+			templateInformation.BlockVersionMostPopularPercentage = toFixed(float64(tipBlockVersionCount)/float64(templateInformation.BlockVersionWindowLength)*100, 2)
 		}
 	}
 	if templateInformation.BlockVersionCurrent == int32(maxVersion) {
@@ -285,8 +275,6 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		missedVotesStakeInterval += int(activeNetParams.TicketsPerBlock) - len(stakeVersionResult.VoterVersions)
 	}
 
-	//templateInformation.StakeVersionHeights = dataTickHeights
-	//templateInformation.StakeVersions = stakeVersionsFound
 	numberOfIntervals := 4
 	stakeVersionInfo, err := dcrdClient.GetStakeVersionInfo(int32(numberOfIntervals))
 	if err != nil {
@@ -298,6 +286,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		return
 	}
 	templateInformation.StakeVersionsIntervals = stakeVersionInfo.Intervals
+
 	minimumNeededVoteVersions := uint32(100)
 	// Hacky way of populating the Vote Version bar graph
 	// Each element in each dataset needs counts for each interval
@@ -329,12 +318,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	voteVersionLabels[len(stakeVersionInfo.Intervals)-1] = "Current Interval"
 	templateInformation.StakeVersionIntervalResults = voteVersionIntervalResults
 	templateInformation.BlockHeight = height
-	templateInformation.BlockVersionEnforceThreshold = int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
-	templateInformation.BlockVersionRejectThreshold = int(float64(activeNetParams.BlockRejectNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100)
-	templateInformation.BlockVersionWindowLength = activeNetParams.BlockUpgradeNumToCheck
-	templateInformation.StakeVersionWindowLength = activeNetParams.StakeVersionInterval
+
 	templateInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval*5 - int64(missedVotesStakeInterval)
-	templateInformation.StakeVersionThreshold = toFixed(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)*100, 0)
 	templateInformation.StakeVersionIntervalLabels = voteVersionLabels
 
 	templateInformation.StakeVersionCurrent = block.StakeVersion
@@ -358,6 +343,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 
 	blocksIntoInterval := stakeVersionInfo.Intervals[0].EndHeight - stakeVersionInfo.Intervals[0].StartHeight
 	templateInformation.StakeVersionVotesRemaining = (activeNetParams.StakeVersionInterval - blocksIntoInterval) * 5
+
 	// Quorum/vote information
 	getVoteInfo, err := dcrdClient.GetVoteInfo(4)
 	if err != nil {
@@ -365,48 +351,47 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		templateInformation.Quorum = false
 		return
 	}
+	templateInformation.GetVoteInfoResult = getVoteInfo
+
 	templateInformation.Quorum = true
-	templateInformation.RuleChangeActivationQuorum = activeNetParams.RuleChangeActivationQuorum
-	templateInformation.RuleChangeActivationMultiplier = activeNetParams.RuleChangeActivationMultiplier
-	templateInformation.RuleChangeActivationDivisor = activeNetParams.RuleChangeActivationDivisor
-	templateInformation.RuleChangeActivationWindow = activeNetParams.RuleChangeActivationInterval
-	templateInformation.RuleChangeActivationWindowVotes = templateInformation.RuleChangeActivationWindow * 5
-	templateInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(templateInformation.RuleChangeActivationWindowVotes) * 100
-	templateInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
-	templateInformation.QuorumVotedPercentage = toFixed(float64(getVoteInfo.Agendas[0].QuorumProgress*100), 2)
-	templateInformation.QuorumAbstainedPercentage = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
-	templateInformation.AgendaID = getVoteInfo.Agendas[0].Id
-	templateInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
-	// XX instread of static linking there should be itteration trough the Choices array
-	templateInformation.AgendaChoice1Id = getVoteInfo.Agendas[0].Choices[0].Id
-	templateInformation.AgendaChoice1Description = getVoteInfo.Agendas[0].Choices[0].Description
-	templateInformation.AgendaChoice1Count = getVoteInfo.Agendas[0].Choices[0].Count
-	templateInformation.AgendaChoice1IsIgnore = getVoteInfo.Agendas[0].Choices[0].IsIgnore
-	templateInformation.AgendaChoice1Bits = getVoteInfo.Agendas[0].Choices[0].Bits
-	templateInformation.AgendaChoice1Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
-	templateInformation.AgendaChoice2Id = getVoteInfo.Agendas[0].Choices[1].Id
-	templateInformation.AgendaChoice2Description = getVoteInfo.Agendas[0].Choices[1].Description
-	templateInformation.AgendaChoice2Count = getVoteInfo.Agendas[0].Choices[1].Count
-	templateInformation.AgendaChoice2IsIgnore = getVoteInfo.Agendas[0].Choices[1].IsIgnore
-	templateInformation.AgendaChoice2Bits = getVoteInfo.Agendas[0].Choices[1].Bits
-	templateInformation.AgendaChoice2Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[1].Progress*100), 2)
-	templateInformation.AgendaChoice3Id = getVoteInfo.Agendas[0].Choices[2].Id
-	templateInformation.AgendaChoice3Description = getVoteInfo.Agendas[0].Choices[2].Description
-	templateInformation.AgendaChoice3Count = getVoteInfo.Agendas[0].Choices[2].Count
-	templateInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsIgnore
-	templateInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
-	templateInformation.AgendaChoice3Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[2].Progress*100), 2)
-	templateInformation.VoteStartHeight = getVoteInfo.StartHeight
-	templateInformation.VoteEndHeight = getVoteInfo.EndHeight
-	templateInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
-	templateInformation.TotalVotes = getVoteInfo.TotalVotes
+
+	/*
+		// These fields can be refactored out of GetVoteInfoResults
+		templateInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
+		templateInformation.QuorumVotedPercentage = toFixed(float64(getVoteInfo.Agendas[0].QuorumProgress*100), 2)
+		templateInformation.QuorumAbstainedPercentage = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
+		templateInformation.AgendaID = getVoteInfo.Agendas[0].Id
+		templateInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
+		// XX instread of static linking there should be itteration trough the Choices array
+		templateInformation.AgendaChoice1Id = getVoteInfo.Agendas[0].Choices[0].Id
+		templateInformation.AgendaChoice1Description = getVoteInfo.Agendas[0].Choices[0].Description
+		templateInformation.AgendaChoice1Count = getVoteInfo.Agendas[0].Choices[0].Count
+		templateInformation.AgendaChoice1IsIgnore = getVoteInfo.Agendas[0].Choices[0].IsIgnore
+		templateInformation.AgendaChoice1Bits = getVoteInfo.Agendas[0].Choices[0].Bits
+		templateInformation.AgendaChoice1Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
+		templateInformation.AgendaChoice2Id = getVoteInfo.Agendas[0].Choices[1].Id
+		templateInformation.AgendaChoice2Description = getVoteInfo.Agendas[0].Choices[1].Description
+		templateInformation.AgendaChoice2Count = getVoteInfo.Agendas[0].Choices[1].Count
+		templateInformation.AgendaChoice2IsIgnore = getVoteInfo.Agendas[0].Choices[1].IsIgnore
+		templateInformation.AgendaChoice2Bits = getVoteInfo.Agendas[0].Choices[1].Bits
+		templateInformation.AgendaChoice2Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[1].Progress*100), 2)
+		templateInformation.AgendaChoice3Id = getVoteInfo.Agendas[0].Choices[2].Id
+		templateInformation.AgendaChoice3Description = getVoteInfo.Agendas[0].Choices[2].Description
+		templateInformation.AgendaChoice3Count = getVoteInfo.Agendas[0].Choices[2].Count
+		templateInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsIgnore
+		templateInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
+		templateInformation.AgendaChoice3Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[2].Progress*100), 2)
+
+
+		templateInformation.VoteStartHeight = getVoteInfo.StartHeight
+		templateInformation.VoteEndHeight = getVoteInfo.EndHeight
+		templateInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
+		templateInformation.TotalVotes = getVoteInfo.TotalVotes
+	*/
 	templateInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "started"
 	templateInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "defined"
 	templateInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
 	templateInformation.VotingFailed = getVoteInfo.Agendas[0].Status == "failed"
-
-	/// XXX need to calculate expiration block
-	templateInformation.VoteExpirationBlock = int64(210001)
 
 	choiceIds := make([]string, len(getVoteInfo.Agendas[0].Choices))
 	choicePercentages := make([]float64, len(getVoteInfo.Agendas[0].Choices))
@@ -422,9 +407,6 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 var mux map[string]func(http.ResponseWriter, *http.Request)
 
 func main() {
-	mux = make(map[string]func(http.ResponseWriter, *http.Request))
-	mux["/"] = demoPage
-
 	connectChan := make(chan int64, 100)
 	quit := make(chan struct{})
 	ntfnHandlersDaemon := dcrrpcclient.NotificationHandlers{
