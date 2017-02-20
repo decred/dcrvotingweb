@@ -143,7 +143,7 @@
                                         <div class="shadow"></div>
                                 </div>
                                 <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br />
-                                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset"><strong>START IN<br />{{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}} BLOCKS</strong></span><br /><br />{{end}}
+                                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset"><strong>STARTS IN<br />{{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}} BLOCKS</strong></span><br /><br />{{end}}
                                 {{if .VotingStarted}}<span class="textinset" style="font-size:1em;"><p><span style="color:#41BF53"><strong>{{.AgendaChoice3Count}} {{.AgendaChoice3Id}}</strong></span> | <span style="color:#FD714A"><strong>{{.AgendaChoice2Count}} {{.AgendaChoice2Id}}</strong></span><br />
                                 {{.AgendaChoice1Count}} {{.AgendaChoice1Id}}<br />
                                  Quorum Progress: {{.QuorumVotedPercentage }}%</p></span>{{end}}
