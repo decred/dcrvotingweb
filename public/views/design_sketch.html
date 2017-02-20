@@ -107,8 +107,7 @@
                                 </div>
                                 <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br />
                                 <span class="bigpercent">
-                                {{if not .StakeVersionSuccess}}{{.MostPopularStakeVersionPercentage}}%{{end}}
-                                {{if .VotingStarted}}{{.MostPopularStakeVersionCount}} <span style="font-size:0.4em">Votes</span>{{end}}
+                                {{if .StakeVersionSuccess}}100%{{else}}{{.MostPopularStakeVersionPercentage}}%{{end}}
                                 </span>
 				<br />{{if .StakeVersionSuccess}}v{{.CurrentCalculatedStakeVersion}}{{else}}<span class="error">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}<br />
                                 {{if .StakeVersionSuccess}}
@@ -159,7 +158,7 @@
                         </div>
 			{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<div class="alert alert-success">
                             PoW v{{.CurrentCalculatedBlockVersion}} &hearts; PoS v{{.CurrentCalculatedStakeVersion}}<br />
-<strong>PoW and PoS miners have upgraded to v{{.CurrentCalculatedStakeVersion}}.  There are {{.VoteBlockLeft}} blocks until the vote begins.</strong>
+<strong>PoW and PoS miners have upgraded to v{{.CurrentCalculatedStakeVersion}}.  There are {{.VoteBlockLeft}} blocks {{if .VotingStarted}}left in the vote.{{else}}until the vote begins.{{end}}</strong>
                           </div>{{end}}
                           {{if not .StakeVersionSuccess }}<div class="alert alert-danger">
                             <span class="text-center">
@@ -265,7 +264,7 @@
           <!-- 95% Threshold reached alertbox --><br />
           {{if .StakeVersionSuccess}}
           <div class="alert alert-success">
-            Success! v{{.CurrentCalculatedStakeVersion}} had {{.MostPopularStakeVersionCount}} of votes in the latest static window and therefore it is the current network stake version (v{{.CurrentCalculatedStakeVersion}})
+            Success! v{{.CurrentCalculatedStakeVersion}} had the sufficient number of votes in the latest static interval and therefore it is the current network stake version.
           </div>
           {{else}}
             <div class="alert alert-danger">
