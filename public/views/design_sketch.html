@@ -81,7 +81,7 @@
                                 <span class="label label-default">IN PROGRESS</span>
                                 {{end}}
 				<p class="textinset">
-                                <small><strong>Current Version:</strong>  v{{.MostPopularBlockVersion}}<br /><strong>Rolling Window:</strong> {{.BlockVersionWindowLength}} Blocks<br /><strong>Reject Threshold:</strong> {{.BlockVersionRejectThreshold}}%</small>
+                                <small><strong>Current Version:</strong> v{{.MostPopularBlockVersion}}<br /><strong>Rolling Window:</strong> {{.BlockVersionWindowLength}} Blocks<br /><strong>Reject Threshold:</strong> {{.BlockVersionRejectThreshold}}%</small>
                                 </p> 
 				</div>
                         </div>
@@ -105,7 +105,10 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br /><span class="bigpercent">{{if .StakeVersionSuccess}}100%{{else}}{{.MostPopularStakeVersionPercentage}}%{{end}}</span>
+                                <div class="inset text-center" style="padding-top:12px"><strong>PoS</strong><br />
+                                <span class="bigpercent">
+                                {{if .StakeVersionSuccess}}100%{{else}}{{.MostPopularStakeVersionPercentage}}%{{end}}
+                                </span>
 				<br />{{if .StakeVersionSuccess}}v{{.CurrentCalculatedStakeVersion}}{{else}}<span class="error">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}<br />
                                 {{if .StakeVersionSuccess}}
                                 <span class="label label-success">FINISHED</span><br />
@@ -139,19 +142,32 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br /><span class="bigpercent">{{if .VotingStarted}}{{end}}</span><br /><br />{{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{else}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
-				<p class="textinset">
+                                <div class="inset text-center" style="padding-top:12px"><strong>Stakevoting</strong><br />
+                                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset"><strong>START IN<br />{{.VoteBlockLeft}} BLOCKS</strong></span><br /><br />{{end}}
+                                {{if .VotingStarted}}<span class="textinset" style="font-size:1em;"><p><span style="color:#41BF53"><strong>{{.AgendaChoice3Count}} {{.AgendaChoice3Id}}</strong></span> | <span style="color:#FD714A"><strong>{{.AgendaChoice2Count}} {{.AgendaChoice2Id}}</strong></span><br />
+                                {{.AgendaChoice1Count}} {{.AgendaChoice1Id}}<br />
+                                 Quorum Progress: {{.QuorumVotedPercentage }}%</p></span>{{end}}
+                                <!-- <span class="bigpercentvoting">{{if .VotingStarted}}{{end}}</span><br /> -->
+                                {{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{end}}
+                                {{if .VotingLockedin}}<p class="textinset"><br /><br /><br /><br /></p><span class="label label-success">LOCKED IN</span>{{end}}
+                                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
+				                        <p class="textinset">
                                 <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting interval:</strong><br />Block {{.VoteStartHeight}}-{{.VoteEndHeight}}</small>
                                 </p>
                                 </div>
                         </div>
-			{{if and .StakeVersionSuccess .BlockVersionSuccess}}<div class="alert alert-success">
+			{{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<div class="alert alert-success">
                             PoW v{{.CurrentCalculatedBlockVersion}} &hearts; PoS v{{.CurrentCalculatedStakeVersion}}<br />
 <strong>PoW and PoS miners have upgraded to v{{.CurrentCalculatedStakeVersion}}.  There are {{.VoteBlockLeft}} blocks {{if .VotingStarted}}left in the vote.{{else}}until the vote begins.{{end}}</strong>
-                          </div>
-                          {{else}}<div class="alert alert-danger">
+                          </div>{{end}}
+                          {{if not .StakeVersionSuccess }}<div class="alert alert-danger">
                             <span class="text-center">
                               Voting will begin when PoW and PoS miners have upgraded to latest v4 and the next voting interval has been reached.
+                          </div>
+                          {{end}}
+                          {{if .VotingStarted}}<div class="alert alert-success">
+                            PoW v{{.CurrentCalculatedBlockVersion}} &hearts; PoS v{{.CurrentCalculatedStakeVersion}}<br />
+<strong>PoW and PoS miners have upgraded to v{{.CurrentCalculatedStakeVersion}}.  There are {{.VoteBlockLeft}} blocks left in the vote.</strong>
                           </div>
                           {{end}}
 		</div><!-- END CYRCLE OVERVIEW -->
@@ -180,7 +196,7 @@
 	<tr><td>Network <strong>Block</strong> Version:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedBlockVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}</strong></td></tr>
 	<tr><td>Most popular block version (v{{.MostPopularBlockVersion}}) percentage:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">{{.MostPopularBlockVersionPercentage}}%</span>{{else}}<span style="color:#FD714A">{{.MostPopularBlockVersionPercentage}}%</span>{{end}}</td></tr>
 	<tr><td>Network <strong>Stake</strong> Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}</strong></td></tr>
-	<tr><td>Most popular stake version (v{{.MostPopularStakeVersion}}):</td><td><span style="color:#FD714A;">{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</span></td></tr>
+	<tr><td>Most popular stake version (v{{.CurrentCalculatedStakeVersion}}):</td><td><strong>{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</strong></td></tr>
 	</tbody>
 	</table>
         </div>
@@ -265,7 +281,7 @@
 	<table class="table table-condensed">
 	<tbody> 
 	<tr><td>Current Stake Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}</strong></td></tr>
-	<tr><td>Most Stake Version:</td><td><strong>v{{.MostPopularStakeVersion}}</strong></td></tr>
+	<tr><td>Most Stake Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}v{{.MostPopularStakeVersion}}{{end}}</strong></td></tr>
 	<tr><td>Most Popular:</td><td><strong>{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</strong></td></tr>
 	<tr><td>Upgrade Threshold:</td><td><strong>{{.StakeVersionThreshold}}%</strong></td></tr>
 	<tr><td>Static Interval:</td><td><strong>{{.StakeVersionWindowLength}} Blocks</strong></td></tr>
@@ -312,9 +328,19 @@
             quorum, and this means that the issue will be up for vote again during 
             the next voting period, until it passes its expiration date of {{.QuorumExpirationDate}}.
           </p>
-          {{if .VotingStarted}}<h3>Quorum:</h3>{{end}}
+          
           <!-- QUORUM HORIZONTAL BARCHART -->
-          <canvas id="voteQuorum" width="400" height="100" {{if .VotingStarted}}{{else}}style="display:none;"{{end}}></canvas>
+          <div class="col-md-8">
+              {{if .VotingStarted}}<h3>Quorum:</h3>{{end}}
+          <canvas id="voteQuorum" width="300" height="150" {{if .VotingStarted}}{{else}}style="display:none;"{{end}}></canvas>
+          </div>
+          <div class="col-md-7">
+            {{if .VotingStarted}}<h3>Voting Progress:</h3>{{end}}
+            <div style="width: 350px; height: 350px;">
+            <canvas id="voteProgress" width="350" height="350" {{if .VotingStarted}}{{else}}style="display:none;"{{end}}></canvas>
+            </div>
+          </div>
+          <div style="clear:both;">&nbsp;</div>
           {{if .VotingStarted}}<div class="alert alert-danger">
             <strong>Danger!</strong> We have yet not reached the minimum Quorum of 10% actively made votes.
           </div>{{end}}
@@ -329,9 +355,38 @@
   <!--<tr><td>Estimated Vote Expiration Block:</td><td><strong>{{.VoteExpirationBlock}}</strong></td></tr>-->
 	</tbody>
 	</table>
-            {{if .VotingStarted}}<h3>Voting Progress:</h3>{{end}}
-            <canvas id="voteProgress" width="100" height="100" {{if .VotingStarted}}{{else}}style="display:none;"{{end}}></canvas>
-          </blockquote>
+  {{if .VotingStarted}}
+  <strong>Agenda Choices:</strong>
+  <table class="table table-condensed">
+  <thead><tr><th></th><th>Choice 1</th></tr></thead>
+	<tbody>
+	<tr><td>Choice ID:</td><td><strong>{{.AgendaChoice1Id}}</strong></td></tr>
+	<tr><td>Choice Description:</td><td><strong>{{.AgendaChoice1Description}}</strong></td></tr>
+	<tr><td>Votes Received:</td><td><strong>{{.AgendaChoice1Count}}</strong></td></tr>
+  <tr><td>Vote Bit:</td><td><strong>{{.AgendaChoice1Bits}}</strong></td></tr>
+	</tbody>
+	</table>
+
+  <table class="table table-condensed">
+  <thead><tr><th></th><th>Choice 2</th></tr></thead>
+	<tbody>
+	<tr><td>Choice ID:</td><td><strong>{{.AgendaChoice2Id}}</strong></td></tr>
+	<tr><td>Choice Description:</td><td><strong>{{.AgendaChoice2Description}}</strong></td></tr>
+	<tr><td>Votes Received:</td><td><strong>{{.AgendaChoice2Count}}</strong></td></tr>
+  <tr><td>Vote Bit:</td><td><strong>{{.AgendaChoice2Bits}}</strong></td></tr>
+	</tbody>
+	</table>
+
+  <table class="table table-condensed">
+  <thead><tr><th></th><th>Choice 3</th></tr></thead>
+	<tbody>
+	<tr><td>Choice ID:</td><td><strong>{{.AgendaChoice3Id}}</strong></td></tr>
+	<tr><td>Choice Description:</td><td><strong>{{.AgendaChoice3Description}}</strong></td></tr>
+	<tr><td>Votes Received:</td><td><strong>{{.AgendaChoice3Count}}</strong></td></tr>
+  <tr><td>Vote Bit:</td><td><strong>{{.AgendaChoice3Bits}}</strong></td></tr>
+	</tbody>
+	</table>
+  {{end}}
         </div>
       </div>
     </div>
@@ -437,7 +492,7 @@
     var ctx = document.getElementById("blockVersionsIndicator").getContext("2d");
     new Chart(ctx, blockVersionsBarConfig);
     // vote version line graph
-    var voteVersionGraphColors = ['23,12,220','244,100,1','75,192,192','41,113,255','123,22,255','22,255,122', '28,97,21', '100,175,183', '139,177,22', '112,29,239']
+    var voteVersionGraphColors = ['111,27,255','91,192,222','74,172,255','63,102,135','51,122,183','22,255,122', '0,96,255', '0,62,164', '139,177,22', '112,29,239']
     var barChartExampleConfig = {
       type: 'bar',
       data: {
@@ -494,18 +549,30 @@
     var quorumHorizontalConfig = {
       type: 'horizontalBar',
       data: {
-      labels: ["Voted vs. Abstained"],
+      labels: ["%"],
         datasets: [{
           type: 'horizontalBar',
-          label: 'Voted',
+          label: 'Quorum Progress',
           data: [{{.QuorumVotedPercentage}}],
-          backgroundColor: '#41BF53',
+          backgroundColor: '#5bc0de',
           }, {
           type: 'horizontalBar',
           label: 'Abstained',
           labelFontColor : "#fff",
           data: [{{.QuorumAbstainedPercentage}}],
-          backgroundColor: '#0C1E3E'
+          backgroundColor: '#337ab7'
+        }, {
+          type: 'horizontalBar',
+          label: '{{.AgendaChoice3Id}}',
+          labelFontColor : "#fff",
+          data: [{{.AgendaChoice3Progress}}],
+          backgroundColor: '#41BF53'
+        }, {
+          type: 'horizontalBar',
+          label: '{{.AgendaChoice2Id}}',
+          labelFontColor : "#fff",
+          data: [{{.AgendaChoice2Progress}}],
+          backgroundColor: '#FD714A'
         }] 
       },
       options: {
@@ -529,19 +596,19 @@
         datasets: [{
           data: {{.ChoicePercentages}},
           backgroundColor: [
-            "#0C1E3E",
+            "#337ab7",
             "#FD714A",
             "#41BF53"
           ],
           hoverBackgroundColor: [
-            "#05235A",
+            "#3e91d8",
             "#fa3804",
             "#74DE83"
           ],
           borderColor: [
-            "#5bc0de",
-            "#ff0000",
-            "#00ff00"
+            "#132f4b",
+            "#132f4b",
+            "#132f4b"
           ]
         }]
       }
@@ -559,7 +626,7 @@ less.refreshStyles();
 var transform_styles = ['-webkit-transform', '-ms-transform', 'transform'];
 var pow_percent = '{{.MostPopularBlockVersionPercentage}}';
 var pos_percent = '{{if .StakeVersionSuccess}}100{{else}}{{.MostPopularStakeVersionPercentage}}{{end}}';
-var stake_percent = '0';
+var stake_percent = '{{if .VotingStarted}}{{.QuorumVotedPercentage}}{{else}}0{{end}}{{if .VotingLockedin}}100{{end}}';
 
 window.circle1 = function() {
 	var rotation = Math.floor(pow_percent * 1.8);

@@ -79,7 +79,28 @@ type hardForkInfo struct {
 	QuorumExpirationDate      string
 	AgendaID                  string
 	AgendaDescription         string
+	AgendaChoice1Id           string
+	AgendaChoice1Description  string
+	AgendaChoice1Count        uint32
+	AgendaChoice1IsIgnore     bool
+	AgendaChoice1Bits         uint16
+	AgendaChoice1Progress     float64
+	AgendaChoice2Id           string
+	AgendaChoice2Description  string
+	AgendaChoice2Count        uint32
+	AgendaChoice2IsIgnore     bool
+	AgendaChoice2Bits         uint16
+	AgendaChoice2Progress     float64
+	AgendaChoice3Id           string
+	AgendaChoice3Description  string
+	AgendaChoice3Count        uint32
+	AgendaChoice3IsIgnore     bool
+	AgendaChoice3Bits         uint16
+	AgendaChoice3Progress     float64
 	VotingStarted             bool
+	VotingDefined             bool
+	VotingLockedin            bool
+	VotingFailed              bool
 	VoteStartHeight           int64
 	VoteEndHeight             int64
 	VoteBlockLeft             int64
@@ -302,15 +323,38 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.RuleChangeActivationWindowVotes = hardForkInformation.RuleChangeActivationWindow * 5
 	hardForkInformation.QuorumPercentage = float64(activeNetParams.RuleChangeActivationQuorum) / float64(hardForkInformation.RuleChangeActivationWindowVotes) * 100
 	hardForkInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
-	hardForkInformation.QuorumVotedPercentage = getVoteInfo.Agendas[0].QuorumProgress
-	hardForkInformation.QuorumAbstainedPercentage = (float64(1) - getVoteInfo.Agendas[0].QuorumProgress) * 100
+	hardForkInformation.QuorumVotedPercentage = toFixed(float64(getVoteInfo.Agendas[0].QuorumProgress*100), 2)
+	hardForkInformation.QuorumAbstainedPercentage = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
 	hardForkInformation.AgendaID = getVoteInfo.Agendas[0].Id
 	hardForkInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
+	// XX instread of static linking there should be itteration trough the Choices array
+	hardForkInformation.AgendaChoice1Id = getVoteInfo.Agendas[0].Choices[0].Id
+	hardForkInformation.AgendaChoice1Description = getVoteInfo.Agendas[0].Choices[0].Description
+	hardForkInformation.AgendaChoice1Count = getVoteInfo.Agendas[0].Choices[0].Count
+	hardForkInformation.AgendaChoice1IsIgnore = getVoteInfo.Agendas[0].Choices[0].IsIgnore
+	hardForkInformation.AgendaChoice1Bits = getVoteInfo.Agendas[0].Choices[0].Bits
+	hardForkInformation.AgendaChoice1Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
+	hardForkInformation.AgendaChoice2Id = getVoteInfo.Agendas[0].Choices[1].Id
+	hardForkInformation.AgendaChoice2Description = getVoteInfo.Agendas[0].Choices[1].Description
+	hardForkInformation.AgendaChoice2Count = getVoteInfo.Agendas[0].Choices[1].Count
+	hardForkInformation.AgendaChoice2IsIgnore = getVoteInfo.Agendas[0].Choices[1].IsIgnore
+	hardForkInformation.AgendaChoice2Bits = getVoteInfo.Agendas[0].Choices[1].Bits
+	hardForkInformation.AgendaChoice2Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[1].Progress*100), 2)
+	hardForkInformation.AgendaChoice3Id = getVoteInfo.Agendas[0].Choices[2].Id
+	hardForkInformation.AgendaChoice3Description = getVoteInfo.Agendas[0].Choices[2].Description
+	hardForkInformation.AgendaChoice3Count = getVoteInfo.Agendas[0].Choices[2].Count
+	hardForkInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsIgnore
+	hardForkInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
+	hardForkInformation.AgendaChoice3Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[2].Progress*100), 2)
 	hardForkInformation.VoteStartHeight = getVoteInfo.StartHeight
 	hardForkInformation.VoteEndHeight = getVoteInfo.EndHeight
 	hardForkInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
 	hardForkInformation.TotalVotes = getVoteInfo.TotalVotes
 	hardForkInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "started"
+	hardForkInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "defined"
+	hardForkInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
+	hardForkInformation.VotingFailed = getVoteInfo.Agendas[0].Status == "failed"
+
 	/// XXX need to calculate expiration block
 	hardForkInformation.VoteExpirationBlock = int64(210001)
 
