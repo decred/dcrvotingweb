@@ -84,16 +84,19 @@ type hardForkInfo struct {
 	AgendaChoice1Count        uint32
 	AgendaChoice1IsIgnore     bool
 	AgendaChoice1Bits         uint16
+	AgendaChoice1Progress     float64
 	AgendaChoice2Id           string
 	AgendaChoice2Description  string
 	AgendaChoice2Count        uint32
 	AgendaChoice2IsIgnore     bool
 	AgendaChoice2Bits         uint16
+	AgendaChoice2Progress     float64
 	AgendaChoice3Id           string
 	AgendaChoice3Description  string
 	AgendaChoice3Count        uint32
 	AgendaChoice3IsIgnore     bool
 	AgendaChoice3Bits         uint16
+	AgendaChoice3Progress     float64
 	VotingStarted             bool
 	VotingDefined             bool
 	VotingLockedin            bool
@@ -330,16 +333,19 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.AgendaChoice1Count = getVoteInfo.Agendas[0].Choices[0].Count
 	hardForkInformation.AgendaChoice1IsIgnore = getVoteInfo.Agendas[0].Choices[0].IsIgnore
 	hardForkInformation.AgendaChoice1Bits = getVoteInfo.Agendas[0].Choices[0].Bits
+	hardForkInformation.AgendaChoice1Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
 	hardForkInformation.AgendaChoice2Id = getVoteInfo.Agendas[0].Choices[1].Id
 	hardForkInformation.AgendaChoice2Description = getVoteInfo.Agendas[0].Choices[1].Description
 	hardForkInformation.AgendaChoice2Count = getVoteInfo.Agendas[0].Choices[1].Count
 	hardForkInformation.AgendaChoice2IsIgnore = getVoteInfo.Agendas[0].Choices[1].IsIgnore
 	hardForkInformation.AgendaChoice2Bits = getVoteInfo.Agendas[0].Choices[1].Bits
+	hardForkInformation.AgendaChoice2Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[1].Progress*100), 2)
 	hardForkInformation.AgendaChoice3Id = getVoteInfo.Agendas[0].Choices[2].Id
 	hardForkInformation.AgendaChoice3Description = getVoteInfo.Agendas[0].Choices[2].Description
 	hardForkInformation.AgendaChoice3Count = getVoteInfo.Agendas[0].Choices[2].Count
 	hardForkInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsIgnore
 	hardForkInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
+	hardForkInformation.AgendaChoice3Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[2].Progress*100), 2)
 	hardForkInformation.VoteStartHeight = getVoteInfo.StartHeight
 	hardForkInformation.VoteEndHeight = getVoteInfo.EndHeight
 	hardForkInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight

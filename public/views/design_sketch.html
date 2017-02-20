@@ -550,18 +550,30 @@
     var quorumHorizontalConfig = {
       type: 'horizontalBar',
       data: {
-      labels: ["Voted vs. Abstained"],
+      labels: ["%"],
         datasets: [{
           type: 'horizontalBar',
-          label: 'Voted',
+          label: 'Quorum Progress',
           data: [{{.QuorumVotedPercentage}}],
-          backgroundColor: '#41BF53',
+          backgroundColor: '#5bc0de',
           }, {
           type: 'horizontalBar',
           label: 'Abstained',
           labelFontColor : "#fff",
           data: [{{.QuorumAbstainedPercentage}}],
-          backgroundColor: '#0C1E3E'
+          backgroundColor: '#337ab7'
+        }, {
+          type: 'horizontalBar',
+          label: '{{.AgendaChoice3Id}}',
+          labelFontColor : "#fff",
+          data: [{{.AgendaChoice3Progress}}],
+          backgroundColor: '#41BF53'
+        }, {
+          type: 'horizontalBar',
+          label: '{{.AgendaChoice2Id}}',
+          labelFontColor : "#fff",
+          data: [{{.AgendaChoice2Progress}}],
+          backgroundColor: '#FD714A'
         }] 
       },
       options: {
@@ -585,19 +597,19 @@
         datasets: [{
           data: {{.ChoicePercentages}},
           backgroundColor: [
-            "#0C1E3E",
+            "#337ab7",
             "#FD714A",
             "#41BF53"
           ],
           hoverBackgroundColor: [
-            "#05235A",
+            "#3e91d8",
             "#fa3804",
             "#74DE83"
           ],
           borderColor: [
-            "#5bc0de",
-            "#ff0000",
-            "#00ff00"
+            "#132f4b",
+            "#132f4b",
+            "#132f4b"
           ]
         }]
       }
