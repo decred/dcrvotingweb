@@ -340,7 +340,6 @@ func updateHardForkInformation(dcrdClient *dcrrpcclient.Client) {
 	hardForkInformation.AgendaChoice3Count = getVoteInfo.Agendas[0].Choices[2].Count
 	hardForkInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsIgnore
 	hardForkInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
-
 	hardForkInformation.VoteStartHeight = getVoteInfo.StartHeight
 	hardForkInformation.VoteEndHeight = getVoteInfo.EndHeight
 	hardForkInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
