@@ -173,6 +173,7 @@ func minus(a, b int) int {
 	return a - b
 }
 
+// renders the 'home' template that is current located at "design_sketch.html".
 func demoPage(w http.ResponseWriter, r *http.Request) {
 
 	fp := filepath.Join("public", "views", "design_sketch.html")
@@ -186,14 +187,28 @@ func demoPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 
+// updatetemplateInformation is called on startup and upon every block connected notification received.
+func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	fmt.Println("updating hard fork information")
+
+	// Get the current best block (height and hash)
 	hash, height, err := dcrdClient.GetBestBlock()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	// Set Current block height
+	templateInformation.BlockHeight = height
+
+	// Request the current block to parse its blockHeader
+	block, err := dcrdClient.GetBlockVerbose(hash, false)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	// Request GetStakeVersions to receive information about passed block versions.
+	//
 	// Request twice as many, so we can populate the rolling block version window's first
 	stakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
 		int32(templateInformation.BlockVersionWindowLength*2))
@@ -201,17 +216,21 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		fmt.Println(err)
 		return
 	}
-	block, err := dcrdClient.GetBlockVerbose(hash, false)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
 	blockVersionsFound := make(map[int32]*blockVersions)
 	blockVersionsHeights := make([]int64, templateInformation.BlockVersionWindowLength)
 	elementNum := 0
+
+	// The algorithm starts at the middle of the GetStakeVersionResults and decrements backwards toward
+	// the beginning of the list.  This is due to GetStakeVersionResults.StakeVersions being ordered
+	// from most recent blocks to oldest. (ie [0] == current, [len] == oldest).  So by starting in the middle
+	// we then can calculate that first blocks rolling window result then become one block 'more recent'
+	// and calculate that blocks rolling window results.
 	for i := len(stakeVersionResults.StakeVersions)/2 - 1; i >= 0; i-- {
+		// Calculate the last block element in the window
 		windowEnd := i + int(templateInformation.BlockVersionWindowLength)
+		// blockVersionsHeights lets us have a correctly ordered list of blockheights for xaxis label
 		blockVersionsHeights[elementNum] = stakeVersionResults.StakeVersions[i].Height
+		// Define rolling window range for this current block (i)
 		stakeVersionsWindow := stakeVersionResults.StakeVersions[i:windowEnd]
 		for _, stakeVersion := range stakeVersionsWindow {
 			_, ok := blockVersionsFound[stakeVersion.BlockVersion]
@@ -237,7 +256,10 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 
 	// Calculate current block version and most popular version (and that percentage)
 	templateInformation.BlockVersionCurrent = int32(maxVersion)
-	MostPopularBlockVersionCount := 0
+	mostPopularBlockVersionCount := 0
+	// Range across rolling window block version results.  If any of the rolling window look back
+	// counts are greater than the required threshold then that is assured to be the current block
+	// version at point in the chain.
 	for i, blockVersion := range templateInformation.BlockVersions {
 		tipBlockVersionCount := blockVersion.RollingWindowLookBacks[len(blockVersion.RollingWindowLookBacks)-1]
 		if tipBlockVersionCount >= int(activeNetParams.BlockRejectNumRequired) {
@@ -246,11 +268,11 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 			templateInformation.BlockVersionMostPopular = i
 			templateInformation.BlockVersionMostPopularPercentage = toFixed(float64(tipBlockVersionCount)/float64(templateInformation.BlockVersionWindowLength)*100, 2)
 			templateInformation.BlockVersionSuccess = true
-			MostPopularBlockVersionCount = tipBlockVersionCount
+			mostPopularBlockVersionCount = tipBlockVersionCount
 		}
-		if tipBlockVersionCount > MostPopularBlockVersionCount {
+		if tipBlockVersionCount > mostPopularBlockVersionCount {
 			// Show Red
-			MostPopularBlockVersionCount = tipBlockVersionCount
+			mostPopularBlockVersionCount = tipBlockVersionCount
 			templateInformation.BlockVersionMostPopular = i
 			templateInformation.BlockVersionMostPopularPercentage = toFixed(float64(tipBlockVersionCount)/float64(templateInformation.BlockVersionWindowLength)*100, 2)
 		}
@@ -263,7 +285,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		}
 	}
 
-	blocksIntoStakeVersionWindow := (height - activeNetParams.StakeValidationHeight) % activeNetParams.StakeVersionInterval
+	blocksIntoStakeVersionWindow := (templateInformation.BlockHeight - activeNetParams.StakeValidationHeight) % activeNetParams.StakeVersionInterval
 	// Request twice as many, so we can populate the rolling block version window's first
 	heightstakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
 		int32(blocksIntoStakeVersionWindow))
@@ -317,7 +339,6 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 	voteVersionLabels[len(stakeVersionInfo.Intervals)-1] = "Current Interval"
 	templateInformation.StakeVersionIntervalResults = voteVersionIntervalResults
-	templateInformation.BlockHeight = height
 
 	templateInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval*5 - int64(missedVotesStakeInterval)
 	templateInformation.StakeVersionIntervalLabels = voteVersionLabels
@@ -353,6 +374,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 	templateInformation.GetVoteInfoResult = getVoteInfo
 
+	// Set Quorum to true since we got a valid response back from GetVoteInfoResult
 	templateInformation.Quorum = true
 
 	/*
@@ -404,11 +426,21 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 
 }
 
-var mux map[string]func(http.ResponseWriter, *http.Request)
-
 func main() {
+	// Chans for rpccclient notification handlers
 	connectChan := make(chan int64, 100)
 	quit := make(chan struct{})
+
+	// Read in current dcrd cert
+	var dcrdCerts []byte
+	dcrdCerts, err := ioutil.ReadFile(dcrdCertPath)
+	if err != nil {
+		fmt.Printf("Failed to read dcrd cert file at %s: %s\n", dcrdCertPath,
+			err.Error())
+		os.Exit(1)
+	}
+
+	// Set up notification handler that will release ntfns when new blocks connect
 	ntfnHandlersDaemon := dcrrpcclient.NotificationHandlers{
 		OnBlockConnected: func(serializedBlockHeader []byte, transactions [][]byte) {
 			var blockHeader wire.BlockHeader
@@ -421,16 +453,8 @@ func main() {
 			connectChan <- int64(blockHeader.Height)
 		},
 	}
-	var dcrdCerts []byte
-	dcrdCerts, err := ioutil.ReadFile(dcrdCertPath)
-	if err != nil {
-		fmt.Printf("Failed to read dcrd cert file at %s: %s\n", dcrdCertPath,
-			err.Error())
-		os.Exit(1)
-	}
-	fmt.Printf("Attempting to connect to dcrd RPC %s as user %s "+
-		"using certificate located in %s\n",
-		dcrdServer, dcrdUser, dcrdCertPath)
+
+	// dcrrpclient configuration
 	connCfgDaemon := &dcrrpcclient.ConnConfig{
 		Host:         dcrdServer,
 		Endpoint:     "ws",
@@ -439,18 +463,27 @@ func main() {
 		Certificates: dcrdCerts,
 		DisableTLS:   false,
 	}
+
+	fmt.Printf("Attempting to connect to dcrd RPC %s as user %s "+
+		"using certificate located in %s\n",
+		dcrdServer, dcrdUser, dcrdCertPath)
+	// Attempt to connect rpcclient and daemon
 	dcrdClient, err := dcrrpcclient.New(connCfgDaemon, &ntfnHandlersDaemon)
 	if err != nil {
 		fmt.Printf("Failed to start dcrd rpcclient: %s\n", err.Error())
 		os.Exit(1)
 	}
-
+	// Subscribe to block notifications
 	if err := dcrdClient.NotifyBlocks(); err != nil {
 		fmt.Printf("Failed to start register daemon rpc client for  "+
 			"block notifications: %s\n", err.Error())
 		os.Exit(1)
 	}
+
+	// Run an initial templateInforation update based on current change
 	updatetemplateInformation(dcrdClient)
+
+	// Run goroutine for notifications
 	go func() {
 		for {
 			select {
@@ -466,17 +499,22 @@ func main() {
 			}
 		}
 	}()
+
+	// Various url handlers for js/css/fonts/images
 	http.HandleFunc("/", demoPage)
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("public/js/"))))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("public/css/"))))
 	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir("public/fonts/"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("public/images/"))))
+
+	// Start http server listening and serving
 	err = http.ListenAndServe(listeningPort, nil)
 	if err != nil {
 		fmt.Printf("Failed to bind http server: %s\n", err.Error())
 	}
 }
 
+// Some various helper math helper funcs
 func round(num float64) int {
 	return int(num + math.Copysign(0.5, num))
 }
