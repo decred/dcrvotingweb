@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/decred/dcrd/chaincfg"
 	"github.com/decred/dcrd/dcrjson"
@@ -117,7 +118,7 @@ type templateFields struct {
 	// Quorum is a bool that is true if needed number of yes/nos were
 	// received (>10%)
 	Quorum bool
-	// QuorumPercentage
+	// QuorumThreshold
 	QuorumThreshold float64
 	// QuorumVotes
 	QuorumVotes int
@@ -126,14 +127,34 @@ type templateFields struct {
 	// QuorumAbstainedPercentage
 	QuorumAbstainedPercentage float64
 	// QuorumExpirationDate
-	QuorumExpirationDate string
-	GetVoteInfoResult    *dcrjson.GetVoteInfoResult
-	VotingStarted        bool
-	VotingDefined        bool
-	VotingLockedin       bool
-	VotingFailed         bool
-	ChoiceIds            []string
-	ChoicePercentages    []float64
+	QuorumExpirationDate     string
+	AgendaID                 string
+	AgendaDescription        string
+	AgendaChoice1Id          string
+	AgendaChoice1Description string
+	AgendaChoice1Count       uint32
+	AgendaChoice1IsIgnore    bool
+	AgendaChoice1Bits        uint16
+	AgendaChoice1Progress    float64
+	AgendaChoice2Id          string
+	AgendaChoice2Description string
+	AgendaChoice2Count       uint32
+	AgendaChoice2IsIgnore    bool
+	AgendaChoice2Bits        uint16
+	AgendaChoice2Progress    float64
+	AgendaChoice3Id          string
+	AgendaChoice3Description string
+	AgendaChoice3Count       uint32
+	AgendaChoice3IsIgnore    bool
+	AgendaChoice3Bits        uint16
+	AgendaChoice3Progress    float64
+	GetVoteInfoResult        *dcrjson.GetVoteInfoResult
+	VotingStarted            bool
+	VotingDefined            bool
+	VotingLockedin           bool
+	VotingFailed             bool
+	ChoiceIds                []string
+	ChoicePercentages        []float64
 }
 
 // Contains a certain block version's count of blocks in the
@@ -166,10 +187,14 @@ var templateInformation = &templateFields{
 }
 
 var funcMap = template.FuncMap{
-	"minus": minus,
+	"minus":   minus,
+	"minus64": minus64,
 }
 
 func minus(a, b int) int {
+	return a - b
+}
+func minus64(a, b int64) int64 {
 	return a - b
 }
 
@@ -314,44 +339,42 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	// Each element in each dataset needs counts for each interval
 	// For example:
 	// version 1: [100, 200, 300, 400]
-	voteVersionIntervalResults := make([]intervalVersionCounts, 0)
-	voteVersionLabels := make([]string, len(stakeVersionInfo.Intervals))
+	stakeVersionIntervalResults := make([]intervalVersionCounts, 0)
+	stakeVersionLabels := make([]string, len(stakeVersionInfo.Intervals))
 	for i := len(stakeVersionInfo.Intervals) - 1; i >= 0; i-- {
 		interval := stakeVersionInfo.Intervals[i]
-		voteVersionLabels[len(stakeVersionInfo.Intervals)-1-i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
-		for _, voteVersion := range interval.VoteVersions {
+		stakeVersionLabels[len(stakeVersionInfo.Intervals)-1-i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
+		for _, stakeVersion := range interval.VoteVersions {
 			found := false
-			for k, result := range voteVersionIntervalResults {
-				if result.Version == voteVersion.Version {
-					voteVersionIntervalResults[k].Count[len(stakeVersionInfo.Intervals)-1-i] = voteVersion.Count
-					voteVersionIntervalResults[k].Version = voteVersion.Version
+			for k, result := range stakeVersionIntervalResults {
+				if result.Version == stakeVersion.Version {
+					stakeVersionIntervalResults[k].Count[len(stakeVersionInfo.Intervals)-1-i] = stakeVersion.Count
+					stakeVersionIntervalResults[k].Version = stakeVersion.Version
 					found = true
 				}
 			}
-			if !found && voteVersion.Count > minimumNeededVoteVersions {
-				voteVersionIntervalResult := intervalVersionCounts{}
-				voteVersionIntervalResult.Count = make([]uint32, len(stakeVersionInfo.Intervals))
-				voteVersionIntervalResult.Count[len(stakeVersionInfo.Intervals)-1-i] = voteVersion.Count
-				voteVersionIntervalResult.Version = voteVersion.Version
-				voteVersionIntervalResults = append(voteVersionIntervalResults, voteVersionIntervalResult)
+			if !found && stakeVersion.Count > minimumNeededVoteVersions {
+				stakeVersionIntervalResult := intervalVersionCounts{}
+				stakeVersionIntervalResult.Count = make([]uint32, len(stakeVersionInfo.Intervals))
+				stakeVersionIntervalResult.Count[len(stakeVersionInfo.Intervals)-1-i] = stakeVersion.Count
+				stakeVersionIntervalResult.Version = stakeVersion.Version
+				stakeVersionIntervalResults = append(stakeVersionIntervalResults, stakeVersionIntervalResult)
 			}
 		}
 	}
-	voteVersionLabels[len(stakeVersionInfo.Intervals)-1] = "Current Interval"
-	templateInformation.StakeVersionIntervalResults = voteVersionIntervalResults
-
+	stakeVersionLabels[len(stakeVersionInfo.Intervals)-1] = "Current Interval"
+	templateInformation.StakeVersionIntervalResults = stakeVersionIntervalResults
 	templateInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval*5 - int64(missedVotesStakeInterval)
-	templateInformation.StakeVersionIntervalLabels = voteVersionLabels
-
+	templateInformation.StakeVersionIntervalLabels = stakeVersionLabels
 	templateInformation.StakeVersionCurrent = block.StakeVersion
 
 	mostPopularVersion := uint32(0)
 	mostPopularVersionCount := uint32(0)
-	for _, voteVersion := range stakeVersionInfo.Intervals[0].VoteVersions {
-		if voteVersion.Version != templateInformation.StakeVersionCurrent &&
-			voteVersion.Count > mostPopularVersionCount {
-			mostPopularVersion = voteVersion.Version
-			mostPopularVersionCount = voteVersion.Count
+	for _, stakeVersion := range stakeVersionInfo.Intervals[0].VoteVersions {
+		if stakeVersion.Version != templateInformation.StakeVersionCurrent &&
+			stakeVersion.Count > mostPopularVersionCount {
+			mostPopularVersion = stakeVersion.Version
+			mostPopularVersionCount = stakeVersion.Count
 		}
 	}
 	if mostPopularVersion <= templateInformation.StakeVersionCurrent {
@@ -377,39 +400,32 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	// Set Quorum to true since we got a valid response back from GetVoteInfoResult
 	templateInformation.Quorum = true
 
-	/*
-		// These fields can be refactored out of GetVoteInfoResults
-		templateInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
-		templateInformation.QuorumVotedPercentage = toFixed(float64(getVoteInfo.Agendas[0].QuorumProgress*100), 2)
-		templateInformation.QuorumAbstainedPercentage = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
-		templateInformation.AgendaID = getVoteInfo.Agendas[0].Id
-		templateInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
-		// XX instread of static linking there should be itteration trough the Choices array
-		templateInformation.AgendaChoice1Id = getVoteInfo.Agendas[0].Choices[0].Id
-		templateInformation.AgendaChoice1Description = getVoteInfo.Agendas[0].Choices[0].Description
-		templateInformation.AgendaChoice1Count = getVoteInfo.Agendas[0].Choices[0].Count
-		templateInformation.AgendaChoice1IsIgnore = getVoteInfo.Agendas[0].Choices[0].IsIgnore
-		templateInformation.AgendaChoice1Bits = getVoteInfo.Agendas[0].Choices[0].Bits
-		templateInformation.AgendaChoice1Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
-		templateInformation.AgendaChoice2Id = getVoteInfo.Agendas[0].Choices[1].Id
-		templateInformation.AgendaChoice2Description = getVoteInfo.Agendas[0].Choices[1].Description
-		templateInformation.AgendaChoice2Count = getVoteInfo.Agendas[0].Choices[1].Count
-		templateInformation.AgendaChoice2IsIgnore = getVoteInfo.Agendas[0].Choices[1].IsIgnore
-		templateInformation.AgendaChoice2Bits = getVoteInfo.Agendas[0].Choices[1].Bits
-		templateInformation.AgendaChoice2Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[1].Progress*100), 2)
-		templateInformation.AgendaChoice3Id = getVoteInfo.Agendas[0].Choices[2].Id
-		templateInformation.AgendaChoice3Description = getVoteInfo.Agendas[0].Choices[2].Description
-		templateInformation.AgendaChoice3Count = getVoteInfo.Agendas[0].Choices[2].Count
-		templateInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsIgnore
-		templateInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
-		templateInformation.AgendaChoice3Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[2].Progress*100), 2)
+	// These fields can be refactored out of GetVoteInfoResults
+	templateInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
+	templateInformation.QuorumVotedPercentage = toFixed(float64(getVoteInfo.Agendas[0].QuorumProgress*100), 2)
+	templateInformation.QuorumAbstainedPercentage = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
+	templateInformation.AgendaID = getVoteInfo.Agendas[0].Id
+	templateInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
+	// XX instread of static linking there should be itteration trough the Choices array
+	templateInformation.AgendaChoice1Id = getVoteInfo.Agendas[0].Choices[0].Id
+	templateInformation.AgendaChoice1Description = getVoteInfo.Agendas[0].Choices[0].Description
+	templateInformation.AgendaChoice1Count = getVoteInfo.Agendas[0].Choices[0].Count
+	templateInformation.AgendaChoice1IsIgnore = getVoteInfo.Agendas[0].Choices[0].IsIgnore
+	templateInformation.AgendaChoice1Bits = getVoteInfo.Agendas[0].Choices[0].Bits
+	templateInformation.AgendaChoice1Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
+	templateInformation.AgendaChoice2Id = getVoteInfo.Agendas[0].Choices[1].Id
+	templateInformation.AgendaChoice2Description = getVoteInfo.Agendas[0].Choices[1].Description
+	templateInformation.AgendaChoice2Count = getVoteInfo.Agendas[0].Choices[1].Count
+	templateInformation.AgendaChoice2IsIgnore = getVoteInfo.Agendas[0].Choices[1].IsIgnore
+	templateInformation.AgendaChoice2Bits = getVoteInfo.Agendas[0].Choices[1].Bits
+	templateInformation.AgendaChoice2Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[1].Progress*100), 2)
+	templateInformation.AgendaChoice3Id = getVoteInfo.Agendas[0].Choices[2].Id
+	templateInformation.AgendaChoice3Description = getVoteInfo.Agendas[0].Choices[2].Description
+	templateInformation.AgendaChoice3Count = getVoteInfo.Agendas[0].Choices[2].Count
+	templateInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsIgnore
+	templateInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
+	templateInformation.AgendaChoice3Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[2].Progress*100), 2)
 
-
-		templateInformation.VoteStartHeight = getVoteInfo.StartHeight
-		templateInformation.VoteEndHeight = getVoteInfo.EndHeight
-		templateInformation.VoteBlockLeft = getVoteInfo.EndHeight - getVoteInfo.CurrentHeight
-		templateInformation.TotalVotes = getVoteInfo.TotalVotes
-	*/
 	templateInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "started"
 	templateInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "defined"
 	templateInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
