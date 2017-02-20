@@ -197,7 +197,7 @@
 	<tr><td>Network <strong>Block</strong> Version:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedBlockVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedBlockVersion}}</span>{{end}}</strong></td></tr>
 	<tr><td>Most popular block version (v{{.MostPopularBlockVersion}}) percentage:</td><td><strong>{{if .BlockVersionSuccess}}<span style="color:#41BF53">{{.MostPopularBlockVersionPercentage}}%</span>{{else}}<span style="color:#FD714A">{{.MostPopularBlockVersionPercentage}}%</span>{{end}}</td></tr>
 	<tr><td>Network <strong>Stake</strong> Version:</td><td><strong>{{if .StakeVersionSuccess}}<span style="color:#41BF53">v{{.CurrentCalculatedStakeVersion}}</span>{{else}}<span style="color:#FD714A">v{{.CurrentCalculatedStakeVersion}}</span>{{end}}</strong></td></tr>
-	<tr><td>Most popular stake version (v{{.MostPopularStakeVersion}}):</td><td><span style="color:#FD714A;">{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</span></td></tr>
+	<tr><td>Most popular stake version (v{{.CurrentCalculatedStakeVersion}}):</td><td><span style="color:#FD714A;">{{.MostPopularStakeVersionCount}} / {{.StakeVersionWindowVoteTotal}}</span></td></tr>
 	</tbody>
 	</table>
         </div>
