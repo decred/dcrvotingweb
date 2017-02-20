@@ -60,74 +60,57 @@ type templateFields struct {
 	BlockVersionRejectThreshold int
 	// BlockVersionCurrent is the currently calculated block version based on the rolling window.
 	BlockVersionCurrent int32
-	// BlockVersionMostPopular
+	// BlockVersionMostPopular is the calculated most popular block version that is NOT current version.
 	BlockVersionMostPopular int32
-	// BlockVersionMostPopularPercentage
+	// BlockVersionMostPopularPercentage is the percentage of the most popular block version
 	BlockVersionMostPopularPercentage float64
 
 	// StakeVersion Information
 	//
-	// StakeVersionThreshold is the activeNetParams of
+	// StakeVersionThreshold is the activeNetParams of StakeVersion threshold made into a float for display
 	StakeVersionThreshold float64
-	// StakeVersionWindowLength is the activeNetParams of
+	// StakeVersionWindowLength is the activeNetParams of StakeVersionInterval
 	StakeVersionWindowLength int64
-	//StakeVersionWindowVoteTotal is the activeNetParams of
+	// StakeVersionWindowVoteTotal is the number of total possible votes in the windows.
+	// It is reduced by number of observed missed votes thus far in the window.
 	StakeVersionWindowVoteTotal int64
-	//StakeVersionWindowStartHeight
-	StakeVersionWindowStartHeight int64
-	//StakeVersionWindowEndHeight
-	StakeVersionWindowEndHeight int
-	// StakeVersionIntervalLabels
+	// StakeVersionIntervalLabels are labels for the bar graph for each of the past 4 fixed stake version intervals.
 	StakeVersionIntervalLabels []string
-	//StakeVersionVotesRemaining
+	// StakeVersionVotesRemaining is the calculated number of votes possibly remaining in the current stake version interval.
 	StakeVersionVotesRemaining int64
-	//StakeVersionsIntervals
+	// StakeVersionsIntervals  is the data received from GetStakeVersionInfo json-rpc call to dcrd.
 	StakeVersionsIntervals []dcrjson.VersionInterval
-	//StakeVersionIntervalResults
+	// StakeVersionIntervalResults is the data after being analyzed for graph displaying.
 	StakeVersionIntervalResults []intervalVersionCounts
-	//StakeVersionHeights
-	StakeVersionHeights []int64
-	// StakeVersionSuccess
+	// StakeVersionSuccess is a bool for whether or not the StakeVersion has rolled over in this window.
 	StakeVersionSuccess bool
-	// StakeVersionCurrent
+	// StakeVersionCurrent is the StakeVersion that has been seen in the recent block header.
 	StakeVersionCurrent uint32
-	// StakeVersionMostPopular
+	// StakeVersionMostPopular is the most popular stake version that is NOT the current stake version.
 	StakeVersionMostPopular uint32
-	// StakeVersionMostPopularCount
+	// StakeVersionMostPopularCount is the count of most popular stake versions.
 	StakeVersionMostPopularCount uint32
-	// StakeVersionMostPopularPercentage
+	// StakeVersionMostPopularPercentage is the percentage of most popular stake versions out of possible votes.
 	StakeVersionMostPopularPercentage float64
-	// StakeVersionRequiredVotes
+	// StakeVersionRequiredVotes is the number of stake version votes required for the stake version to change.
 	StakeVersionRequiredVotes int32
 
 	// Quorum and Rule Change Information
-
-	// RuleChangeActivationThreshold is the activeNetParams of
-	RuleChangeActivationThreshold int32
-	// RuleChangeActivationQuorum is the activeNetParams of
+	// RuleChangeActivationQuorum is the activeNetParams of RuleChangeActivationQuorum
 	RuleChangeActivationQuorum uint32
-	// RuleChangeActivationMultiplier is the activeNetParams of
-	RuleChangeActivationMultiplier uint32
-	// RuleChangeActivationDivisor is the activeNetParams of
-	RuleChangeActivationDivisor uint32
-	// RuleChangeActivationWindow is the activeNetParams of
-	RuleChangeActivationWindow uint32
-	// RuleChangeActivationWindowVotes
-	RuleChangeActivationWindowVotes uint32
-
 	// Quorum is a bool that is true if needed number of yes/nos were
-	// received (>10%)
+	// received (>10%).
 	Quorum bool
-	// QuorumThreshold
+	// QuorumThreshold is the percentage required for the RuleChange to become active.
 	QuorumThreshold float64
-	// QuorumVotes
-	QuorumVotes int
-	// QuorumVotedPercentage
+	// QuorumVotedPercentage is the percentage of progress toward quorum XXX needs to be fixed.
 	QuorumVotedPercentage float64
-	// QuorumAbstainedPercentage
+	// QuorumAbstainedPercentage is the abstain percentage.
 	QuorumAbstainedPercentage float64
-	// QuorumExpirationDate
-	QuorumExpirationDate     string
+	// QuorumExpirationDate is the date in which the agenda is scheduled to expire.
+	QuorumExpirationDate string
+	// All of these are already contained in GetVoteInfoResult, so we need to refactor the html
+	// to properly use these.
 	AgendaID                 string
 	AgendaDescription        string
 	AgendaChoice1Id          string
@@ -148,13 +131,16 @@ type templateFields struct {
 	AgendaChoice3IsIgnore    bool
 	AgendaChoice3Bits        uint16
 	AgendaChoice3Progress    float64
-	GetVoteInfoResult        *dcrjson.GetVoteInfoResult
-	VotingStarted            bool
-	VotingDefined            bool
-	VotingLockedin           bool
-	VotingFailed             bool
-	ChoiceIds                []string
-	ChoicePercentages        []float64
+	// These are bools to determine what state a given agenda is at.  These need to be refactored with stuff above.
+	VotingStarted  bool
+	VotingDefined  bool
+	VotingLockedin bool
+	VotingFailed   bool
+	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
+	GetVoteInfoResult *dcrjson.GetVoteInfoResult
+	// Choice Ids and percentages that have been scrubbed for graphing.
+	ChoiceIds         []string
+	ChoicePercentages []float64
 }
 
 // Contains a certain block version's count of blocks in the
@@ -178,12 +164,8 @@ var templateInformation = &templateFields{
 	StakeVersionWindowLength: activeNetParams.StakeVersionInterval,
 	StakeVersionThreshold:    toFixed(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)*100, 0),
 	// RuleChange params
-	RuleChangeActivationQuorum:      activeNetParams.RuleChangeActivationQuorum,
-	RuleChangeActivationMultiplier:  activeNetParams.RuleChangeActivationMultiplier,
-	RuleChangeActivationDivisor:     activeNetParams.RuleChangeActivationDivisor,
-	RuleChangeActivationWindow:      activeNetParams.RuleChangeActivationInterval,
-	RuleChangeActivationWindowVotes: activeNetParams.RuleChangeActivationInterval * uint32(activeNetParams.TicketsPerBlock),
-	QuorumThreshold:                 float64(activeNetParams.RuleChangeActivationQuorum) / float64(activeNetParams.RuleChangeActivationInterval*uint32(activeNetParams.TicketsPerBlock)) * 100,
+	RuleChangeActivationQuorum: activeNetParams.RuleChangeActivationQuorum,
+	QuorumThreshold:            float64(activeNetParams.RuleChangeActivationQuorum) / float64(activeNetParams.RuleChangeActivationInterval*uint32(activeNetParams.TicketsPerBlock)) * 100,
 }
 
 var funcMap = template.FuncMap{
