@@ -301,7 +301,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 	missedVotesStakeInterval := 0
 	for _, stakeVersionResult := range heightstakeVersionResults.StakeVersions {
-		missedVotesStakeInterval += int(activeNetParams.TicketsPerBlock) - len(stakeVersionResult.VoterVersions)
+		missedVotesStakeInterval += int(activeNetParams.TicketsPerBlock) - len(stakeVersionResult.Votes)
 	}
 
 	numberOfIntervals := 4
