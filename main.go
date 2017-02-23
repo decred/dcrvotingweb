@@ -136,6 +136,7 @@ type templateFields struct {
 	VotingDefined  bool
 	VotingLockedin bool
 	VotingFailed   bool
+	QuorumArchived bool
 	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
 	GetVoteInfoResult *dcrjson.GetVoteInfoResult
 	// Choice Ids and percentages that have been scrubbed for graphing.
@@ -408,11 +409,11 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
 	templateInformation.AgendaChoice3Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[2].Progress*100), 2)
 
-	templateInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "started"
-	templateInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "defined"
+	templateInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "defined"
+	templateInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "started"
 	templateInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
 	templateInformation.VotingFailed = getVoteInfo.Agendas[0].Status == "failed"
-
+	templateInformation.QuorumArchived = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2) >= 100
 	choiceIds := make([]string, len(getVoteInfo.Agendas[0].Choices))
 	choicePercentages := make([]float64, len(getVoteInfo.Agendas[0].Choices))
 	for i, choice := range getVoteInfo.Agendas[0].Choices {

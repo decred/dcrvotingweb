@@ -2,16 +2,25 @@ $('.radial-progress').click(function() {
 $('#boxpow').toggleClass("hidden");
 $('#boxpos').addClass( "hidden" );
 $('#boxstake').addClass( "hidden" );
+  $('html, body').animate({
+        scrollTop: $("#boxpow").offset().top
+    }, 600);
 });
 $('.radial-progress2').click(function() {
 $('#boxpos').toggleClass("hidden");
 $('#boxpow').addClass( "hidden" );
 $('#boxstake').addClass( "hidden" );
+  $('html, body').animate({
+        scrollTop: $("#boxpos").offset().top
+    }, 600);
 });
 $('.radial-progress3').click(function() {
 $('#boxstake').toggleClass("hidden");
 $('#boxpos').addClass( "hidden" );
 $('#boxpow').addClass( "hidden" );
+  $('html, body').animate({
+        scrollTop: $("#boxpos").offset().top
+    }, 600);
 });
 $(document).keydown(function(event){
     var display = "0";
