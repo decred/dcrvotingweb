@@ -158,7 +158,10 @@
                                 {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset"><strong>STARTS IN<br />{{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}} BLOCKS</strong></span><br /><br />{{end}}
                                 {{if .VotingStarted}}<span class="textinset" style="font-size:1em;"><p><span style="color:#41BF53"><strong>{{.AgendaChoice3Count}} {{.AgendaChoice3Id}}</strong></span> | <span style="color:#FD714A"><strong>{{.AgendaChoice2Count}} {{.AgendaChoice2Id}}</strong></span><br />
                                 {{.AgendaChoice1Count}} {{.AgendaChoice1Id}}<br />
-                                 Quorum Progress: {{.QuorumVotedPercentage }}%</p></span>{{end}}
+                                {{if .QuorumAchieved}}<span style="color:#41BF53;font-size:0.6em;">Quorum achieved</span>
+                                {{else}}
+                                 <span style="font-size:0.6em;">Quorum Progress: {{.QuorumVotedPercentage }}%</span>{{end}}
+                                 </p>{{end}}
                                 <!-- <span class="bigpercentvoting">{{if .VotingStarted}}{{end}}</span><br /> -->
                                 {{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{end}}
                                 {{if .VotingLockedin}}<p class="textinset"><br /><br /><br /><br /></p><span class="label label-success">LOCKED IN</span>{{end}}
@@ -353,9 +356,15 @@
             </div>
           </div>
           <div style="clear:both;">&nbsp;</div>
-          {{if .VotingStarted}}<div class="alert alert-danger">
-            <strong>Danger!</strong> We have yet not reached the minimum Quorum of 10% actively made votes.
-          </div>{{end}}
+          {{if .QuorumAchieved}}
+          <div class="alert alert-success">
+            <strong>Success!</strong> We have reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.
+          </div>
+          {{else}}
+          <div class="alert alert-danger">
+            <strong>Danger!</strong> We have yet not reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.
+          </div>
+          {{end}}
         </div>
         <div class="col-md-5 text-right">
 	<p class="bg-primary inco" style="padding:15px;font-size:12px;">{{.AgendaDescription}}</p>

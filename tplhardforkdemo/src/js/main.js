@@ -19,7 +19,7 @@ $('#boxstake').toggleClass("hidden");
 $('#boxpos').addClass( "hidden" );
 $('#boxpow').addClass( "hidden" );
   $('html, body').animate({
-        scrollTop: $("#boxpos").offset().top
+        scrollTop: $("#boxstake").offset().top
     }, 600);
 });
 $(document).keydown(function(event){
