@@ -356,6 +356,7 @@
             </div>
           </div>
           <div style="clear:both;">&nbsp;</div>
+        {{if .VotingStarted}}
           {{if .QuorumAchieved}}
           <div class="alert alert-success">
             <strong>Success!</strong> We have reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.
@@ -365,6 +366,7 @@
             <strong>Danger!</strong> We have yet not reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.
           </div>
           {{end}}
+        {{end}}
         </div>
         <div class="col-md-5 text-right">
 	<p class="bg-primary inco" style="padding:15px;font-size:12px;">{{.AgendaDescription}}</p>
