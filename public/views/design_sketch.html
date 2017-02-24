@@ -60,8 +60,8 @@
 
 
 <div class="wrapper" style="margin-top:60px;">
-	
                 <div class="col-md-5">
+<!-- Begin Circle 1 - PoW -->	
                         <div class="radial-progress">
                                 <div class="circle">
                                         <div class="mask full">
@@ -73,18 +73,25 @@
                                         </div>
                                         <div class="shadow"></div>
                                 </div>
-                                <div class="inset text-center" style="padding-top:12px"><strong>PoW</strong><br /><span class="bigpercent">{{.BlockVersionMostPopularPercentage}}%</span>
-				<br />{{if .BlockVersionSuccess}}v{{.BlockVersionCurrent}}{{else}}<span class="error">v{{.BlockVersionCurrent}}</span>{{end}}<br />
-                                {{if .BlockVersionSuccess}}
+                                <!-- Begin Circle 1 - Content -->
+                                <div class="inset text-center" style="padding-top:12px"><strong>PoW</strong><br />
+                                <span class="bigpercent">{{.BlockVersionMostPopularPercentage}}%</span><br />
+                              {{if .BlockVersionSuccess}}
+                                v{{.BlockVersionCurrent}}
+                              {{else}}<span class="error">v{{.BlockVersionCurrent}}</span>{{end}}<br />
+                              {{if .BlockVersionSuccess}}
                                 <span class="label label-success">FINISHED</span>
-                                {{else}}
+                              {{else}}
                                 <span class="label label-default">IN PROGRESS</span>
-                                {{end}}
-				<p class="textinset">
-                                <small><strong>Current Version:</strong> v{{.BlockVersionMostPopular}}<br /><strong>Rolling Window:</strong> {{.BlockVersionWindowLength}} Blocks<br /><strong>Reject Threshold:</strong> {{.BlockVersionRejectThreshold}}%</small>
+                              {{end}}
+				                        <p class="textinset">
+                                <small><strong>Current Version:</strong> v{{.BlockVersionMostPopular}}<br />
+                                <strong>Rolling Window:</strong> {{.BlockVersionWindowLength}} Blocks<br />
+                                <strong>Reject Threshold:</strong> {{.BlockVersionRejectThreshold}}%</small>
                                 </p> 
-				</div>
-                        </div>
+				                        </div>
+                        </div><!-- End Circle 1 - PoW -->
+<!-- Begin Alert Box -->
                           {{if .BlockVersionSuccess}}<div class="alert alert-success">
                             Success! v{{.BlockVersionMostPopular}} had {{.BlockVersionMostPopularPercentage}}% of votes in the latest rolling window and therefore it is the current network block version (v{{.BlockVersionCurrent}})
                           </div>
@@ -92,8 +99,10 @@
                             v{{.BlockVersionCurrent}} is still the current block version.  But v{{.BlockVersionMostPopular}} has received {{.BlockVersionMostPopularPercentage}}% of the votes in the latest rolling window.  Be prepared to upgrade if it reaches the threshold.
                           </div>
                           {{end}}
-                </div>
+                </div><!-- End Col -->
+
                 <div class="col-md-5">
+<!-- Begin Circle 2 - PoS -->
                         <div class="radial-progress2">
                                 <div class="circle2">
                                         <div class="mask full">
@@ -109,7 +118,7 @@
                                 <span class="bigpercent">
                                 {{if .StakeVersionSuccess}}100%{{else}}{{.StakeVersionMostPopularPercentage}}%{{end}}
                                 </span>
-				<br />{{if .StakeVersionSuccess}}v{{.StakeVersionCurrent}}{{else}}<span class="error">v{{.StakeVersionCurrent}}</span>{{end}}<br />
+			                          <br />{{if .StakeVersionSuccess}}v{{.StakeVersionCurrent}}{{else}}<span class="error">v{{.StakeVersionCurrent}}</span>{{end}}<br />
                                 {{if .StakeVersionSuccess}}
                                 <span class="label label-success">FINISHED</span><br />
                                 {{else}}
@@ -118,8 +127,9 @@
 			        <p class="textinset">
                                 <small><strong>Current Block:</strong> {{.BlockHeight}}<br /><strong>Static Interval:</strong> {{.StakeVersionWindowLength}} Blocks<br /><strong>Upgrade Threshold:</strong> {{.StakeVersionThreshold}}%<br /></small>
                                 </p>
-				</div>
-                        </div>
+				                        </div>
+                        </div><!-- End Circle 2 - PoS -->
+<!-- Begin Alert Box -->
                           {{if .StakeVersionSuccess}}
                           <div class="alert alert-success">
                             Success! v{{.StakeVersionCurrent}} has been set as the current stake version.
@@ -129,8 +139,10 @@
                             v{{.StakeVersionCurrent}} is still the current vote version.  But v{{.StakeVersionMostPopular}} has received {{.StakeVersionMostPopularCount}} / {{.StakeVersionWindowVoteTotal}} of the votes in the latest static window.  Be prepared to upgrade if it reaches the threshold.
                           </div>
                           {{end}}
-                </div>
+                </div><!-- End col -->
+  
                 <div class="col-md-5">
+<!-- Begin Circle 3 - Vote -->
                         <div class="radial-progress3">
                                 <div class="circle3">
                                         <div class="mask full">
@@ -146,7 +158,10 @@
                                 {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="textinset"><strong>STARTS IN<br />{{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}} BLOCKS</strong></span><br /><br />{{end}}
                                 {{if .VotingStarted}}<span class="textinset" style="font-size:1em;"><p><span style="color:#41BF53"><strong>{{.AgendaChoice3Count}} {{.AgendaChoice3Id}}</strong></span> | <span style="color:#FD714A"><strong>{{.AgendaChoice2Count}} {{.AgendaChoice2Id}}</strong></span><br />
                                 {{.AgendaChoice1Count}} {{.AgendaChoice1Id}}<br />
-                                 Quorum Progress: {{.QuorumVotedPercentage }}%</p></span>{{end}}
+                                {{if .QuorumAchieved}}<span style="color:#41BF53;font-size:0.6em;">Quorum achieved</span>
+                                {{else}}
+                                 <span style="font-size:0.6em;">Quorum Progress: {{.QuorumVotedPercentage }}%</span>{{end}}
+                                 </p>{{end}}
                                 <!-- <span class="bigpercentvoting">{{if .VotingStarted}}{{end}}</span><br /> -->
                                 {{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{end}}
                                 {{if .VotingLockedin}}<p class="textinset"><br /><br /><br /><br /></p><span class="label label-success">LOCKED IN</span>{{end}}
@@ -341,9 +356,17 @@
             </div>
           </div>
           <div style="clear:both;">&nbsp;</div>
-          {{if .VotingStarted}}<div class="alert alert-danger">
-            <strong>Danger!</strong> We have yet not reached the minimum Quorum of 10% actively made votes.
-          </div>{{end}}
+        {{if .VotingStarted}}
+          {{if .QuorumAchieved}}
+          <div class="alert alert-success">
+            <strong>Success!</strong> We have reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.
+          </div>
+          {{else}}
+          <div class="alert alert-danger">
+            <strong>Danger!</strong> We have yet not reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.
+          </div>
+          {{end}}
+        {{end}}
         </div>
         <div class="col-md-5 text-right">
 	<p class="bg-primary inco" style="padding:15px;font-size:12px;">{{.AgendaDescription}}</p>
