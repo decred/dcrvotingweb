@@ -586,16 +586,10 @@
           backgroundColor: '#337ab7'
         }, {
           type: 'horizontalBar',
-          label: '{{.AgendaChoice3Id}}',
+          label: 'Voted',
           labelFontColor : "#fff",
-          data: [{{.AgendaChoice3Progress}}],
+          data: [{{.AgendaChoice3Progress}}+{{.AgendaChoice2Progress}}],
           backgroundColor: '#41BF53'
-        }, {
-          type: 'horizontalBar',
-          label: '{{.AgendaChoice2Id}}',
-          labelFontColor : "#fff",
-          data: [{{.AgendaChoice2Progress}}],
-          backgroundColor: '#FD714A'
         }] 
       },
       options: {
