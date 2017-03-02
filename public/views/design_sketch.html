@@ -359,7 +359,8 @@
         {{if .VotingStarted}}
           {{if .QuorumAchieved}}
           <div class="alert alert-success">
-            <strong>Success!</strong> We have reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.
+            <strong>Success!</strong> We have reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.<br />
+            There are <strong>{{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}}</strong> blocks left in the vote.
           </div>
           {{else}}
           <div class="alert alert-danger">
@@ -385,7 +386,7 @@
 	<tr><td>Choice ID:</td><td><strong>{{.AgendaChoice1Id}}</strong></td></tr>
 	<tr><td>Choice Description:</td><td><strong>{{.AgendaChoice1Description}}</strong></td></tr>
 	<tr><td>Votes Received:</td><td><strong>{{.AgendaChoice1Count}}</strong></td></tr>
-  <tr><td>Vote Bit:</td><td><strong>{{.AgendaChoice1Bits}}</strong></td></tr>
+  <tr><td>Vote Value:</td><td><strong>{{.AgendaChoice1Bits}}</strong></td></tr>
 	</tbody>
 	</table>
 
@@ -395,7 +396,7 @@
 	<tr><td>Choice ID:</td><td><strong>{{.AgendaChoice2Id}}</strong></td></tr>
 	<tr><td>Choice Description:</td><td><strong>{{.AgendaChoice2Description}}</strong></td></tr>
 	<tr><td>Votes Received:</td><td><strong>{{.AgendaChoice2Count}}</strong></td></tr>
-  <tr><td>Vote Bit:</td><td><strong>{{.AgendaChoice2Bits}}</strong></td></tr>
+  <tr><td>Vote Value:</td><td><strong>{{.AgendaChoice2Bits}}</strong></td></tr>
 	</tbody>
 	</table>
 
@@ -405,7 +406,7 @@
 	<tr><td>Choice ID:</td><td><strong>{{.AgendaChoice3Id}}</strong></td></tr>
 	<tr><td>Choice Description:</td><td><strong>{{.AgendaChoice3Description}}</strong></td></tr>
 	<tr><td>Votes Received:</td><td><strong>{{.AgendaChoice3Count}}</strong></td></tr>
-  <tr><td>Vote Bit:</td><td><strong>{{.AgendaChoice3Bits}}</strong></td></tr>
+  <tr><td>Vote Value:</td><td><strong>{{.AgendaChoice3Bits}}</strong></td></tr>
 	</tbody>
 	</table>
   {{end}}
