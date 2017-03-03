@@ -111,6 +111,7 @@ type templateFields struct {
 	QuorumExpirationDate string
 	// All of these are already contained in GetVoteInfoResult, so we need to refactor the html
 	// to properly use these.
+	AgendaLockedinPercentage float64
 	AgendaID                 string
 	AgendaDescription        string
 	AgendaChoice1Id          string
@@ -389,6 +390,13 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.QuorumAbstainedPercentage = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
 	templateInformation.AgendaID = getVoteInfo.Agendas[0].Id
 	templateInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
+
+	// Status LockedIn Circle3 Ring Indicates BlocksLeft until old versions gets denied
+	lockedinBlocksleft := float64(getVoteInfo.EndHeight) - float64(getVoteInfo.CurrentHeight)
+	lockedinWindowsize := float64(getVoteInfo.EndHeight) - float64(getVoteInfo.StartHeight)
+	lockedinPercentage := lockedinWindowsize / 100
+	templateInformation.AgendaLockedinPercentage = toFixed(float64(lockedinBlocksleft)/float64(lockedinPercentage), 2)
+
 	// XX instread of static linking there should be itteration trough the Choices array
 	templateInformation.AgendaChoice1Id = getVoteInfo.Agendas[0].Choices[0].Id
 	templateInformation.AgendaChoice1Description = getVoteInfo.Agendas[0].Choices[0].Description
