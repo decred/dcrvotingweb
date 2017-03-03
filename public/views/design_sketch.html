@@ -165,6 +165,7 @@
                                 <!-- <span class="bigpercentvoting">{{if .VotingStarted}}{{end}}</span><br /> -->
                                 {{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{end}}
                                 {{if .VotingLockedin}}<p class="textinset"><br /><br /><br /><br /></p><span class="label label-success">LOCKED IN</span>{{end}}
+                                {{if .VotingFailed}}<p class="textinset"><br /><br /><br /><br /></p><span class="label label-danger">VOTING FAILED</span>{{end}}
                                 {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
 				                        <p class="textinset">
                                 <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting interval:</strong><br />Block {{.GetVoteInfoResult.StartHeight}}-{{.GetVoteInfoResult.EndHeight}}</small>
@@ -183,6 +184,14 @@
                           {{if .VotingStarted}}<div class="alert alert-success">
                             PoW v{{.BlockVersionCurrent}} &hearts; PoS v{{.StakeVersionCurrent}}<br />
 <strong>PoW and PoS miners have upgraded to v{{.StakeVersionCurrent}}.  There are {{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}} blocks left in the vote.</strong>
+                          </div>
+                          {{end}}
+                          {{if .VotingLockedin}}<div class="alert alert-success">
+                            The vote has passed! The new rules will be activated in <strong>{{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}}</strong> blocks.  All nodes <strong>MUST</strong> be upgraded before that point or they will be forked from the network.
+                          </div>
+                          {{end}}
+                          {{if .VotingFailed}}<div class="alert alert-danger">
+                            A majority no vote has been achieved.  The new rules associated with the agenda will <strong>NOT</strong> be activated.
                           </div>
                           {{end}}
 		</div><!-- END CYRCLE OVERVIEW -->
@@ -216,15 +225,6 @@
 	</table>
         </div>
   </div><!-- BOX AGENDA END -->
-
-
-
-
-
-
-
-
-
 
 
 <div id="boxpow" class="hidden">
@@ -643,7 +643,7 @@ less.refreshStyles();
 var transform_styles = ['-webkit-transform', '-ms-transform', 'transform'];
 var pow_percent = '{{.BlockVersionMostPopularPercentage}}';
 var pos_percent = '{{if .StakeVersionSuccess}}100{{else}}{{.StakeVersionMostPopularPercentage}}{{end}}';
-var stake_percent = '{{if .VotingStarted}}{{.QuorumVotedPercentage}}{{else}}0{{end}}{{if .VotingLockedin}}100{{end}}';
+var stake_percent = '{{if .VotingStarted}}{{.QuorumVotedPercentage}}{{else}}0{{end}}{{if .VotingLockedin}}100{{end}}{{if .VotingFailed}}100{{end}}';
 
 window.circle1 = function() {
 	var rotation = Math.floor(pow_percent * 1.8);
