@@ -344,12 +344,12 @@
           <!-- QUORUM HORIZONTAL BARCHART -->
           <div class="col-md-8">
               {{if .VotingStarted}}<h3>Quorum:</h3>{{end}}
-          <canvas id="voteQuorum" width="300" height="150" {{if .VotingStarted}}{{else}}style="display:none;"{{end}}></canvas>
+          <canvas id="voteQuorum" width="350" height="150" {{if .VotingStarted}}{{else}}style="display:none;"{{end}}></canvas>
           </div>
           <div class="col-md-7">
             {{if .VotingStarted}}<h3>Voting Progress:</h3>{{end}}
-            <div style="width: 300px; height: 300px;">
-            <canvas id="voteProgress" width="300" height="300" {{if .VotingStarted}}{{else}}style="display:none;"{{end}}></canvas>
+            <div style="width: 350px; height: 350px;">
+            <canvas id="voteProgress" width="350" height="350" {{if .VotingStarted}}{{else}}style="display:none;"{{end}}></canvas>
             </div>
           </div>
           <div style="clear:both;">&nbsp;</div>
