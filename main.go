@@ -397,6 +397,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	lockedinPercentage := lockedinWindowsize / 100
 	templateInformation.AgendaLockedinPercentage = toFixed(float64(lockedinBlocksleft)/float64(lockedinPercentage), 2)
 
+	// Recalculating Vote Percentages for Donut Chart
+
 	// XX instread of static linking there should be itteration trough the Choices array
 	templateInformation.AgendaChoice1Id = getVoteInfo.Agendas[0].Choices[0].Id
 	templateInformation.AgendaChoice1Description = getVoteInfo.Agendas[0].Choices[0].Description
@@ -422,11 +424,16 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
 	templateInformation.VotingFailed = getVoteInfo.Agendas[0].Status == "failed"
 	templateInformation.QuorumAchieved = float64(getVoteInfo.Agendas[0].QuorumProgress) == 1
+
 	choiceIds := make([]string, len(getVoteInfo.Agendas[0].Choices))
 	choicePercentages := make([]float64, len(getVoteInfo.Agendas[0].Choices))
 	for i, choice := range getVoteInfo.Agendas[0].Choices {
-		choiceIds[i] = choice.Id
-		choicePercentages[i] = choice.Progress
+		if choice.IsIgnore {
+
+		} else {
+			choiceIds[i] = choice.Id
+			choicePercentages[i] = toFixed(choice.Progress*100, 2)
+		}
 	}
 	templateInformation.ChoiceIds = choiceIds
 	templateInformation.ChoicePercentages = choicePercentages
