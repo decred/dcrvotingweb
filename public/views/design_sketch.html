@@ -317,11 +317,8 @@
       <!-- INTRODUCTION TEXT -->
       <div class="row">
         <div class="col-md-10">
-          <h3>Stake Voting{{if .VotingStarted}}
-                                <span class="label label-success">VOTING STARTED</span>
-                                {{else}}
-                                <span class="label label-warning">NOT STARTED</span>
-                                {{end}}</h3>
+          <h3>Stake Voting{{if .VotingLockedin}}<span class="label label-success">LOCKED IN</span>{{end}}{{if .VotingFailed}}<span class="label label-danger">FAILED</span>{{end}}{{if .VotingStarted}}
+                                <span class="label label-success">VOTING STARTED</span>{{end}}</h3>
           <p>
             After {{.BlockVersionRejectThreshold}}% of blocks in a rolling window 
             of {{.BlockVersionWindowLength}} blocks are the latest block version 
@@ -589,7 +586,7 @@
           label: 'Voted',
           labelFontColor : "#fff",
           data: [{{.AgendaChoice3Progress}}+{{.AgendaChoice2Progress}}],
-          backgroundColor: '#41BF53'
+          backgroundColor: '#073f6f'
         }] 
       },
       options: {
@@ -608,17 +605,20 @@
     new Chart(cta, quorumHorizontalConfig);
     var quorumDonutConfig = {
       type: 'doughnut',
+      options: {
+        responsive: true
+      },
       data: {
       labels: {{.ChoiceIds}},
         datasets: [{
           data: {{.ChoicePercentages}},
           backgroundColor: [
-            "#337ab7",
+            "#132f4b",
             "#FD714A",
             "#41BF53"
           ],
           hoverBackgroundColor: [
-            "#3e91d8",
+            "#132f4b",
             "#fa3804",
             "#74DE83"
           ],
