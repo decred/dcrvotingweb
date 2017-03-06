@@ -386,8 +386,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 
 	// These fields can be refactored out of GetVoteInfoResults
 	templateInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
-	templateInformation.QuorumVotedPercentage = toFixed(float64(getVoteInfo.Agendas[0].QuorumProgress*100), 2)
-	templateInformation.QuorumAbstainedPercentage = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
+	templateInformation.QuorumVotedPercentage = toFixed(getVoteInfo.Agendas[0].QuorumProgress*100, 2)
+	templateInformation.QuorumAbstainedPercentage = toFixed(getVoteInfo.Agendas[0].Choices[0].Progress*100, 2)
 	templateInformation.AgendaID = getVoteInfo.Agendas[0].Id
 	templateInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
 
@@ -395,7 +395,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	lockedinBlocksleft := float64(getVoteInfo.EndHeight) - float64(getVoteInfo.CurrentHeight)
 	lockedinWindowsize := float64(getVoteInfo.EndHeight) - float64(getVoteInfo.StartHeight)
 	lockedinPercentage := lockedinWindowsize / 100
-	templateInformation.AgendaLockedinPercentage = toFixed(float64(lockedinBlocksleft)/float64(lockedinPercentage), 2)
+	templateInformation.AgendaLockedinPercentage = toFixed(lockedinBlocksleft/lockedinPercentage, 2)
 
 	// Recalculating Vote Percentages for Donut Chart
 
@@ -405,25 +405,25 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.AgendaChoice1Count = getVoteInfo.Agendas[0].Choices[0].Count
 	templateInformation.AgendaChoice1IsIgnore = getVoteInfo.Agendas[0].Choices[0].IsIgnore
 	templateInformation.AgendaChoice1Bits = getVoteInfo.Agendas[0].Choices[0].Bits
-	templateInformation.AgendaChoice1Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[0].Progress*100), 2)
+	templateInformation.AgendaChoice1Progress = toFixed(getVoteInfo.Agendas[0].Choices[0].Progress*100, 2)
 	templateInformation.AgendaChoice2Id = getVoteInfo.Agendas[0].Choices[1].Id
 	templateInformation.AgendaChoice2Description = getVoteInfo.Agendas[0].Choices[1].Description
 	templateInformation.AgendaChoice2Count = getVoteInfo.Agendas[0].Choices[1].Count
 	templateInformation.AgendaChoice2IsIgnore = getVoteInfo.Agendas[0].Choices[1].IsIgnore
 	templateInformation.AgendaChoice2Bits = getVoteInfo.Agendas[0].Choices[1].Bits
-	templateInformation.AgendaChoice2Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[1].Progress*100), 2)
+	templateInformation.AgendaChoice2Progress = toFixed(getVoteInfo.Agendas[0].Choices[1].Progress*100, 2)
 	templateInformation.AgendaChoice3Id = getVoteInfo.Agendas[0].Choices[2].Id
 	templateInformation.AgendaChoice3Description = getVoteInfo.Agendas[0].Choices[2].Description
 	templateInformation.AgendaChoice3Count = getVoteInfo.Agendas[0].Choices[2].Count
 	templateInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsIgnore
 	templateInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
-	templateInformation.AgendaChoice3Progress = toFixed(float64(getVoteInfo.Agendas[0].Choices[2].Progress*100), 2)
+	templateInformation.AgendaChoice3Progress = toFixed(getVoteInfo.Agendas[0].Choices[2].Progress*100, 2)
 
 	templateInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "started"
 	templateInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "defined"
 	templateInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
 	templateInformation.VotingFailed = getVoteInfo.Agendas[0].Status == "failed"
-	templateInformation.QuorumAchieved = float64(getVoteInfo.Agendas[0].QuorumProgress) == 1
+	templateInformation.QuorumAchieved = getVoteInfo.Agendas[0].QuorumProgress == 1
 
 	choiceIds := make([]string, len(getVoteInfo.Agendas[0].Choices))
 	choicePercentages := make([]float64, len(getVoteInfo.Agendas[0].Choices))
