@@ -1,4 +1,8 @@
 package: github.com/decred/hardforkdemo
 import:
+- package: github.com/decred/dcrd
+  subpackages:
+  - chaincfg
+  - dcrjson
+  - wire
 - package: github.com/decred/dcrrpcclient
-
