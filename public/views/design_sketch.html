@@ -162,13 +162,16 @@
                                 {{else}}
                                  <span style="font-size:0.6em;">Quorum Progress: {{.QuorumVotedPercentage }}%</span>{{end}}
                                  </p>{{end}}
-                                <!-- <span class="bigpercentvoting">{{if .VotingStarted}}{{end}}</span><br /> -->
+                                {{if .VotingActive}}<span class="bigpercent">100%</span><br />
+                                <span class="textinset">Voting succeeded!  New rules active!</span>{{end}}
+
                                 {{if .VotingStarted}}<span class="label label-success">VOTING STARTED</span>{{end}}
                                 {{if .VotingLockedin}}<p class="textinset"><br />Please Upgrade your Software<br /><strong>{{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}}</strong> blocks left<br /><br /></p><span class="label label-success">LOCKED IN</span>{{end}}
                                 {{if .VotingFailed}}<p class="textinset"><br /><br /><br /><br /></p><span class="label label-danger">VOTING FAILED</span>{{end}}
-                                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="label label-warning">NOT STARTED</span>{{end}}<br />
+                                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}<span class="label label-warning">NOT STARTED</span>{{end}}
+                                {{if .VotingActive}}<p class="textinset"></p><span class="label label-success">ACTIVE</span>{{end}}<br />
 				                        <p class="textinset">
-                                <small><strong>Agenda ID:</strong>  #{{.AgendaID}}<br /><strong>Voting interval:</strong><br />Block {{.GetVoteInfoResult.StartHeight}}-{{.GetVoteInfoResult.EndHeight}}</small>
+                                <small><strong>Agenda ID:</strong>  #{{.AgendaID}}{{if not .VotingActive}}<br /><strong>Voting interval:</strong><br />Block {{.GetVoteInfoResult.StartHeight}}-{{.GetVoteInfoResult.EndHeight}}{{end}}</small>
                                 </p>
                                 </div>
                         </div>
@@ -192,6 +195,10 @@
                           {{end}}
                           {{if .VotingFailed}}<div class="alert alert-danger">
                             A majority no vote has been achieved.  The new rules associated with the agenda will <strong>NOT</strong> be activated.
+                          </div>
+                          {{end}}
+                          {{if .VotingActive}}<div class="alert alert-success">
+                            The new rules <strong>have</strong>  been activated.  Ensure you are running a recent enough software version that supports the new rules.  The first version of dcrd that supports the new rules is 0.8.2.
                           </div>
                           {{end}}
 		</div><!-- END CYRCLE OVERVIEW -->
@@ -317,8 +324,13 @@
       <!-- INTRODUCTION TEXT -->
       <div class="row">
         <div class="col-md-10">
-          <h3>Stake Voting{{if .VotingLockedin}}<span class="label label-success">LOCKED IN</span>{{end}}{{if .VotingFailed}}<span class="label label-danger">FAILED</span>{{end}}{{if .VotingStarted}}
+          <h3>Stake Voting{{if .VotingActive}} <span class="label label-success">VOTING SUCCEEDED</span>{{end}}{{if .VotingLockedin}} <span class="label label-success">LOCKED IN</span>{{end}}{{if .VotingFailed}} <span class="label label-danger">FAILED</span>{{end}}{{if .VotingStarted}}
                                 <span class="label label-success">VOTING STARTED</span>{{end}}</h3>
+        {{if .VotingActive}}<br />
+          <div class="alert alert-success">
+            The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. The first version of dcrd that supports the new rules is 0.8.2.
+          </div>
+        {{end}}
           <p>
             After {{.BlockVersionRejectThreshold}}% of blocks in a rolling window 
             of {{.BlockVersionWindowLength}} blocks are the latest block version 
@@ -353,6 +365,7 @@
             </div>
           </div>
           <div style="clear:both;">&nbsp;</div>
+
         {{if .VotingStarted}}
           {{if .QuorumAchieved}}
           <div class="alert alert-success">
@@ -643,7 +656,7 @@ less.refreshStyles();
 var transform_styles = ['-webkit-transform', '-ms-transform', 'transform'];
 var pow_percent = '{{.BlockVersionMostPopularPercentage}}';
 var pos_percent = '{{if .StakeVersionSuccess}}100{{else}}{{.StakeVersionMostPopularPercentage}}{{end}}';
-var stake_percent = '{{if .VotingStarted}}{{.QuorumVotedPercentage}}{{else}}0{{end}}{{if .VotingFailed}}{{ .AgendaLockedinPercentage}}{{end}}{{if .VotingLockedin}}{{ .AgendaLockedinPercentage}}{{end}}';
+var stake_percent = '{{if .VotingStarted}}{{.QuorumVotedPercentage}}{{else}}0{{end}}{{if .VotingFailed}}{{ .AgendaLockedinPercentage}}{{end}}{{if .VotingLockedin}}{{ .AgendaLockedinPercentage}}{{end}}{{if .VotingActive}}100{{end}}';
 
 window.circle1 = function() {
 	var rotation = Math.floor(pow_percent * 1.8);
