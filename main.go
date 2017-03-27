@@ -137,6 +137,7 @@ type templateFields struct {
 	VotingDefined  bool
 	VotingLockedin bool
 	VotingFailed   bool
+	VotingActive   bool
 	QuorumAchieved bool
 	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
 	GetVoteInfoResult *dcrjson.GetVoteInfoResult
@@ -423,6 +424,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "defined"
 	templateInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
 	templateInformation.VotingFailed = getVoteInfo.Agendas[0].Status == "failed"
+	templateInformation.VotingActive = getVoteInfo.Agendas[0].Status == "active"
 	templateInformation.QuorumAchieved = getVoteInfo.Agendas[0].QuorumProgress == 1
 
 	choiceIds := make([]string, len(getVoteInfo.Agendas[0].Choices))
