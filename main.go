@@ -304,6 +304,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 
 }
 
+// main wraps mainCore, which does all the work, because deferred functions do
+/// not run after os.Exit().
 func main() {
 	os.Exit(mainCore())
 }
@@ -323,7 +325,7 @@ func mainCore() int {
 		if err != nil {
 			fmt.Printf("Failed to read dcrd cert file at %s: %s\n", *cert,
 				err.Error())
-			os.Exit(1)
+			return 1
 		}
 	}
 
