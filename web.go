@@ -12,7 +12,7 @@ import (
 	"github.com/decred/dcrd/dcrjson"
 )
 
-// Overall Data structure given to the template to render.
+// Overall data structure given to the template to render.
 type templateFields struct {
 
 	// Basic information
@@ -152,12 +152,17 @@ func (td *WebUI) demoPage(w http.ResponseWriter, r *http.Request) {
 	// (i.e. block notification).
 }
 
+// WebUI represents the html web interface. It includes the template related
+// data, methods for parsing the templates, and the http.HandlerFuncs registered
+// with URL paths by the http router.
 type WebUI struct {
 	TemplateData *templateFields
 	templ        *template.Template
 	templFiles   []string
 }
 
+// NewWebUI is the constructor for WebUI.  It creates a html/template.Template,
+// loads the function map, and parses the template files.
 func NewWebUI() *WebUI {
 	fp := filepath.Join("public", "views", "design_sketch.html")
 	tmpl, err := template.New("home").Funcs(funcMap).ParseFiles(fp)
@@ -174,6 +179,7 @@ func NewWebUI() *WebUI {
 	}
 }
 
+// ParseTemplates parses the html templates into a new html/template.Temlate.
 func (td *WebUI) ParseTemplates() (err error) {
 	td.templ, err = template.New("home").ParseFiles(td.templFiles...)
 	return
