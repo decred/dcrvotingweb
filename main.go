@@ -31,6 +31,7 @@ var pass = flag.String("pass", "bananas", "node RPC password")
 var cert = flag.String("cert", "dcrd.cert", "node RPC TLS certificate (when notls=false)")
 var notls = flag.Bool("notls", false, "Disable use of TLS for node connection")
 var listenPort = flag.String("listen", ":8000", "web app listening port")
+var useStub = flag.Bool("stubnode", false, "Stub out the node client with static json data")
 
 // Daemon Params to use
 var activeNetParams = &chaincfg.TestNet2Params
@@ -362,39 +363,13 @@ func mainCore() int {
 		DisableTLS:   *notls,
 	}
 
-	fmt.Printf("Attempting to connect to dcrd RPC %s as user %s "+
-		"using certificate located in %s\n", *host, *user, *cert)
-	// Attempt to connect rpcclient and daemon
-	dcrdClient, err := dcrrpcclient.New(connCfgDaemon, &ntfnHandlersDaemon)
+
+	// create the dcrrpcclient.Client or StakeInfoStub
+	dcrdClient, cleanup, err := MakeClient(connCfgDaemon, &ntfnHandlersDaemon, *useStub)
+	defer cleanup()
 	if err != nil {
-		fmt.Printf("Failed to start dcrd rpcclient: %s\n", err.Error())
 		return 1
 	}
-	defer func() {
-		fmt.Printf("Disconnecting from dcrd.\n")
-		dcrdClient.Disconnect()
-	}()
-
-	// Subscribe to block notifications
-	if err = dcrdClient.NotifyBlocks(); err != nil {
-		fmt.Printf("Failed to start register daemon rpc client for  "+
-			"block notifications: %s\n", err.Error())
-		return 1
-	}
-
-	// Only accept a single CTRL+C
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-
-	// Start waiting for the interrupt signal
-	go func() {
-		<-c
-		signal.Stop(c)
-		// Close the channel so multiple goroutines can get the message
-		fmt.Println("CTRL+C hit.  Closing.")
-		close(quit)
-		return
-	}()
 
 	// Run an initial templateInforation update based on current change
 	updatetemplateInformation(dcrdClient)
