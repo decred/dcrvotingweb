@@ -61,7 +61,7 @@ var templateInformation = &templateFields{
 }
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
-func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
+func updatetemplateInformation(dcrdClient StakeInfoer) {
 	fmt.Println("updating hard fork information")
 
 	// Get the current best block (height and hash)
