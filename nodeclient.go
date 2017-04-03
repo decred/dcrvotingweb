@@ -27,8 +27,8 @@ func MakeClient(config *dcrrpcclient.ConnConfig,
 		return NewStakeInfoStub(), func() {}, nil
 	}
 
-	fmt.Printf("Attempting to connect to dcrd RPC %s as user %s "+
-		"using certificate located in %s\n", *host, *user, *cert)
+	fmt.Printf("Attempting to connect to dcrd RPC %s as user %s\n",
+		config.Host, config.User)
 	// Attempt to connect rpcclient and daemon
 	dcrdClient, err := dcrrpcclient.New(config, ntfnHandlers)
 	if err != nil {

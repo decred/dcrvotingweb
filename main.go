@@ -363,7 +363,6 @@ func mainCore() int {
 		DisableTLS:   *notls,
 	}
 
-
 	// create the dcrrpcclient.Client or StakeInfoStub
 	dcrdClient, cleanup, err := MakeClient(connCfgDaemon, &ntfnHandlersDaemon, *useStub)
 	defer cleanup()
