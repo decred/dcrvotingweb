@@ -1,0 +1,106 @@
+{
+  "currentheight": 273167,
+  "hash": "00000000062b8a5baa35ce53f274f29aeb57d77a4c15375c6f82c92ed1bea1e8",
+  "intervals": [
+    {
+      "startheight": 272928,
+      "endheight": 273167,
+      "posversions": [
+        {
+          "version": 4,
+          "count": 240
+        }
+      ],
+      "voteversions": [
+        {
+          "version": 0,
+          "count": 41
+        },
+        {
+          "version": 3,
+          "count": 20
+        },
+        {
+          "version": 4,
+          "count": 1080
+        }
+      ]
+    },
+    {
+      "startheight": 270912,
+      "endheight": 272928,
+      "posversions": [
+        {
+          "version": 3,
+          "count": 2016
+        }
+      ],
+      "voteversions": [
+        {
+          "version": 0,
+          "count": 4
+        },
+        {
+          "version": 3,
+          "count": 665
+        },
+        {
+          "version": 4,
+          "count": 8257
+        },
+        {
+          "version": 6,
+          "count": 26
+        },
+        {
+          "version": 127,
+          "count": 11
+        },
+        {
+          "version": 65284,
+          "count": 49
+        },
+        {
+          "version": 2948509150,
+          "count": 12
+        },
+        {
+          "version": 4160749567,
+          "count": 2
+        },
+        {
+          "version": 4294967295,
+          "count": 49
+        }
+      ]
+    },
+    {
+      "startheight": 268896,
+      "endheight": 270912,
+      "posversions": [
+        {
+          "version": 3,
+          "count": 2016
+        }
+      ],
+      "voteversions": [
+        {
+          "version": 2,
+          "count": 8
+        },
+        {
+          "version": 3,
+          "count": 7523
+        },
+        {
+          "version": 4,
+          "count": 1049
+        },
+        {
+          "version": 6,
+          "count": 1153
+        }
+      ]
+    }
+  ]
+}

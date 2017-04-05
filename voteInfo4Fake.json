@@ -13,15 +13,15 @@
         "starttime": 1486598400,
         "expiretime": 1496966400,
         "status": "active",
-        "quorumprogress": 0,
+        "quorumprogress": 1,
         "choices": [{
                 "id": "abstain",
                 "description": "abstain voting for change",
                 "bits": 0,
                 "isignore": true,
                 "isno": false,
-                "count": 0,
-                "progress": 0
+                "count": 2520,
+                "progress": 0.269288309467835
             },
             {
                 "id": "no",
@@ -38,8 +38,8 @@
                 "bits": 4,
                 "isignore": false,
                 "isno": false,
-                "count": 0,
-                "progress": 0
+                "count": 6838,
+                "progress": 0.730711690532165
             }
         ]
     }]

@@ -1,0 +1,22 @@
+{
+  "currentheight": 289984,
+  "hash": "0000000000b0a130a86d7fe1e475b39da048c3215d958ea4b2e102ad5a687fc0",
+  "intervals": [
+    {
+      "startheight": 289056,
+      "endheight": 289984,
+      "posversions": [
+        {
+          "version": 4,
+          "count": 929
+        }
+      ],
+      "voteversions": [
+        {
+          "version": 4,
+          "count": 4501
+        }
+      ]
+    }
+  ]
+}
