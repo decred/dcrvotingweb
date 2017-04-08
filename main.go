@@ -12,7 +12,6 @@ import (
 	"math"
 	"net/http"
 	"os"
-	"os/signal"
 	"sync"
 	"time"
 

@@ -22,9 +22,10 @@ type StakeInfoer interface {
 // defer. The StakeInfoer will either be a *dcrrpcclient.Client or a
 // *StakeInfoStub, depending on the stub input argument.
 func MakeClient(config *dcrrpcclient.ConnConfig,
-	ntfnHandlers *dcrrpcclient.NotificationHandlers, stub bool) (StakeInfoer, func(), error) {
+	ntfnHandlers *dcrrpcclient.NotificationHandlers, stub bool,
+	stubHeightOpt ...uint32) (StakeInfoer, func(), error) {
 	if stub {
-		return NewStakeInfoStub(), func() {}, nil
+		return NewStakeInfoStub(stubHeightOpt...), func() {}, nil
 	}
 
 	fmt.Printf("Attempting to connect to dcrd RPC %s as user %s\n",
