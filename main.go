@@ -8,18 +8,15 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"math"
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"sync"
 	"time"
 
 	"github.com/decred/dcrd/chaincfg"
-	"github.com/decred/dcrd/dcrjson"
 	"github.com/decred/dcrd/wire"
 	"github.com/decred/dcrrpcclient"
 )
@@ -37,116 +34,6 @@ var listenPort = flag.String("listen", ":8000", "web app listening port")
 
 // Daemon Params to use
 var activeNetParams = &chaincfg.TestNet2Params
-
-// Overall Data structure given to the template to render.
-type templateFields struct {
-
-	// Basic information
-	BlockHeight int64
-
-	// BlockVersion Information
-	//
-	// BlockVersions is the data after it has been prepared for graphing.
-	BlockVersions map[int32]*blockVersions
-	// BlockVersionHeights is an array of Block heights for graph's x axis.
-	BlockVersionsHeights []int64
-	// BlockVersionSuccess is a bool whether or not BlockVersion has
-	// successfully tripped over to the new version.
-	BlockVersionSuccess bool
-	// BlockVersionWindowLength is the activeNetParams of BlockUpgradeNumToCheck
-	// rolling window length.
-	BlockVersionWindowLength uint64
-	// BlockVersionEnforceThreshold is the activeNetParams of BlockEnforceNumRequired.
-	BlockVersionEnforceThreshold int
-	// BlockVersionRejectThreshold is the activeNetParams of BlockRejectNumRequired.
-	BlockVersionRejectThreshold int
-	// BlockVersionCurrent is the currently calculated block version based on the rolling window.
-	BlockVersionCurrent int32
-	// BlockVersionMostPopular is the calculated most popular block version that is NOT current version.
-	BlockVersionMostPopular int32
-	// BlockVersionMostPopularPercentage is the percentage of the most popular block version
-	BlockVersionMostPopularPercentage float64
-
-	// StakeVersion Information
-	//
-	// StakeVersionThreshold is the activeNetParams of StakeVersion threshold made into a float for display
-	StakeVersionThreshold float64
-	// StakeVersionWindowLength is the activeNetParams of StakeVersionInterval
-	StakeVersionWindowLength int64
-	// StakeVersionWindowVoteTotal is the number of total possible votes in the windows.
-	// It is reduced by number of observed missed votes thus far in the window.
-	StakeVersionWindowVoteTotal int64
-	// StakeVersionIntervalLabels are labels for the bar graph for each of the past 4 fixed stake version intervals.
-	StakeVersionIntervalLabels []string
-	// StakeVersionVotesRemaining is the calculated number of votes possibly remaining in the current stake version interval.
-	StakeVersionVotesRemaining int64
-	// StakeVersionsIntervals  is the data received from GetStakeVersionInfo json-rpc call to dcrd.
-	StakeVersionsIntervals []dcrjson.VersionInterval
-	// StakeVersionIntervalResults is the data after being analyzed for graph displaying.
-	StakeVersionIntervalResults []intervalVersionCounts
-	// StakeVersionSuccess is a bool for whether or not the StakeVersion has rolled over in this window.
-	StakeVersionSuccess bool
-	// StakeVersionCurrent is the StakeVersion that has been seen in the recent block header.
-	StakeVersionCurrent uint32
-	// StakeVersionMostPopular is the most popular stake version that is NOT the current stake version.
-	StakeVersionMostPopular uint32
-	// StakeVersionMostPopularCount is the count of most popular stake versions.
-	StakeVersionMostPopularCount uint32
-	// StakeVersionMostPopularPercentage is the percentage of most popular stake versions out of possible votes.
-	StakeVersionMostPopularPercentage float64
-	// StakeVersionRequiredVotes is the number of stake version votes required for the stake version to change.
-	StakeVersionRequiredVotes int32
-
-	// Quorum and Rule Change Information
-	// RuleChangeActivationQuorum is the activeNetParams of RuleChangeActivationQuorum
-	RuleChangeActivationQuorum uint32
-	// Quorum is a bool that is true if needed number of yes/nos were
-	// received (>10%).
-	Quorum bool
-	// QuorumThreshold is the percentage required for the RuleChange to become active.
-	QuorumThreshold float64
-	// QuorumVotedPercentage is the percentage of progress toward quorum XXX needs to be fixed.
-	QuorumVotedPercentage float64
-	// QuorumAbstainedPercentage is the abstain percentage.
-	QuorumAbstainedPercentage float64
-	// QuorumExpirationDate is the date in which the agenda is scheduled to expire.
-	QuorumExpirationDate string
-	// All of these are already contained in GetVoteInfoResult, so we need to refactor the html
-	// to properly use these.
-	AgendaLockedinPercentage float64
-	AgendaID                 string
-	AgendaDescription        string
-	AgendaChoice1Id          string
-	AgendaChoice1Description string
-	AgendaChoice1Count       uint32
-	AgendaChoice1IsIgnore    bool
-	AgendaChoice1Bits        uint16
-	AgendaChoice1Progress    float64
-	AgendaChoice2Id          string
-	AgendaChoice2Description string
-	AgendaChoice2Count       uint32
-	AgendaChoice2IsIgnore    bool
-	AgendaChoice2Bits        uint16
-	AgendaChoice2Progress    float64
-	AgendaChoice3Id          string
-	AgendaChoice3Description string
-	AgendaChoice3Count       uint32
-	AgendaChoice3IsIgnore    bool
-	AgendaChoice3Bits        uint16
-	AgendaChoice3Progress    float64
-	// These are bools to determine what state a given agenda is at.  These need to be refactored with stuff above.
-	VotingStarted  bool
-	VotingDefined  bool
-	VotingLockedin bool
-	VotingFailed   bool
-	VotingActive   bool
-	QuorumAchieved bool
-	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
-	GetVoteInfoResult *dcrjson.GetVoteInfoResult
-	// Choice Ids and percentages that have been scrubbed for graphing.
-	ChoiceIds         []string
-	ChoicePercentages []float64
-}
 
 // Contains a certain block version's count of blocks in the
 // rolling window (which has a length of activeNetParams.BlockUpgradeNumToCheck)
@@ -171,33 +58,6 @@ var templateInformation = &templateFields{
 	// RuleChange params
 	RuleChangeActivationQuorum: activeNetParams.RuleChangeActivationQuorum,
 	QuorumThreshold:            float64(activeNetParams.RuleChangeActivationQuorum) / float64(activeNetParams.RuleChangeActivationInterval*uint32(activeNetParams.TicketsPerBlock)) * 100,
-}
-
-var funcMap = template.FuncMap{
-	"minus":   minus,
-	"minus64": minus64,
-}
-
-func minus(a, b int) int {
-	return a - b
-}
-func minus64(a, b int64) int64 {
-	return a - b
-}
-
-// renders the 'home' template that is current located at "design_sketch.html".
-func demoPage(w http.ResponseWriter, r *http.Request) {
-
-	fp := filepath.Join("public", "views", "design_sketch.html")
-	tmpl, err := template.New("home").Funcs(funcMap).ParseFiles(fp)
-	if err != nil {
-		panic(err)
-	}
-	err = tmpl.Execute(w, templateInformation)
-	if err != nil {
-		panic(err)
-	}
-
 }
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
@@ -376,13 +236,22 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.StakeVersionVotesRemaining = (activeNetParams.StakeVersionInterval - blocksIntoInterval) * 5
 
 	// Quorum/vote information
-	getVoteInfo, err := dcrdClient.GetVoteInfo(4)
+	// NOTE: vote version will not be hard coded as it will change with time,
+	// and the web page will show multiple agendas at once. This is temporary.
+	voteVersion := uint32(4)
+	getVoteInfo, err := dcrdClient.GetVoteInfo(voteVersion)
 	if err != nil {
 		fmt.Println("Get vote info err", err)
 		templateInformation.Quorum = false
 		return
 	}
 	templateInformation.GetVoteInfoResult = getVoteInfo
+
+	// There may be no agendas for this vote version
+	if len(getVoteInfo.Agendas) == 0 {
+		fmt.Printf("No agendas for vote version %d\n", voteVersion)
+		return
+	}
 
 	// Set Quorum to true since we got a valid response back from GetVoteInfoResult
 	templateInformation.Quorum = true
@@ -444,6 +313,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 
 }
 
+// main wraps mainCore, which does all the work, because deferred functions do
+/// not run after os.Exit().
 func main() {
 	os.Exit(mainCore())
 }
@@ -463,7 +334,7 @@ func mainCore() int {
 		if err != nil {
 			fmt.Printf("Failed to read dcrd cert file at %s: %s\n", *cert,
 				err.Error())
-			os.Exit(1)
+			return 1
 		}
 	}
 
@@ -545,8 +416,15 @@ func mainCore() int {
 		}
 	}()
 
-	// Various url handlers for js/css/fonts/images
-	http.HandleFunc("/", demoPage)
+	// Create new web UI to deal with HTML templates and provide the
+	// http.HandleFunc for the web server
+	webUI := NewWebUI()
+	webUI.TemplateData = templateInformation
+	// Register OS signal (USR1 on non-Windows platforms) to reload templates
+	webUI.UseSIGToReloadTemplates()
+
+	// URL handlers for js/css/fonts/images
+	http.HandleFunc("/", webUI.demoPage)
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("public/js/"))))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("public/css/"))))
 	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir("public/fonts/"))))
@@ -561,6 +439,7 @@ func mainCore() int {
 		}
 	}()
 
+	// Wait for goroutines, such as the block connected handler loop
 	wg.Wait()
 
 	return 0
