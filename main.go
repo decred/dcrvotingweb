@@ -36,7 +36,7 @@ var notls = flag.Bool("notls", false, "Disable use of TLS for node connection")
 var listenPort = flag.String("listen", ":8000", "web app listening port")
 
 // Daemon Params to use
-var activeNetParams = &chaincfg.TestNetParams
+var activeNetParams = &chaincfg.TestNet2Params
 
 // Overall Data structure given to the template to render.
 type templateFields struct {
