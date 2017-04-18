@@ -6,13 +6,16 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"html/template"
 	"io/ioutil"
 	"math"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/decred/dcrd/chaincfg"
@@ -25,16 +28,15 @@ import (
 var maxVersion = 10000
 
 // Settings for daemon
-var dcrdCertPath = ("/home/user/.dcrd/rpc.cert")
-var dcrdServer = "127.0.0.1:19109"
-var dcrdUser = "USER"
-var dcrdPass = "PASSWORD"
+var host = flag.String("host", "127.0.0.1:19109", "node RPC host:port")
+var user = flag.String("user", "dcrd", "node RPC username")
+var pass = flag.String("pass", "bananas", "node RPC password")
+var cert = flag.String("cert", "dcrd.cert", "node RPC TLS certificate (when notls=false)")
+var notls = flag.Bool("notls", false, "Disable use of TLS for node connection")
+var listenPort = flag.String("listen", ":8000", "web app listening port")
 
 // Daemon Params to use
 var activeNetParams = &chaincfg.TestNetParams
-
-// Webserver settings
-var listeningPort = ":8000"
 
 // Overall Data structure given to the template to render.
 type templateFields struct {
@@ -217,7 +219,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		fmt.Println(err)
 		return
 	}
-	// Request GetStakeVersions to receive information about passed block versions.
+	// Request GetStakeVersions to receive information about past block versions.
 	//
 	// Request twice as many, so we can populate the rolling block version window's first
 	stakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
@@ -443,26 +445,35 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 }
 
 func main() {
+	os.Exit(mainCore())
+}
+
+func mainCore() int {
+	flag.Parse()
+
 	// Chans for rpccclient notification handlers
 	connectChan := make(chan int64, 100)
 	quit := make(chan struct{})
 
 	// Read in current dcrd cert
 	var dcrdCerts []byte
-	dcrdCerts, err := ioutil.ReadFile(dcrdCertPath)
-	if err != nil {
-		fmt.Printf("Failed to read dcrd cert file at %s: %s\n", dcrdCertPath,
-			err.Error())
-		os.Exit(1)
+	var err error
+	if !*notls {
+		dcrdCerts, err = ioutil.ReadFile(*cert)
+		if err != nil {
+			fmt.Printf("Failed to read dcrd cert file at %s: %s\n", *cert,
+				err.Error())
+			os.Exit(1)
+		}
 	}
 
 	// Set up notification handler that will release ntfns when new blocks connect
 	ntfnHandlersDaemon := dcrrpcclient.NotificationHandlers{
 		OnBlockConnected: func(serializedBlockHeader []byte, transactions [][]byte) {
 			var blockHeader wire.BlockHeader
-			err := blockHeader.Deserialize(bytes.NewReader(serializedBlockHeader))
-			if err != nil {
-				fmt.Printf("Failed to deserialize block header: %v\n", err.Error())
+			errLocal := blockHeader.Deserialize(bytes.NewReader(serializedBlockHeader))
+			if errLocal != nil {
+				fmt.Printf("Failed to deserialize block header: %v\n", errLocal.Error())
 				return
 			}
 			fmt.Println("got a new block passing it", blockHeader.Height)
@@ -472,34 +483,54 @@ func main() {
 
 	// dcrrpclient configuration
 	connCfgDaemon := &dcrrpcclient.ConnConfig{
-		Host:         dcrdServer,
+		Host:         *host,
 		Endpoint:     "ws",
-		User:         dcrdUser,
-		Pass:         dcrdPass,
+		User:         *user,
+		Pass:         *pass,
 		Certificates: dcrdCerts,
-		DisableTLS:   false,
+		DisableTLS:   *notls,
 	}
 
 	fmt.Printf("Attempting to connect to dcrd RPC %s as user %s "+
-		"using certificate located in %s\n",
-		dcrdServer, dcrdUser, dcrdCertPath)
+		"using certificate located in %s\n", *host, *user, *cert)
 	// Attempt to connect rpcclient and daemon
 	dcrdClient, err := dcrrpcclient.New(connCfgDaemon, &ntfnHandlersDaemon)
 	if err != nil {
 		fmt.Printf("Failed to start dcrd rpcclient: %s\n", err.Error())
-		os.Exit(1)
+		return 1
 	}
+	defer func() {
+		fmt.Printf("Disconnecting from dcrd.\n")
+		dcrdClient.Disconnect()
+	}()
+
 	// Subscribe to block notifications
-	if err := dcrdClient.NotifyBlocks(); err != nil {
+	if err = dcrdClient.NotifyBlocks(); err != nil {
 		fmt.Printf("Failed to start register daemon rpc client for  "+
 			"block notifications: %s\n", err.Error())
-		os.Exit(1)
+		return 1
 	}
+
+	// Only accept a single CTRL+C
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	// Start waiting for the interrupt signal
+	go func() {
+		<-c
+		signal.Stop(c)
+		// Close the channel so multiple goroutines can get the message
+		fmt.Println("CTRL+C hit.  Closing.")
+		close(quit)
+		return
+	}()
 
 	// Run an initial templateInforation update based on current change
 	updatetemplateInformation(dcrdClient)
 
 	// Run goroutine for notifications
+	var wg sync.WaitGroup
+	wg.Add(1)
 	go func() {
 		for {
 			select {
@@ -507,11 +538,9 @@ func main() {
 				fmt.Printf("Block height %v connected\n", height)
 				updatetemplateInformation(dcrdClient)
 			case <-quit:
-				close(quit)
-				dcrdClient.Disconnect()
-				fmt.Printf("\nClosing hardfork demo.\n")
-				os.Exit(1)
-				break
+				fmt.Printf("Closing hardfork demo.\n")
+				wg.Done()
+				return
 			}
 		}
 	}()
@@ -523,11 +552,18 @@ func main() {
 	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir("public/fonts/"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("public/images/"))))
 
-	// Start http server listening and serving
-	err = http.ListenAndServe(listeningPort, nil)
-	if err != nil {
-		fmt.Printf("Failed to bind http server: %s\n", err.Error())
-	}
+	// Start http server listening and serving, but no way to signal to quit
+	go func() {
+		err = http.ListenAndServe(*listenPort, nil)
+		if err != nil {
+			fmt.Printf("Failed to bind http server: %s\n", err.Error())
+			close(quit)
+		}
+	}()
+
+	wg.Wait()
+
+	return 0
 }
 
 // Some various helper math helper funcs
