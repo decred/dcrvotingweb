@@ -1,0 +1,33 @@
+{
+  "hash": "0000000000b0a130a86d7fe1e475b39da048c3215d958ea4b2e102ad5a687fc0",
+  "confirmations": 1,
+  "size": 2107,
+  "height": 289984,
+  "version": 4,
+  "merkleroot": "1b193049354b0d024a9e695b71bb60e4552dfef3cbeab52d2bb285e4166dacde",
+  "stakeroot": "29aba41745437283cea92510c977d577e191289b3734a34af9898529d78549f0",
+  "tx": [
+    "a32f84bd4578b74e87bc12fe7c95c5b742812e779e6d2808cbe184f411e6d3c4"
+  ],
+  "stx": [
+    "915816b12a5e968da37d30ed7e0df2320521875a272a710e209c3864efd34a8b",
+    "81c1c7059b539f12ff7c1401289ed3a40cc885b998f2600d5e8a98b6678d55ac",
+    "dd2bce81b9b1efbc65227339f87730e7efb1b7abf76c2c885809f3c96efc8758",
+    "b2fb90158975c53cbfb1d0f2e31f87c6868deb10e4e088c5101a433f774e4078",
+    "7cdae928201a4a4e7c50631a804b47458817daf40ef8f883f59a3cd244870e0f"
+  ],
+  "time": 1489616778,
+  "nonce": 2788577386,
+  "votebits": 1,
+  "finalstate": "7d8489cb5b8b",
+  "voters": 5,
+  "freshstake": 0,
+  "revocations": 0,
+  "poolsize": 6792,
+  "bits": "1c0647ad",
+  "sbits": 33.57268317,
+  "difficulty": 10435.53693827,
+  "extradata": "698302018b550000000000000000000000000000000000000000000000000000",
+  "stakeversion": 4,
+  "previousblockhash": "0000000004f022f00e90cd9a964b5c1a471f631f45b8e23954478ab81bb71b2a"
+}
