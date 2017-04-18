@@ -236,13 +236,22 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.StakeVersionVotesRemaining = (activeNetParams.StakeVersionInterval - blocksIntoInterval) * 5
 
 	// Quorum/vote information
-	getVoteInfo, err := dcrdClient.GetVoteInfo(4)
+	// NOTE: vote version will not be hard coded as it will change with time,
+	// and the web page will show multiple agendas at once. This is temporary.
+	voteVersion := uint32(4)
+	getVoteInfo, err := dcrdClient.GetVoteInfo(voteVersion)
 	if err != nil {
 		fmt.Println("Get vote info err", err)
 		templateInformation.Quorum = false
 		return
 	}
 	templateInformation.GetVoteInfoResult = getVoteInfo
+
+	// There may be no agendas for this vote version
+	if len(getVoteInfo.Agendas) == 0 {
+		fmt.Printf("No agendas for vote version %d\n", voteVersion)
+		return
+	}
 
 	// Set Quorum to true since we got a valid response back from GetVoteInfoResult
 	templateInformation.Quorum = true
