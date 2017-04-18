@@ -32,7 +32,7 @@ var host = flag.String("host", "127.0.0.1:19109", "node RPC host:port")
 var user = flag.String("user", "dcrd", "node RPC username")
 var pass = flag.String("pass", "bananas", "node RPC password")
 var cert = flag.String("cert", "dcrd.cert", "node RPC TLS certificate (when notls=false)")
-var notls = flag.Bool("notls", true, "Disable use of TLS for node connection")
+var notls = flag.Bool("notls", false, "Disable use of TLS for node connection")
 var listenPort = flag.String("listen", ":8000", "web app listening port")
 
 // Daemon Params to use
