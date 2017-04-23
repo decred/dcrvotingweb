@@ -1,0 +1,765 @@
+{{define "home"}}
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Decred PoW &amp; PoS voting results</title>
+  <meta content="Decred PoW &amp; PoS voting results" name="description">
+  <meta content="Decred PoW &amp; PoS voting results" property="og:title">
+  <meta content="Decred PoW &amp; PoS voting results" property="og:description">
+  <meta content="images/ogMainSite.jpg" property="og:image">
+  <meta content="summary" name="twitter:card">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <link href="css/normalize.css" rel="stylesheet" type="text/css">
+  <link href="css/components.css" rel="stylesheet" type="text/css">
+  <link href="css/decred-hardforkwebsite.css" rel="stylesheet" type="text/css">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="images/favicon/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="images/favicon/favicon-16x16.png" sizes="16x16">
+  <link rel="manifest" href="images/favicon/manifest.json">
+  <link rel="mask-icon" href="images/favicon/safari-pinned-tab.svg">
+  <link rel="shortcut icon" href="images/favicon/favicon.ico">
+  <meta name="apple-mobile-web-app-title" content="deCRED - decentralized credit">
+  <meta name="application-name" content="deCRED - decentralized credit">
+  <meta name="msapplication-TileColor" content="#2973ff">
+  <meta name="msapplication-TileImage" content="images/favicon/mstile-144x144.png">
+  <meta name="msapplication-config" content="images/favicon/browserconfig.xml">
+  <link rel="icon" href="favicon.ico">
+  <script src="js/modernizr.js" type="text/javascript"></script>
+</head>
+<body class="body">
+  <div class="tooltip w-clearfix">
+    <div class="tooltip-dot"></div>
+    <div class="margin-right-5 tooltip-option-name"></div>
+    <div class="tooltip-option-value"></div>
+    <div class="tooltip-square"></div>
+  </div>
+  <div class="main">
+    <div class="header">
+      <div class="header w-clearfix width-1180">
+        <a class="header-logo w-inline-block" href="http://www.decred.org"></a>
+        <a class="header-link w-button" href="#">Testnet Faucet</a>
+      </div>
+    </div>
+    <div class="voting-overview">
+      <div class="w-clearfix width-1180">
+        <div class="voting-overview-graph width-590"></div>
+        <div class="voting-overview w-clearfix width-590">
+          <div class="heading voting-overview">Voting Overview</div>
+          <div class="text-block voting-overview">
+            <p>
+There is a two-phase process for voting to implement consensus changes that would create a hard fork. Note: the following block intervals are for the testnet, they will differ for mainnet.
+            </p>
+            <p>
+The first step is to meet the upgrade threshold on the network. After the hard fork code is released, a majority of the nodes on the network participating in PoW/PoS need to first upgrade before the voting can begin. For Proof-of-Work, at least 75% of the 100 most recent blocks must have the latest block version. For Proof-of-Stake, 75% of the votes cast within a static 2016 block interval must have the latest vote version.
+            </p>
+            <p>
+The second step of this process is the actual voting. The previous 2016 block interval falls somewhere within a larger 5040 block interval and the network must wait for that larger 5040 block interval to end. Because of the different interval lengths, it might take up to an additional 5040 blocks before the voting window begins. After that, a static 5040 block interval transpires while votes are cast and if 75% of the votes mined within that interval signal a ‘yes’ vote to the proposed changes, the changes are fully implemented after one additional block interval (to give any remaining nodes the time needed to update to avoid being forked off the blockchain).
+            </p>
+        </div>
+      </div>
+    </div>
+    <div class="pow-pos-upgrade">
+      <div class="overflow-hidden pow-pos-upgrade w-clearfix width-1180">
+        <div class="pow-upgrade w-clearfix width-half">
+          <div class="chart-toggle-side pow"></div>
+          <div class="pow-upgrade transition upgrade-content">
+            <div class="upgrade-content-statistics-header w-clearfix">
+              <div class="heading pow-pos">PoW Upgrade</div>
+              <!--  POW STATUS LABEL SWITCH -->
+              {{if .BlockVersionSuccess}}
+              <div class="finished indicator pow-pos transition">finished</div>
+              {{else}}
+              <div class="in-progress indicator pow-pos transition">in-progress</div>
+              {{end}}
+
+              
+            </div>
+            <div class="upgrade-content-statistics-main w-clearfix">
+              <div class="upgrade-content-statistics-numbers w-clearfix">Current Version: 
+<!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
+                {{if .BlockVersionSuccess}}
+                <span class="highlight-text green">v{{.BlockVersionCurrent}}</span>
+                {{else}}
+                <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
+                {{end}}
+                <br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
+                <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>
+                <br> Reject Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
+                <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
+              </div>
+              <div class="pow-pos-time-remaining transition">5h 43 min remaining</div>
+            </div>
+            <div class="progress-bar-pow-pos-upgrade">
+              <div class="progress-indicator w-clearfix">
+                <div class="pow progress-percent"></div>
+              </div>
+              <div class="pow-pos-upgrade progress-bar-threshold"></div>
+              <div class="heading progress-bar-pow-pos-percent">62%</div>
+            </div>
+          </div>
+          <div class="chart pow w-clearfix">
+            <div class="chart-info w-clearfix">
+              <div class="heading pow-pos">PoS Upgrade</div>
+              <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: 
+<!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
+                {{if .StakeVersionSuccess}}
+                <span class="highlight-text green">v{{.StakeVersionCurrent}}</span>
+                {{else}}
+                <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
+                {{end}}
+
+                <br> Most Popular Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
+                <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
+                <br> Reject Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
+                <br> Rolling Window: <span class="highlight-text">{{.StakeVersionWindowLength}} Blocks</span>
+              </div>
+            </div>
+            <div class="chart-draw lines-big w-clearfix">
+              <div class="chart-draw-header w-clearfix">
+                <div class="chart-draw-header-indicator"></div>
+                <div class="chart-draw-header-indicator-name">Block V4</div>
+              </div>
+              <div class="chart-draw-area">
+
+                  <canvas id="pow-big"></canvas>
+
+              </div>
+            </div>
+            <div class="bars-small chart-draw w-clearfix">
+              <div class="chart-draw-header w-clearfix">
+                <div class="chart-draw-header-indicator"></div>
+                <div class="chart-draw-header-indicator-name">Block V4</div>
+              </div>
+              <div class="chart-draw-area">
+
+                  <canvas id="pow-small"></canvas>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pos-upgrade w-clearfix width-half">
+          <div class="chart-toggle-side pos"></div>
+          <div class="pos-upgrade transition upgrade-content">
+            <div class="upgrade-content-statistics-header w-clearfix">
+              <div class="heading pow-pos">PoS Upgrade</div>
+              <div class="in-progress indicator pow-pos transition">in-progress</div>
+            </div>
+            <div class="upgrade-content-statistics-main w-clearfix">
+              <div class="upgrade-content-statistics-numbers w-clearfix">Current Version: 
+<!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
+                {{if .StakeVersionSuccess}}                
+                <span class="highlight-text green">v{{.StakeVersionCurrent}}</span>
+                {{else}}
+                <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
+                {{end}}
+                <br> Most Popular Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
+                <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
+                <br> Reject Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
+                <br> Rolling Window: <span class="highlight-text">{{.StakeVersionWindowLength}} Blocks</span>
+              </div>
+              <div class="pow-pos-time-remaining transition">5h 43 min remaining</div>
+            </div>
+            <div class="progress-bar-pow-pos-upgrade">
+              <div class="progress-indicator w-clearfix">
+                <div class="pow progress-percent"></div>
+              </div>
+              <div class="pow-pos-upgrade progress-bar-threshold"></div>
+              <div class="heading progress-bar-pow-pos-percent">62%</div>
+            </div>
+          </div>
+          <div class="chart pos w-clearfix">
+            <div class="chart-info w-clearfix">
+              <div class="heading pow-pos">PoW Upgrade</div>
+              <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: <span class="highlight-text green">v4</span>
+                <br> Most Popular Version: <span class="highlight-text green">v4</span>
+                <br> Most Popular: <span class="highlight-text">100%</span>
+                <br> Reject Threshold: <span class="highlight-text">75%</span>
+                <br> Rolling Window: <span class="highlight-text">100 Blocks</span>
+              </div>
+            </div>
+            <div class="chart-draw lines-big w-clearfix">
+              <div class="chart-draw-header w-clearfix">
+                <div class="chart-draw-header-indicator"></div>
+                <div class="chart-draw-header-indicator-name">Block V4</div>
+              </div>
+              <div class="chart-draw-area">
+
+                  <canvas id="pos-big"></canvas>
+
+              </div>
+            </div>
+            <div class="bars-small chart-draw w-clearfix">
+              <div class="chart-draw-header w-clearfix">
+                <div class="chart-draw-header-indicator"></div>
+                <div class="chart-draw-header-indicator-name">Block V4</div>
+              </div>
+              <div class="chart-draw-area">
+
+                  <canvas id="pos-small"></canvas>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="agendas w-clearfix">
+      <div class="agendas w-clearfix width-1180">
+        <div class="agenda drop-shadow-first-element w-clearfix">
+          <div class="agenda-section w-clearfix">
+            <div class="agenda-indicator w-clearfix">
+              <div class="indicator upcoming">upcoming</div>
+              <div class="indicator-icon lockin" data-tooltip-text="Lock-in phase, new rules not yet activated"></div>
+              <div class="activated indicator-icon" data-tooltip-text="Voting Succeeded, New Rules Activated"></div>
+              <div class="quorum w-clearfix">Quorum: &nbsp;<span class="highlight-text orange transparent quorum">No</span>
+              </div>
+            </div>
+            <div class="w-clearfix width-half">
+              <div class="agenda heading">Agenda name</div>
+              <div class="agenda-cfg w-clearfix">
+                <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#maxblocksize</span>
+                </div>
+                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">288048-293087</span>
+                </div>
+                <div class="agenda-cfg-spec w-clearfix">If anything missing: &nbsp;<span class="highlight-text cyan transparent">Add here</span>
+                </div>
+              </div>
+              <div class="agenda-paragraph">Change maximum allowed block size from 1MB to 1.25MiB
+                <br> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo&nbsp;</div>
+            </div>
+            <div class="left-padding-50 w-clearfix width-half">
+              <div class="agenda-voting-overview-options-title w-clearfix">
+                <div class="agenda-voting-overview">voting overview:</div>
+              </div>
+              <div class="agenda-voting-overview-options w-clearfix">
+                <div class="width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_1 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 1</div>
+                    <div class="agenda-voting-overview-option-percent value">60%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_2 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 2</div>
+                    <div class="agenda-voting-overview-option-percent value">30%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_3 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 3</div>
+                    <div class="agenda-voting-overview-option-percent value">10%</div>
+                  </div>
+                </div>
+                <div class="width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_4 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_5 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_6 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                </div>
+                <div class="w-clearfix width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="agenda-voting-overview-option-dot n"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="agenda-section progress-bar w-clearfix">
+            <div class="progress-bar-agenda w-clearfix">
+              <div class="progress-bar-competing-options-and-total-votes w-clearfix">
+                <div class="progress-bar-competing-options w-clearfix">
+                  <div class="option-1 option-progress" data-tooltip-text="Option 1" data-tooltip-value="60"></div>
+                  <div class="option-2 option-progress" data-tooltip-text="Option 2" data-tooltip-value="30"></div>
+                  <div class="option-3 option-progress" data-tooltip-text="Option 3" data-tooltip-value="10"></div>
+                </div>
+                <div class="total-votes-cast" data-tooltip-text="Total Votes Cast" data-tooltip-value="0"></div>
+              </div>
+              <div class="agenda progress-bar-threshold"></div>
+              <div class="heading progress-bar-agenda-voting-percent">0%</div>
+            </div>
+          </div>
+          <div class="agenda-voting-begins">Time estimate until voting begins…</div>
+        </div>
+        <div class="agenda drop-shadow-n-element w-clearfix">
+          <div class="agenda-section w-clearfix">
+            <div class="agenda-indicator w-clearfix">
+              <div class="in-progress indicator">in-progress</div>
+              <div class="indicator-icon lockin" data-tooltip-text="Lock-in phase, new rules not yet activated"></div>
+              <div class="activated indicator-icon" data-tooltip-text="Voting Succeeded, New Rules Activated"></div>
+              <div class="quorum w-clearfix">Quorum: &nbsp;<span class="highlight-text orange transparent quorum">No</span>
+              </div>
+            </div>
+            <div class="w-clearfix width-half">
+              <div class="agenda heading">Agenda name</div>
+              <div class="agenda-cfg w-clearfix">
+                <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#maxblocksize</span>
+                </div>
+                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">288048-293087</span>
+                </div>
+                <div class="agenda-cfg-spec w-clearfix">If anything missing: &nbsp;<span class="highlight-text cyan transparent">Add here</span>
+                </div>
+              </div>
+              <div class="agenda-paragraph">Change maximum allowed block size from 1MB to 1.25MiB
+                <br> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo&nbsp;</div>
+            </div>
+            <div class="left-padding-50 w-clearfix width-half">
+              <div class="agenda-voting-overview-options-title w-clearfix">
+                <div class="agenda-voting-overview">voting overview:</div>
+              </div>
+              <div class="agenda-voting-overview-options w-clearfix">
+                <div class="width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_1 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 1</div>
+                    <div class="agenda-voting-overview-option-percent value">60%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_2 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 2</div>
+                    <div class="agenda-voting-overview-option-percent value">30%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_3 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 3</div>
+                    <div class="agenda-voting-overview-option-percent value">10%</div>
+                  </div>
+                </div>
+                <div class="width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_4 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_5 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_6 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                </div>
+                <div class="w-clearfix width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="agenda-voting-overview-option-dot n"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="agenda-section progress-bar w-clearfix">
+            <div class="progress-bar-agenda w-clearfix">
+              <div class="progress-bar-competing-options-and-total-votes w-clearfix">
+                <div class="progress-bar-competing-options w-clearfix">
+                  <div class="option-1 option-progress" data-tooltip-text="Option 1" data-tooltip-value="60"></div>
+                  <div class="option-2 option-progress" data-tooltip-text="Option 2" data-tooltip-value="30"></div>
+                  <div class="option-3 option-progress" data-tooltip-text="Option 3" data-tooltip-value="10"></div>
+                </div>
+                <div class="total-votes-cast" data-tooltip-text="Total Votes Cast" data-tooltip-value="0"></div>
+              </div>
+              <div class="agenda progress-bar-threshold"></div>
+              <div class="heading progress-bar-agenda-voting-percent">0%</div>
+            </div>
+          </div>
+        </div>
+        <div class="agenda drop-shadow-n-element w-clearfix">
+          <div class="agenda-section w-clearfix">
+            <div class="agenda-indicator w-clearfix">
+              <div class="finished indicator">finished</div>
+              <div class="indicator-icon lockin" data-tooltip-text="Lock-in phase, new rules not yet activated"></div>
+              <div class="activated active indicator-icon" data-tooltip-text="Voting Succeeded, New Rules Activated"></div>
+              <div class="quorum w-clearfix">Quorum: &nbsp;<span class="highlight-text green transparent quorum">Yes</span>
+              </div>
+            </div>
+            <div class="w-clearfix width-half">
+              <div class="agenda heading">Agenda name</div>
+              <div class="agenda-cfg w-clearfix">
+                <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#maxblocksize</span>
+                </div>
+                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">288048-293087</span>
+                </div>
+                <div class="agenda-cfg-spec w-clearfix">If anything missing: &nbsp;<span class="highlight-text cyan transparent">Add here</span>
+                </div>
+              </div>
+              <div class="agenda-paragraph">Change maximum allowed block size from 1MB to 1.25MiB
+                <br> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo&nbsp;</div>
+            </div>
+            <div class="left-padding-50 w-clearfix width-half">
+              <div class="agenda-voting-overview-options-title w-clearfix">
+                <div class="agenda-voting-overview">voting overview:</div>
+              </div>
+              <div class="agenda-voting-overview-options w-clearfix">
+                <div class="width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_1 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 1</div>
+                    <div class="agenda-voting-overview-option-percent value">60%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_2 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 2</div>
+                    <div class="agenda-voting-overview-option-percent value">30%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_3 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 3</div>
+                    <div class="agenda-voting-overview-option-percent value">10%</div>
+                  </div>
+                </div>
+                <div class="width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_4 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_5 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_6 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                </div>
+                <div class="w-clearfix width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="agenda-voting-overview-option-dot n"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="agenda-section progress-bar w-clearfix">
+            <div class="progress-bar-agenda w-clearfix">
+              <div class="progress-bar-competing-options-and-total-votes w-clearfix">
+                <div class="progress-bar-competing-options w-clearfix">
+                  <div class="option-1 option-progress" data-tooltip-text="Option 1" data-tooltip-value="60"></div>
+                  <div class="option-2 option-progress" data-tooltip-text="Option 2" data-tooltip-value="30"></div>
+                  <div class="option-3 option-progress" data-tooltip-text="Option 3" data-tooltip-value="10"></div>
+                </div>
+                <div class="total-votes-cast" data-tooltip-text="Total Votes Cast" data-tooltip-value="0"></div>
+              </div>
+              <div class="agenda progress-bar-threshold"></div>
+              <div class="heading progress-bar-agenda-voting-percent">0%</div>
+            </div>
+          </div>
+        </div>
+        <div class="agenda drop-shadow-n-element w-clearfix">
+          <div class="agenda-section w-clearfix">
+            <div class="agenda-indicator w-clearfix">
+              <div class="failed indicator">failed</div>
+              <div class="active indicator-icon lockin" data-tooltip-text="Lock-in phase, new rules not yet activated"></div>
+              <div class="activated indicator-icon" data-tooltip-text="Voting Succeeded, New Rules Activated"></div>
+              <div class="quorum w-clearfix">Quorum: &nbsp;<span class="highlight-text orange transparent quorum">No</span>
+              </div>
+            </div>
+            <div class="w-clearfix width-half">
+              <div class="agenda heading">Agenda name</div>
+              <div class="agenda-cfg w-clearfix">
+                <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#maxblocksize</span>
+                </div>
+                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">288048-293087</span>
+                </div>
+                <div class="agenda-cfg-spec w-clearfix">If anything missing: &nbsp;<span class="highlight-text cyan transparent">Add here</span>
+                </div>
+              </div>
+              <div class="agenda-paragraph">Change maximum allowed block size from 1MB to 1.25MiB
+                <br> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo&nbsp;</div>
+            </div>
+            <div class="left-padding-50 w-clearfix width-half">
+              <div class="agenda-voting-overview-options-title w-clearfix">
+                <div class="agenda-voting-overview">voting overview:</div>
+              </div>
+              <div class="agenda-voting-overview-options w-clearfix">
+                <div class="width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_1 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 1</div>
+                    <div class="agenda-voting-overview-option-percent value">60%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_2 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 2</div>
+                    <div class="agenda-voting-overview-option-percent value">30%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_3 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option 3</div>
+                    <div class="agenda-voting-overview-option-percent value">10%</div>
+                  </div>
+                </div>
+                <div class="width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_4 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_5 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="_6 agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                </div>
+                <div class="w-clearfix width-third">
+                  <div class="agenda-voting-overview-option w-clearfix">
+                    <div class="agenda-voting-overview-option-dot n"></div>
+                    <div class="agenda-voting-overview-option-percent">Option n</div>
+                    <div class="agenda-voting-overview-option-percent value">000%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="agenda-section progress-bar w-clearfix">
+            <div class="progress-bar-agenda w-clearfix">
+              <div class="progress-bar-competing-options-and-total-votes w-clearfix">
+                <div class="progress-bar-competing-options w-clearfix">
+                  <div class="option-1 option-progress" data-tooltip-text="Option 1" data-tooltip-value="60"></div>
+                  <div class="option-2 option-progress" data-tooltip-text="Option 2" data-tooltip-value="30"></div>
+                  <div class="option-3 option-progress" data-tooltip-text="Option 3" data-tooltip-value="10"></div>
+                </div>
+                <div class="total-votes-cast" data-tooltip-text="Total Votes Cast" data-tooltip-value="0"></div>
+              </div>
+              <div class="agenda progress-bar-threshold"></div>
+              <div class="heading progress-bar-agenda-voting-percent">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js" type="text/javascript"></script>
+<script src="js/decred-hardforkwebsite.js" type="text/javascript"></script>
+<!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
+<script src="js/chart.min.js"></script>
+<script src="js/chart.extentions.js"></script>
+<script src="js/webfont.js"></script>
+<script src="js/hfsite.js"></script>
+
+<script>
+  	var time = 100,
+	    viewport = $(window),
+	    active = 'active',
+	    inactive = 'inactive',
+
+	    //agenda
+	    agenda = $('.agenda'),
+
+	    // agenda progressbar percent bar
+	    optionProgress = $('.option-progress'),
+	    totalVotesCast = $('.total-votes-cast'),
+
+	    // tooltip
+	    tooltip = $('.tooltip'),
+	    	tooltipDot = $('.tooltip-dot').hide(),
+	    	tooltipSquare = $('.tooltip-square').hide(),
+	    	tooltipOptionName = $('.tooltip-option-name'),
+	    	tooltipOptionValue = $('.tooltip-option-value'),
+
+	    // indicator icon
+	    indicatorIcon = $('.indicator-icon'),
+
+	    // charts desktop toggle button
+	    powPosChartToggle = $('.chart-toggle-side');
+
+
+  	// charts draw
+	function drawTheChart(ChartData, ChartOptions, chartId, ChartType) {
+		var myChart = new Chart(document.getElementById(chartId).getContext('2d'),
+		    {
+		    	type: ChartType,
+		    	data: ChartData,
+		    	options: ChartOptions
+		    }
+		 );
+		document.getElementById(chartId).getContext('2d').stroke();
+	}
+
+	// charts begin
+	// charts global vars
+	Chart.defaults.global.defaultFontColor = '#fff';
+	// charts data
+	// pow big
+	var powBigChartData = {
+		labels: ['289885','289885','289885','289885','289885','289885','289885','289885','289885','289885','289885'],
+		datasets: [{
+			data: [0,10,20,30,80,50,60,70,80,90,100],
+			backgroundColor:'rgba(41,112,255,0.7)',
+			borderColor: 'rgba(143,143,143,0.5)',
+			pointBackgroundColor: '#2970ff',
+			pointBorderColor: '#2970ff',
+			label: 'Block V4',
+		}]
+	};
+	// pow small
+	var powSmallChartData = {
+		labels: ['Last 100 Blocks'],
+		datasets: [{
+			data: [92],
+			backgroundColor: 'rgba(41,112,255,0.7)',
+			borderColor: 'rgba(143,143,143,0.5)',
+			pointBorderColor: 'rgba(143,143,143,0.5)',
+			label: 'Block v4'
+		}]
+	};
+	// pos big
+	var posBigChartData = {
+		labels: ['289885 - 285024', '289885 - 285024', '289885 - 285024', '289885 - 285024'],
+		datasets: [{
+			data: [9800, 8300, 9500, 5200],
+			backgroundColor: 'rgba(41,112,255,0.7)',
+			borderColor: 'rgba(143,143,143,0.5)',
+			pointBorderColor: 'rgba(143,143,143,0.5)',
+			label: 'Block v4'
+		}]
+	};
+	// pos small
+	var posSmallChartData = {
+		labels: ['Last 100 Blocks'],
+		datasets: [{
+			data: [4600],
+			backgroundColor: 'rgba(41,112,255,0.7)',
+			borderColor: 'rgba(143,143,143,0.5)',
+			pointBorderColor: 'rgba(143,143,143,0.5)',
+			label: 'Block v4'
+		}]
+	};
+	// chart types
+	// line
+	lineChartOptions = {
+		responsive: true,
+		maintainAspectRatio: false,
+		scales: {
+			xAxes: [{
+				gridLines: {color: 'rgba(90,109,129,0.19)', zeroLineColor: 'rgba(90,109,129,0.19)'},
+				ticks: {fontSize: 10}
+			}],
+			yAxes: [{
+				gridLines: {color: 'rgba(90,109,129,0.19)', zeroLineColor: 'rgba(90,109,129,0.19)'},
+				ticks: {fontSize: 10, beginAtZero: true}
+			}]
+		},
+		legend: {display: false},
+		elements: {
+			point: {radius: 1, borderWidth: 0},
+			line: {tension: 0, borderWidth: 0.01},
+		},
+		tooltips:{
+			intersect: false,
+			displayColors: false,
+			backgroundColor: '#596d81',
+			titleFontFamily: 'Source Sans Pro',
+			titleFontSize: 0,
+			titleFontStyle: ' normal',
+			titleSpacing: -9,
+			titleMarginBottom: -4,
+			bodyFontFamily: 'Source Sans Pro',
+			bodyFontSize: 10,
+			bodyFontStyle: 'normal',
+			bodySpacing: 0,
+			xPadding: 8,
+			yPadding: 7,
+			cornerRadius: 2,
+			caretSize: 9,
+		},
+		hover:{
+			mode: 'nearest',
+			animationDuration: 400,
+		},
+	};
+	// bar
+	barChartOptions = {
+		responsive: true,
+		maintainAspectRatio: false,
+		scales: {
+			xAxes: [{
+				barThickness: 10,
+				gridLines: {display: false, color: 'rgba(90,109,129,0.19)'},
+				ticks: {fontSize: 10}
+			}],
+			yAxes: [{
+				gridLines: {color: 'rgba(90,109,129,0.19)', zeroLineColor: 'rgba(90,109,129,0.19)'},
+				ticks: {fontSize: 10, beginAtZero: true}
+			}]
+	 	},
+		legend: {display: false},
+		elements: {rectangle: {borderWidth: 0.01}},
+		tooltips: {
+			intersect: false,
+			displayColors: false,
+			backgroundColor: '#596d81',
+			titleFontFamily: 'Source Sans Pro',
+			titleFontSize: 0,
+			titleFontStyle: ' normal',
+			titleSpacing: -9,
+			titleMarginBottom: -4,
+			bodyFontFamily: 'Source Sans Pro',
+			bodyFontSize: 10,
+			bodyFontStyle: 'normal',
+			bodySpacing: 0,
+			xPadding: 8,
+			yPadding: 7,
+			cornerRadius: 2,
+			caretSize: 9,
+		},
+		hover:{
+			mode: 'nearest',
+			animationDuration: 400,
+		},
+	};
+
+	// pow big chart line
+	drawTheChart(powBigChartData, lineChartOptions, 'pow-big', 'line');
+	// pow small chart bar
+	drawTheChart(powSmallChartData, barChartOptions, 'pow-small', 'bar');
+
+	// pos big chart bar
+	drawTheChart(posBigChartData, barChartOptions, 'pos-big', 'bar');
+	// pos small chart bar
+	drawTheChart(posSmallChartData, barChartOptions, 'pos-small', 'bar');
+
+
+
+	// desktop view, charts toggle
+	powPosChartToggle.click(function() {
+		var that = $(this),
+		    thatParent = that.parent(),
+		    powPosUpgradeInfo = that.parent().children().eq(1),
+		    powPosChart = that.parent().children().eq(2);
+
+		$(this).add(thatParent).add(powPosChart).toggleClass(active);
+		powPosUpgradeInfo.toggleClass(inactive);
+
+		$('.chartjs-hidden-iframe').remove();
+	});
+
+</script>
+</body>
+</html>
+{{end}}

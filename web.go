@@ -164,7 +164,7 @@ type WebUI struct {
 // NewWebUI is the constructor for WebUI.  It creates a html/template.Template,
 // loads the function map, and parses the template files.
 func NewWebUI() *WebUI {
-	fp := filepath.Join("public", "views", "design_sketch.html")
+	fp := filepath.Join("public", "views", "start.html")
 	tmpl, err := template.New("home").Funcs(funcMap).ParseFiles(fp)
 	if err != nil {
 		panic(err)
