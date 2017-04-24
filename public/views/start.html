@@ -25,6 +25,15 @@
   <meta name="msapplication-config" content="images/favicon/browserconfig.xml">
   <link rel="icon" href="favicon.ico">
   <script src="js/modernizr.js" type="text/javascript"></script>
+  <style>
+  .progress-percent.pow {
+  width: {{.BlockVersionMostPopularPercentage}}%;
+  {{if not .BlockVersionSuccess}}
+  background-color:#fd714b;
+  {{end}}
+  }
+  </style>
+
 </head>
 <body class="body">
   <div class="tooltip w-clearfix">
@@ -47,13 +56,13 @@
           <div class="heading voting-overview">Voting Overview</div>
           <div class="text-block voting-overview">
             <p>
-There is a two-phase process for voting to implement consensus changes that would create a hard fork. Note: the following block intervals are for the testnet, they will differ for mainnet.
+There is a two-phase process for voting to implement consensus changes that would create a hard fork.
             </p>
             <p>
-The first step is to meet the upgrade threshold on the network. After the hard fork code is released, a majority of the nodes on the network participating in PoW/PoS need to first upgrade before the voting can begin. For Proof-of-Work, at least 75% of the 100 most recent blocks must have the latest block version. For Proof-of-Stake, 75% of the votes cast within a static 2016 block interval must have the latest vote version.
+The first step is to meet the upgrade threshold on the network. After the hard fork code is released, a majority of the nodes on the network participating in PoW/PoS need to first upgrade before the voting can begin. For Proof-of-Work, at least {{.BlockVersionRejectThreshold}}% of the {{.BlockVersionWindowLength}} most recent blocks must have the latest block version. For Proof-of-Stake, {{.StakeVersionThreshold}}% of the votes cast within a static {{.StakeVersionWindowLength}} block interval must have the latest vote version.
             </p>
             <p>
-The second step of this process is the actual voting. The previous 2016 block interval falls somewhere within a larger 5040 block interval and the network must wait for that larger 5040 block interval to end. Because of the different interval lengths, it might take up to an additional 5040 blocks before the voting window begins. After that, a static 5040 block interval transpires while votes are cast and if 75% of the votes mined within that interval signal a ‘yes’ vote to the proposed changes, the changes are fully implemented after one additional block interval (to give any remaining nodes the time needed to update to avoid being forked off the blockchain).
+The second step of this process is the actual voting. The previous {{.StakeVersionWindowLength}} block interval falls somewhere within a larger 5040 block interval and the network must wait for that larger 5040 block interval to end. Because of the different interval lengths, it might take up to an additional 5040 blocks before the voting window begins. After that, a static 5040 block interval transpires while votes are cast and if 75% of the votes mined within that interval signal a ‘yes’ vote to the proposed changes, the changes are fully implemented after one additional block interval (to give any remaining nodes the time needed to update to avoid being forked off the blockchain).
             </p>
         </div>
       </div>
@@ -94,12 +103,12 @@ The second step of this process is the actual voting. The previous 2016 block in
                 <div class="pow progress-percent"></div>
               </div>
               <div class="pow-pos-upgrade progress-bar-threshold"></div>
-              <div class="heading progress-bar-pow-pos-percent">62%</div>
+              <div class="heading progress-bar-pow-pos-percent">{{.BlockVersionMostPopularPercentage}}%</div>
             </div>
           </div>
           <div class="chart pow w-clearfix">
             <div class="chart-info w-clearfix">
-              <div class="heading pow-pos">PoS Upgrade</div>
+              <div class="heading pow-pos">PoW Upgrade</div>
               <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: 
 <!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
                 {{if .StakeVersionSuccess}}
@@ -108,10 +117,10 @@ The second step of this process is the actual voting. The previous 2016 block in
                 <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
                 {{end}}
 
-                <br> Most Popular Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
-                <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
-                <br> Reject Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
-                <br> Rolling Window: <span class="highlight-text">{{.StakeVersionWindowLength}} Blocks</span>
+                <br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
+                <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>
+                <br> Reject Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
+                <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
               </div>
             </div>
             <div class="chart-draw lines-big w-clearfix">
@@ -606,26 +615,71 @@ The second step of this process is the actual voting. The previous 2016 block in
 	Chart.defaults.global.defaultFontColor = '#fff';
 	// charts data
 	// pow big
-	var powBigChartData = {
-		labels: ['289885','289885','289885','289885','289885','289885','289885','289885','289885','289885','289885'],
-		datasets: [{
-			data: [0,10,20,30,80,50,60,70,80,90,100],
-			backgroundColor:'rgba(41,112,255,0.7)',
-			borderColor: 'rgba(143,143,143,0.5)',
-			pointBackgroundColor: '#2970ff',
-			pointBorderColor: '#2970ff',
-			label: 'Block V4',
-		}]
-	};
+    var blockVersionGraphColors = ['23,12,220','244,100,1','75,192,192','41,113,255','123,22,255','22,255,122', '28,97,21', '100,175,183', '139,177,22', '112,29,239']
+    var powBigChartData = {
+      type: 'line',
+
+        labels: {{.BlockVersionsHeights}},
+        datasets: [
+        {{range $i, $element := .BlockVersions}}
+          {
+              label: "Block v"+{{$i}},
+              fill: true,
+              lineTension: 0.1,
+              backgroundColor: "rgba("+blockVersionGraphColors[{{$i}}-1]+",0.4)",
+              borderColor: "rgba("+blockVersionGraphColors[{{$i}}-1]+",1)",
+              borderCapStyle: 'butt',
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: 'miter',
+              pointBorderColor: "rgba("+blockVersionGraphColors[{{$i}}-1]+",1)",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "rgba("+blockVersionGraphColors[{{$i}}-1]+",1)",
+              pointHoverBorderColor: "rgba(220,220,220,1)",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: {{.RollingWindowLookBacks}},
+              spanGaps: false,
+          },
+        {{end}}
+          ],
+      options: {
+        title: {
+          display: true,
+          text: 'PoW Block Versions',
+          fontColor: '#FFF'
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero:true,
+              fontColor: '#FFF'
+            }
+          }],
+          xAxes: [{
+            ticks: {
+              autoSkipPadding: 50,
+              beginAtZero:true,
+              fontColor: '#FFF',
+              reverse: true,
+            }
+          }]
+        }
+      }
+    };
+
 	// pow small
 	var powSmallChartData = {
 		labels: ['Last 100 Blocks'],
 		datasets: [{
-			data: [92],
+			data: [{{.BlockVersionMostPopularPercentage}}],
 			backgroundColor: 'rgba(41,112,255,0.7)',
 			borderColor: 'rgba(143,143,143,0.5)',
 			pointBorderColor: 'rgba(143,143,143,0.5)',
-			label: 'Block v4'
+			label: 'Block v{{.BlockVersionMostPopular}}'
 		}]
 	};
 	// pos big
