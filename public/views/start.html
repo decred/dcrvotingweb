@@ -74,7 +74,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
           <div class="pow-upgrade transition upgrade-content">
             <div class="upgrade-content-statistics-header w-clearfix">
               <div class="heading pow-pos">PoW Upgrade</div>
-              <!--  POW STATUS LABEL SWITCH -->
+<!--  POW STATUS LABEL SWITCH -->
               {{if .BlockVersionSuccess}}
               <div class="finished indicator pow-pos transition">finished</div>
               {{else}}
@@ -137,7 +137,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
             <div class="bars-small chart-draw w-clearfix">
               <div class="chart-draw-header w-clearfix">
                 <div class="chart-draw-header-indicator"></div>
-                <div class="chart-draw-header-indicator-name">Block V4</div>
+                <div class="chart-draw-header-indicator-name">Block V{{.BlockVersionMostPopular}}</div>
               </div>
               <div class="chart-draw-area">
 
@@ -152,7 +152,12 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
           <div class="pos-upgrade transition upgrade-content">
             <div class="upgrade-content-statistics-header w-clearfix">
               <div class="heading pow-pos">PoS Upgrade</div>
+<!--  POS STATUS LABEL SWITCH -->
+              {{if .StakeVersionSuccess}}
+              <div class="finished indicator pow-pos transition">finished</div>
+              {{else}}
               <div class="in-progress indicator pow-pos transition">in-progress</div>
+              {{end}}
             </div>
             <div class="upgrade-content-statistics-main w-clearfix">
               <div class="upgrade-content-statistics-numbers w-clearfix">Current Version: 
@@ -179,12 +184,17 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
           </div>
           <div class="chart pos w-clearfix">
             <div class="chart-info w-clearfix">
-              <div class="heading pow-pos">PoW Upgrade</div>
-              <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: <span class="highlight-text green">v4</span>
-                <br> Most Popular Version: <span class="highlight-text green">v4</span>
-                <br> Most Popular: <span class="highlight-text">100%</span>
-                <br> Reject Threshold: <span class="highlight-text">75%</span>
-                <br> Rolling Window: <span class="highlight-text">100 Blocks</span>
+              <div class="heading pow-pos">PoS Upgrade</div>
+              <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: 
+                {{if .StakeVersionSuccess}}                
+                <span class="highlight-text green">v{{.StakeVersionCurrent}}</span>
+                {{else}}
+                <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
+                {{end}}                
+                <br> Most Popular Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
+                <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
+                <br> Reject Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
+                <br> Rolling Window: <span class="highlight-text">{{.StakeVersionWindowLength}} Blocks</span>
               </div>
             </div>
             <div class="chart-draw lines-big w-clearfix">
@@ -683,27 +693,57 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
 		}]
 	};
 	// pos big
-	var posBigChartData = {
-		labels: ['289885 - 285024', '289885 - 285024', '289885 - 285024', '289885 - 285024'],
-		datasets: [{
-			data: [9800, 8300, 9500, 5200],
-			backgroundColor: 'rgba(41,112,255,0.7)',
-			borderColor: 'rgba(143,143,143,0.5)',
-			pointBorderColor: 'rgba(143,143,143,0.5)',
-			label: 'Block v4'
-		}]
-	};
+    var voteVersionGraphColors = ['111,27,255','91,192,222','74,172,255','63,102,135','51,122,183','22,255,122', '0,96,255', '0,62,164', '139,177,22', '112,29,239']
+    var posBigChartData = {
+      type: 'bar',
+      data: {
+        labels: {{.StakeVersionIntervalLabels}},
+        datasets: [
+          {{range $i, $element := .StakeVersionIntervalResults}}
+          {
+          label: {{$element.Version}},
+          data: {{$element.Count}},
+          backgroundColor: "rgba("+voteVersionGraphColors[{{.Version}}]+",1)",
+          },
+          {{end}}
+        ]
+      }
+    };
 	// pos small
-	var posSmallChartData = {
-		labels: ['Last 100 Blocks'],
-		datasets: [{
-			data: [4600],
-			backgroundColor: 'rgba(41,112,255,0.7)',
-			borderColor: 'rgba(143,143,143,0.5)',
-			pointBorderColor: 'rgba(143,143,143,0.5)',
-			label: 'Block v4'
-		}]
-	};
+      var posSmallChartData = {
+      type: 'bar',
+      data: {
+        labels: ["Totals for Block {{.BlockHeight}}"],
+        datasets: [
+        {{$interval := index .StakeVersionsIntervals 0}}
+        {{range $i, $element := $interval.VoteVersions}}
+          {{if gt $element.Count 100}}
+          {
+          type: 'bar',
+          label: 'Vote v{{$element.Version}}',
+          backgroundColor: "rgba("+voteVersionGraphColors[{{.Version}}]+",1)",
+          data: [{{$element.Count}}],
+          }, 
+          {{end}}
+        {{end}}
+        ]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            stacked: true,
+            suggestedMin: 0,
+            suggestedMax: {{.StakeVersionWindowVoteTotal}}
+          }],
+          yAxes: [{
+            stacked: true,
+            suggestedMin: 0,
+            suggestedMax: {{.StakeVersionWindowVoteTotal}}
+          }]
+        }
+      }
+    };
+
 	// chart types
 	// line
 	lineChartOptions = {
