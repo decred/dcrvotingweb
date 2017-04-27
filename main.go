@@ -6,6 +6,8 @@ package main
 
 import (
 	"bytes"
+	"encoding/binary"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -13,12 +15,11 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"sync"
 	"time"
 
-	"encoding/binary"
-	"encoding/hex"
-
+	"github.com/asdine/storm"
 	"github.com/decred/dcrd/chaincfg"
 	"github.com/decred/dcrd/wire"
 	"github.com/decred/dcrrpcclient"
@@ -72,7 +73,7 @@ var templateInformation = &templateFields{
 }
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
-func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
+func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *storm.DB) {
 	fmt.Println("updating hard fork information")
 
 	// Get the current best block (height and hash)
@@ -398,6 +399,10 @@ func mainCore() int {
 		return 1
 	}
 
+	// Open DB for past agendas
+	db, err := storm.Open(filepath.Join("history", "agendas.db"))
+	defer db.Close()
+
 	// Only accept a single CTRL+C
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -413,7 +418,9 @@ func mainCore() int {
 	}()
 
 	// Run an initial templateInforation update based on current change
-	updatetemplateInformation(dcrdClient)
+	updatetemplateInformation(dcrdClient, db)
+
+	db.Save(&templateInformation.GetVoteInfoResult.Agendas[0])
 
 	// Run goroutine for notifications
 	var wg sync.WaitGroup
@@ -423,7 +430,7 @@ func mainCore() int {
 			select {
 			case height := <-connectChan:
 				fmt.Printf("Block height %v connected\n", height)
-				updatetemplateInformation(dcrdClient)
+				updatetemplateInformation(dcrdClient, db)
 			case <-quit:
 				fmt.Printf("Closing hardfork demo.\n")
 				wg.Done()
