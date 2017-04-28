@@ -1,5 +1,5 @@
 hash: 5a0626975c3c41c117dc6717a39e4099d68917c40ee94b73f377cf3c2afe1382
-updated: 2017-04-18T14:35:33.553968333-04:00
+updated: 2017-04-27T18:02:07.735845795-07:00
 imports:
 - name: github.com/btcsuite/btclog
   version: 73889fb79bd687870312b6e40effcecffbd57d30
@@ -14,7 +14,7 @@ imports:
 - name: github.com/decred/blake256
   version: a840e32d7c31fe2e0218607334cb120a683951a4
 - name: github.com/decred/dcrd
-  version: ff07aac47f0477f0021bc667dd7a794e67f4abd0
+  version: 45e579b71adfc413cd82594b1966f1cb8232e99c
   subpackages:
   - blockchain/stake
   - blockchain/stake/internal/dbnamespace
@@ -41,7 +41,7 @@ imports:
   subpackages:
   - edwards25519
 - name: golang.org/x/crypto
-  version: efac7f277b17c19894091e358c6130cb6bd51117
+  version: c7af5bf2638a1164f2eb5467c39c6cffbd13a02e
   subpackages:
   - ripemd160
 testImports: []
