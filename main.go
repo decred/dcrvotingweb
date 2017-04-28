@@ -73,8 +73,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	// Set Current block height
 	templateInformation.BlockHeight = height
 
-	// Request the current block to parse its blockHeader
-	block, err := dcrdClient.GetBlockVerbose(hash, false)
+	// Request the current block header
+	blockHeader, err := dcrdClient.GetBlockHeader(hash)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -213,7 +213,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.StakeVersionIntervalResults = stakeVersionIntervalResults
 	templateInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval*5 - int64(missedVotesStakeInterval)
 	templateInformation.StakeVersionIntervalLabels = stakeVersionLabels
-	templateInformation.StakeVersionCurrent = block.StakeVersion
+	templateInformation.StakeVersionCurrent = blockHeader.StakeVersion
 
 	mostPopularVersion := uint32(0)
 	mostPopularVersionCount := uint32(0)
