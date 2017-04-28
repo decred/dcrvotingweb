@@ -275,19 +275,19 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.AgendaChoice1Id = getVoteInfo.Agendas[0].Choices[0].Id
 	templateInformation.AgendaChoice1Description = getVoteInfo.Agendas[0].Choices[0].Description
 	templateInformation.AgendaChoice1Count = getVoteInfo.Agendas[0].Choices[0].Count
-	templateInformation.AgendaChoice1IsIgnore = getVoteInfo.Agendas[0].Choices[0].IsIgnore
+	templateInformation.AgendaChoice1IsIgnore = getVoteInfo.Agendas[0].Choices[0].IsAbstain
 	templateInformation.AgendaChoice1Bits = getVoteInfo.Agendas[0].Choices[0].Bits
 	templateInformation.AgendaChoice1Progress = toFixed(getVoteInfo.Agendas[0].Choices[0].Progress*100, 2)
 	templateInformation.AgendaChoice2Id = getVoteInfo.Agendas[0].Choices[1].Id
 	templateInformation.AgendaChoice2Description = getVoteInfo.Agendas[0].Choices[1].Description
 	templateInformation.AgendaChoice2Count = getVoteInfo.Agendas[0].Choices[1].Count
-	templateInformation.AgendaChoice2IsIgnore = getVoteInfo.Agendas[0].Choices[1].IsIgnore
+	templateInformation.AgendaChoice2IsIgnore = getVoteInfo.Agendas[0].Choices[1].IsAbstain
 	templateInformation.AgendaChoice2Bits = getVoteInfo.Agendas[0].Choices[1].Bits
 	templateInformation.AgendaChoice2Progress = toFixed(getVoteInfo.Agendas[0].Choices[1].Progress*100, 2)
 	templateInformation.AgendaChoice3Id = getVoteInfo.Agendas[0].Choices[2].Id
 	templateInformation.AgendaChoice3Description = getVoteInfo.Agendas[0].Choices[2].Description
 	templateInformation.AgendaChoice3Count = getVoteInfo.Agendas[0].Choices[2].Count
-	templateInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsIgnore
+	templateInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsAbstain
 	templateInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
 	templateInformation.AgendaChoice3Progress = toFixed(getVoteInfo.Agendas[0].Choices[2].Progress*100, 2)
 
@@ -301,7 +301,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	choiceIds := make([]string, len(getVoteInfo.Agendas[0].Choices))
 	choicePercentages := make([]float64, len(getVoteInfo.Agendas[0].Choices))
 	for i, choice := range getVoteInfo.Agendas[0].Choices {
-		if choice.IsIgnore {
+		if choice.IsAbstain {
 
 		} else {
 			choiceIds[i] = choice.Id
