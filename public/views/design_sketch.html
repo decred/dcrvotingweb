@@ -78,14 +78,16 @@
                                 <span class="bigpercent">{{.BlockVersionMostPopularPercentage}}%</span><br />
                               {{if .BlockVersionSuccess}}
                                 v{{.BlockVersionCurrent}}
-                              {{else}}<span class="error">v{{.BlockVersionCurrent}}</span>{{end}}<br />
+                              {{else}}
+                                <span class="error">v{{.BlockVersionMostPopular}}</span>
+                              {{end}}<br />
                               {{if .BlockVersionSuccess}}
                                 <span class="label label-success">FINISHED</span>
                               {{else}}
                                 <span class="label label-default">IN PROGRESS</span>
                               {{end}}
 				                        <p class="textinset">
-                                <small><strong>Current Version:</strong> v{{.BlockVersionMostPopular}}<br />
+                                <small><strong>Current Version:</strong> v{{.BlockVersionCurrent}}<br />
                                 <strong>Rolling Window:</strong> {{.BlockVersionWindowLength}} Blocks<br />
                                 <strong>Reject Threshold:</strong> {{.BlockVersionRejectThreshold}}%</small>
                                 </p> 

@@ -25,15 +25,15 @@ import (
 var maxVersion = 10000
 
 // Settings for daemon
-var host = flag.String("host", "127.0.0.1:19109", "node RPC host:port")
-var user = flag.String("user", "dcrd", "node RPC username")
-var pass = flag.String("pass", "bananas", "node RPC password")
-var cert = flag.String("cert", "dcrd.cert", "node RPC TLS certificate (when notls=false)")
+var host = flag.String("host", "127.0.0.1:9109", "node RPC host:port")
+var user = flag.String("user", "USER", "node RPC username")
+var pass = flag.String("pass", "PASSWORD", "node RPC password")
+var cert = flag.String("cert", "/home/user/.dcrd/rpc.cert", "node RPC TLS certificate (when notls=false)")
 var notls = flag.Bool("notls", false, "Disable use of TLS for node connection")
 var listenPort = flag.String("listen", ":8000", "web app listening port")
 
 // Daemon Params to use
-var activeNetParams = &chaincfg.TestNet2Params
+var activeNetParams = &chaincfg.MainNetParams
 
 // Contains a certain block version's count of blocks in the
 // rolling window (which has a length of activeNetParams.BlockUpgradeNumToCheck)
@@ -127,26 +127,22 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.BlockVersions = blockVersionsFound
 
 	// Calculate current block version and most popular version (and that percentage)
-	templateInformation.BlockVersionCurrent = int32(maxVersion)
+	templateInformation.BlockVersionCurrent = int32(3)
 	mostPopularBlockVersionCount := 0
 	// Range across rolling window block version results.  If any of the rolling window look back
 	// counts are greater than the required threshold then that is assured to be the current block
 	// version at point in the chain.
+
 	for i, blockVersion := range templateInformation.BlockVersions {
 		tipBlockVersionCount := blockVersion.RollingWindowLookBacks[len(blockVersion.RollingWindowLookBacks)-1]
-		if tipBlockVersionCount >= int(activeNetParams.BlockRejectNumRequired) {
+		if templateInformation.BlockVersionCurrent != i && tipBlockVersionCount > mostPopularBlockVersionCount {
 			// Show Green
-			templateInformation.BlockVersionCurrent = i
 			templateInformation.BlockVersionMostPopular = i
 			templateInformation.BlockVersionMostPopularPercentage = toFixed(float64(tipBlockVersionCount)/float64(templateInformation.BlockVersionWindowLength)*100, 2)
-			templateInformation.BlockVersionSuccess = true
+			if tipBlockVersionCount >= int(activeNetParams.BlockRejectNumRequired) {
+				templateInformation.BlockVersionSuccess = true
+			}
 			mostPopularBlockVersionCount = tipBlockVersionCount
-		}
-		if tipBlockVersionCount > mostPopularBlockVersionCount {
-			// Show Red
-			mostPopularBlockVersionCount = tipBlockVersionCount
-			templateInformation.BlockVersionMostPopular = i
-			templateInformation.BlockVersionMostPopularPercentage = toFixed(float64(tipBlockVersionCount)/float64(templateInformation.BlockVersionWindowLength)*100, 2)
 		}
 	}
 	if templateInformation.BlockVersionCurrent == int32(maxVersion) {
