@@ -2112,7 +2112,7 @@ body {
 
 .chart-draw.bars-small {
   width: 140px;
-  margin-right: 120px;
+  margin-right: 100px;
   float: right;
 }
 
@@ -2136,7 +2136,7 @@ body {
 }
 
 .chart-draw-area {
-  height: 200px;
+  height: 250px;
   padding: 0px;
 }
 

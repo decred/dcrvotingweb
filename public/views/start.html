@@ -117,10 +117,10 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
               <div class="heading pow-pos">PoW Upgrade</div>
               <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: 
 <!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
-                {{if .StakeVersionSuccess}}
-                <span class="highlight-text green">v{{.StakeVersionCurrent}}</span>
+                {{if .BlockVersionSuccess}}
+                <span class="highlight-text green">v{{.BlockVersionCurrent}}</span>
                 {{else}}
-                <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
+                <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
                 {{end}}
 
                 <br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
@@ -130,9 +130,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
               </div>
             </div>
             <div class="chart-draw lines-big w-clearfix">
-              <div class="chart-draw-header w-clearfix">
-                <div class="chart-draw-header-indicator"></div>
-                <div class="chart-draw-header-indicator-name">Block V{{.BlockVersionMostPopular}}</div>
+              <div class="chart-draw-header w-clearfix" id="pow-bigLegend">
               </div>
               <div class="chart-draw-area">
 
@@ -141,10 +139,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
               </div>
             </div>
             <div class="bars-small chart-draw w-clearfix">
-              <div class="chart-draw-header w-clearfix">
-                <div class="chart-draw-header-indicator"></div>
-                <div class="chart-draw-header-indicator-name">Block V{{.BlockVersionMostPopular}}</div>
-              </div>
+              
               <div class="chart-draw-area">
 
                   <canvas id="pow-small"></canvas>
@@ -204,10 +199,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
               </div>
             </div>
             <div class="chart-draw lines-big w-clearfix">
-              <div class="chart-draw-header w-clearfix">
-                <div class="chart-draw-header-indicator"></div>
-                <div class="chart-draw-header-indicator-name">Stake V{{.StakeVersionMostPopular}}</div>
-              </div>
+              
               <div class="chart-draw-area">
 
                   <canvas id="pos-big"></canvas>
@@ -216,8 +208,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
             </div>
             <div class="bars-small chart-draw w-clearfix">
               <div class="chart-draw-header w-clearfix">
-                <div class="chart-draw-header-indicator"></div>
-                <div class="chart-draw-header-indicator-name">Stake V{{.StakeVersionMostPopular}}</div>
+                
               </div>
               <div class="chart-draw-area">
 
@@ -688,16 +679,21 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
     };
 
 	// pow small
-	var powSmallChartData = {
-		labels: ['Last 100 Blocks'],
-		datasets: [{
-			data: [{{.BlockVersionMostPopularPercentage}}],
-			backgroundColor: 'rgba(41,112,255,0.7)',
-			borderColor: 'rgba(143,143,143,0.5)',
-			pointBorderColor: 'rgba(143,143,143,0.5)',
-			label: 'Block v{{.BlockVersionMostPopular}}'
-		}]
-	};
+    var powSmallChartData = {
+        labels: ["Last {{.BlockVersionWindowLength}} Blocks"],
+        datasets: [
+        {{range $i, $element := .BlockVersions}}
+        {{$length := minus (len $element.RollingWindowLookBacks) 1}}
+          {
+          type: 'bar',
+          label: 'Block v{{$i}}',
+          backgroundColor: "rgba("+blockVersionGraphColors[{{$i}}-1]+",1)",
+          data: [{{index $element.RollingWindowLookBacks $length}}],
+          }, 
+        {{end}}
+        ]
+    };
+
 	// pos big
   var voteVersionGraphColors = ['111,27,255','91,192,222','74,172,255','63,102,135','51,122,183','22,255,122', '0,96,255', '0,62,164', '139,177,22', '112,29,239']
 	var posBigChartData = {
@@ -714,20 +710,33 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
     {{end}}
     ]
 	};
-	// pow small
+	// pos small
 	var posSmallChartData = {
-		labels: ['Last 100 Blocks'],
-		datasets: [{
-			data: [4600],
-			backgroundColor: 'rgba(41,112,255,0.7)',
-			borderColor: 'rgba(143,143,143,0.5)',
-			pointBorderColor: 'rgba(143,143,143,0.5)',
-			label: 'Block v{{.StakeVersionMostPopular}}'
-		}]
+		labels: [''],
+		datasets: [
+      {{$interval := index .StakeVersionsIntervals 0}}
+        {{range $i, $element := $interval.VoteVersions}}
+          {{if gt $element.Count 100}}
+          {
+          type: 'bar',
+          label: 'Vote v{{$element.Version}}',
+          backgroundColor: "rgba("+voteVersionGraphColors[{{.Version}}]+",1)",
+          data: [{{$element.Count}}],
+          }, 
+          {{end}}
+        {{end}}
+    ]
 	};
 	// chart types
 	// line
 	lineChartOptions = {
+   // custom legend at a later time
+   legendTemplate : '<!-- BEGIN LEGEND -->'
+                  +'<% for (var i=0; i<datasets.length; i++) { %>'
+                    +'<div class="chart-draw-header-indicator" style=\"background-color:<%=datasets[i].lineColor%>\"></div>'
+                    +'<div class="chart-draw-header-indicator-name"><% if (datasets[i].label) { %><%= datasets[i].label %><% } %></div>'
+                +'<% } %>'
+              +'<!-- END LEGEND -->',
 		responsive: true,
 		maintainAspectRatio: false,
 		scales: {
@@ -740,7 +749,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
 				ticks: {fontSize: 10, beginAtZero: true}
 			}]
 		},
-		legend: {display: false},
+		legend: {display: true},
 		elements: {
 			point: {radius: 1, borderWidth: 0},
 			line: {tension: 0, borderWidth: 0.01},
@@ -768,7 +777,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
 			animationDuration: 400,
 		},
 	};
-	// bar
+  // barchart options regular
 	barChartOptions = {
 		responsive: true,
 		maintainAspectRatio: false,
@@ -776,14 +785,14 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
 			xAxes: [{
 				barThickness: 10,
 				gridLines: {display: false, color: 'rgba(90,109,129,0.19)'},
-				ticks: {fontSize: 10}
+				ticks: {fontSize: 10},
 			}],
 			yAxes: [{
 				gridLines: {color: 'rgba(90,109,129,0.19)', zeroLineColor: 'rgba(90,109,129,0.19)'},
-				ticks: {fontSize: 10, beginAtZero: true}
+				ticks: {fontSize: 10, beginAtZero: true},
 			}]
 	 	},
-		legend: {display: false},
+		legend: {display: true},
 		elements: {rectangle: {borderWidth: 0.01}},
 		tooltips: {
 			intersect: false,
@@ -808,15 +817,61 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
 			animationDuration: 400,
 		},
 	};
+	// barchart options STACKED
+	barChartOptionsStacked = {
+		responsive: true,
+		maintainAspectRatio: false,
+		scales: {
+			xAxes: [{
+				barThickness: 10,
+				gridLines: {display: false, color: 'rgba(90,109,129,0.19)'},
+				ticks: {fontSize: 10},
+        stacked: true,
+			}],
+			yAxes: [{
+				gridLines: {color: 'rgba(90,109,129,0.19)', zeroLineColor: 'rgba(90,109,129,0.19)'},
+				ticks: {fontSize: 10, beginAtZero: true},
+        stacked: true,
+			}]
+	 	},
+		legend: {display: false},
+		elements: {rectangle: {borderWidth: 0.1}},
+		tooltips: {
+			intersect: false,
+			displayColors: false,
+			backgroundColor: '#596d81',
+			titleFontFamily: 'Source Sans Pro',
+			titleFontSize: 0,
+			titleFontStyle: ' normal',
+			titleSpacing: -9,
+			titleMarginBottom: -4,
+			bodyFontFamily: 'Source Sans Pro',
+			bodyFontSize: 10,
+			bodyFontStyle: 'normal',
+			bodySpacing: 0,
+			xPadding: 8,
+			yPadding: 7,
+			caretSize: 9,
+		},
+		hover:{
+			mode: 'nearest',
+			animationDuration: 400,
+		},
+	};
 	// pow big chart line
 	drawTheChart(powBigChartData, lineChartOptions, 'pow-big', 'line');
+  // custom legend at a later time
+  // var legend = myChart.generateLegend();
+  //$('#pow-bigLegend').append(legend);
+
+
 	// pow small chart bar
-	drawTheChart(powSmallChartData, barChartOptions, 'pow-small', 'bar');
+	drawTheChart(powSmallChartData, barChartOptionsStacked, 'pow-small', 'bar');
 
 	// pos big chart bar
 	drawTheChart(posBigChartData, barChartOptions, 'pos-big', 'bar');
 	// pos small chart bar
-	drawTheChart(posSmallChartData, barChartOptions, 'pos-small', 'bar');
+	drawTheChart(posSmallChartData, barChartOptionsStacked, 'pos-small', 'bar');
 
 
 
