@@ -49,15 +49,19 @@ type intervalVersionCounts struct {
 // Set all activeNetParams fields since they don't change at runtime
 var templateInformation = &templateFields{
 	// BlockVersion params
-	BlockVersionEnforceThreshold: int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
-	BlockVersionRejectThreshold:  int(float64(activeNetParams.BlockRejectNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
-	BlockVersionWindowLength:     activeNetParams.BlockUpgradeNumToCheck,
+	BlockVersionEnforceThreshold: int(float64(activeNetParams.BlockEnforceNumRequired) /
+		float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
+	BlockVersionRejectThreshold: int(float64(activeNetParams.BlockRejectNumRequired) /
+		float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
+	BlockVersionWindowLength: activeNetParams.BlockUpgradeNumToCheck,
 	// StakeVersion params
 	StakeVersionWindowLength: activeNetParams.StakeVersionInterval,
-	StakeVersionThreshold:    toFixed(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)*100, 0),
+	StakeVersionThreshold: toFixed(float64(activeNetParams.StakeMajorityMultiplier)/
+		float64(activeNetParams.StakeMajorityDivisor)*100, 0),
 	// RuleChange params
 	RuleChangeActivationQuorum: activeNetParams.RuleChangeActivationQuorum,
-	QuorumThreshold:            float64(activeNetParams.RuleChangeActivationQuorum) / float64(activeNetParams.RuleChangeActivationInterval*uint32(activeNetParams.TicketsPerBlock)) * 100,
+	QuorumThreshold: float64(activeNetParams.RuleChangeActivationQuorum) /
+		float64(activeNetParams.RuleChangeActivationInterval*uint32(activeNetParams.TicketsPerBlock)) * 100,
 }
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
@@ -109,7 +113,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 			if !ok {
 				// Had not found this block version yet
 				blockVersionsFound[stakeVersion.BlockVersion] = &blockVersions{}
-				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks = make([]int, templateInformation.BlockVersionWindowLength)
+				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks =
+					make([]int, templateInformation.BlockVersionWindowLength)
 				// Need to populate "back" to fill in values for previously missed window
 				for k := 0; k < elementNum; k++ {
 					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[k] = 0
@@ -153,8 +158,9 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		}
 	}
 
-	blocksIntoStakeVersionWindow := (templateInformation.BlockHeight - activeNetParams.StakeValidationHeight) % activeNetParams.StakeVersionInterval
-	// Request twice as many, so we can populate the rolling block version window's first
+	blocksIntoStakeVersionWindow := (templateInformation.BlockHeight - activeNetParams.StakeValidationHeight) %
+		activeNetParams.StakeVersionInterval
+	// Rolling stake version window's
 	heightstakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
 		int32(blocksIntoStakeVersionWindow))
 	if err != nil {
@@ -165,8 +171,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		missedVotesStakeInterval += int(activeNetParams.TicketsPerBlock) - len(stakeVersionResult.Votes)
 	}
 
-	numberOfIntervals := 4
-	stakeVersionInfo, err := dcrdClient.GetStakeVersionInfo(int32(numberOfIntervals))
+	numberOfIntervalsToCheck := 4
+	stakeVersionInfo, err := dcrdClient.GetStakeVersionInfo(int32(numberOfIntervalsToCheck))
 	if err != nil {
 		fmt.Println(err)
 		return
