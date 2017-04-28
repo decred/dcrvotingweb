@@ -135,7 +135,6 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 
 	for i, blockVersion := range templateInformation.BlockVersions {
 		tipBlockVersionCount := blockVersion.RollingWindowLookBacks[len(blockVersion.RollingWindowLookBacks)-1]
-		fmt.Println(i, templateInformation.BlockVersionCurrent, tipBlockVersionCount, mostPopularBlockVersionCount)
 		if templateInformation.BlockVersionCurrent != i && tipBlockVersionCount > mostPopularBlockVersionCount {
 			// Show Green
 			templateInformation.BlockVersionMostPopular = i
