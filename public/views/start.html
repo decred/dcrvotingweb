@@ -32,6 +32,12 @@
   background-color:#fd714b;
   {{end}}
   }
+  .progress-percent.pos {
+  width: {{.StakeVersionMostPopularPercentage}}%;
+  {{if not .StakeVersionSuccess}}
+  background-color:#fd714b;
+  {{end}}
+  }
   </style>
 
 </head>
@@ -96,7 +102,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
                 <br> Reject Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
                 <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
               </div>
-              <div class="pow-pos-time-remaining transition">5h 43 min remaining</div>
+              <div class="pow-pos-time-remaining transition"></div>
             </div>
             <div class="progress-bar-pow-pos-upgrade">
               <div class="progress-indicator w-clearfix">
@@ -176,10 +182,10 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
             </div>
             <div class="progress-bar-pow-pos-upgrade">
               <div class="progress-indicator w-clearfix">
-                <div class="pow progress-percent"></div>
+                <div class="pow pos progress-percent"></div>
               </div>
               <div class="pow-pos-upgrade progress-bar-threshold"></div>
-              <div class="heading progress-bar-pow-pos-percent">62%</div>
+              <div class="heading progress-bar-pow-pos-percent">{{.StakeVersionMostPopularPercentage}}%</div>
             </div>
           </div>
           <div class="chart pos w-clearfix">
@@ -703,12 +709,12 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
 			backgroundColor: "rgba("+voteVersionGraphColors[{{.Version}}]+",1)",
 			borderColor: 'rgba(143,143,143,0.5)',
 			pointBorderColor: 'rgba(143,143,143,0.5)',
-			label: '{{$element.Version}}'
+			label: 'Vote v{{$element.Version}}'
 		},
     {{end}}
     ]
 	};
-	// pos small
+	// pow small
 	var posSmallChartData = {
 		labels: ['Last 100 Blocks'],
 		datasets: [{
@@ -716,7 +722,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
 			backgroundColor: 'rgba(41,112,255,0.7)',
 			borderColor: 'rgba(143,143,143,0.5)',
 			pointBorderColor: 'rgba(143,143,143,0.5)',
-			label: 'Block v4'
+			label: 'Block v{{.StakeVersionMostPopular}}'
 		}]
 	};
 	// chart types
