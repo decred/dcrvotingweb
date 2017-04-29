@@ -86,8 +86,6 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
               {{else}}
               <div class="in-progress indicator pow-pos transition">in-progress</div>
               {{end}}
-
-              
             </div>
             <div class="upgrade-content-statistics-main w-clearfix">
               <div class="upgrade-content-statistics-numbers w-clearfix">Current Version: 
@@ -122,7 +120,6 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
                 {{else}}
                 <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
                 {{end}}
-
                 <br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
                 <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>
                 <br> Reject Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
@@ -133,21 +130,18 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
               <div class="chart-draw-header w-clearfix" id="pow-bigLegend">
               </div>
               <div class="chart-draw-area">
-
                   <canvas id="pow-big"></canvas>
-
               </div>
             </div>
             <div class="bars-small chart-draw w-clearfix">
-              
               <div class="chart-draw-area">
-
                   <canvas id="pow-small"></canvas>
-
               </div>
             </div>
           </div>
         </div>
+
+
         <div class="pos-upgrade w-clearfix width-half">
           <div class="chart-toggle-side pos"></div>
           <div class="pos-upgrade transition upgrade-content">
@@ -199,21 +193,16 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
               </div>
             </div>
             <div class="chart-draw lines-big w-clearfix">
-              
               <div class="chart-draw-area">
-
                   <canvas id="pos-big"></canvas>
-
               </div>
             </div>
             <div class="bars-small chart-draw w-clearfix">
               <div class="chart-draw-header w-clearfix">
-                
+              <!-- custom legend removed -->
               </div>
               <div class="chart-draw-area">
-
                   <canvas id="pos-small"></canvas>
-
               </div>
             </div>
           </div>
@@ -222,28 +211,82 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
     </div>
     <div class="agendas w-clearfix">
       <div class="agendas w-clearfix width-1180">
+  
+<!-- agenda loop start -->
         <div class="agenda drop-shadow-first-element w-clearfix">
           <div class="agenda-section w-clearfix">
             <div class="agenda-indicator w-clearfix">
+              <!-- labels -->
+              {{if .VotingDefined}}
               <div class="indicator upcoming">upcoming</div>
+              {{end}}
+              {{if .VotingStarted}}
+              <div class="in-progress indicator">in-progress</div>
+              {{end}}
+              {{if .VotingActive}}
+              <div class="finished indicator">Finished</div>
+              {{end}}
+              {{if .VotingFailed}}
+              <div class="failed indicator">Failed</div>
+              {{end}}
+              {{if .VotingLockedin}}
+              <div class="finished indicator">Lockedin</div>
+              {{end}}
+
+              <!-- status icons -->
+              {{if .VotingLockedin}}
               <div class="indicator-icon lockin" data-tooltip-text="Lock-in phase, new rules not yet activated"></div>
-              <div class="activated indicator-icon" data-tooltip-text="Voting Succeeded, New Rules Activated"></div>
-              <div class="quorum w-clearfix">Quorum: &nbsp;<span class="highlight-text orange transparent quorum">No</span>
+              {{end}}
+              {{if .VotingActive}}
+               <div class="activated indicator-icon active" data-tooltip-text="Voting Succeeded, New Rules Activated"></div>
+              {{end}}
+
+              <!-- quorum indicator -->
+              {{if .VotingStarted}}
+              <div class="quorum w-clearfix">Quorum: &nbsp;
+                {{if .QuorumAchieved}}
+                <span class="highlight-text green transparent quorum">Yes</span>
+                {{else}}
+                <span class="highlight-text orange transparent quorum">No</span>
+                {{end}}
               </div>
+              {{end}}
             </div>
+
+            <!-- agenda details -->
             <div class="w-clearfix width-half">
-              <div class="agenda heading">Agenda name</div>
+              <div class="agenda heading">{{.AgendaID}}</div>
               <div class="agenda-cfg w-clearfix">
-                <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#maxblocksize</span>
+                <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#{{.AgendaID}}</span>
                 </div>
-                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">288048-293087</span>
+                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{.GetVoteInfoResult.StartHeight}}-{{.GetVoteInfoResult.EndHeight}}</span>
                 </div>
                 <div class="agenda-cfg-spec w-clearfix">If anything missing: &nbsp;<span class="highlight-text cyan transparent">Add here</span>
                 </div>
               </div>
-              <div class="agenda-paragraph">Change maximum allowed block size from 1MB to 1.25MiB
-                <br> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo&nbsp;</div>
+              <div class="agenda-paragraph">
+                <p>{{.AgendaDescription}}</p>
+                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}
+                <p>Blocks left {{if .VotingStarted}}for{{else}}until{{end}} voting: {{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}}</p>
+                {{end}}
+                {{if .VotingStarted}}
+                  {{if .QuorumAchieved}}
+                    <p><strong>Success!</strong> We have reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.<br />
+                    There are <strong>{{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}}</strong> blocks left in the vote.
+                    </p>
+                  {{else}}
+                    <p>We have yet not reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.
+                    </p>
+                  {{end}}
+                {{end}}
+                {{if .VotingActive}}
+                    <p>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://forum.decred.org/forums/development-dispatches/" target="_blank">Forum</a> to get the latest Development Dispatches.
+                    </p>
+                {{end}}
+              </div>
             </div>
+
+            <!-- agenda choices list -->
             <div class="left-padding-50 w-clearfix width-half">
               <div class="agenda-voting-overview-options-title w-clearfix">
                 <div class="agenda-voting-overview">voting overview:</div>
@@ -293,6 +336,9 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
               </div>
             </div>
           </div>
+
+          <!-- agenda voting results barchart -->
+          {{if .VotingStarted}}
           <div class="agenda-section progress-bar w-clearfix">
             <div class="progress-bar-agenda w-clearfix">
               <div class="progress-bar-competing-options-and-total-votes w-clearfix">
@@ -307,8 +353,34 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
               <div class="heading progress-bar-agenda-voting-percent">0%</div>
             </div>
           </div>
-          <div class="agenda-voting-begins">Time estimate until voting begins…</div>
+          {{end}}
+
+          <!-- agenda toplabel -->
+          {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}
+          <div class="agenda-voting-begins">Starts in {{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}} blocks</div>
+          {{end}}
+          {{if .VotingStarted}}
+            {{if .QuorumAchieved}}
+              <div class="agenda-voting-begins">Quorum achieved
+              </div>
+            {{else}}
+              <div class="agenda-voting-begins">Quorum Progress: {{.QuorumVotedPercentage }}%
+              </div>
+            {{end}} 
+          {{end}}
+          {{if .VotingLockedin}}
+            <div class="agenda-voting-begins">
+              Success - Please Upgrade your Software - <strong>{{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}}</strong> blocks left
+            </div>
+          {{end}}
+          {{if .VotingFailed}}
+            <div class="agenda-voting-begins">Voting failed
+            </div>
+          {{end}}
         </div>
+<!-- agenda loop end -->
+
+
         <div class="agenda drop-shadow-n-element w-clearfix">
           <div class="agenda-section w-clearfix">
             <div class="agenda-indicator w-clearfix">
