@@ -16,6 +16,8 @@ import (
 	"sync"
 	"time"
 
+	"encoding/binary"
+	"encoding/hex"
 	"github.com/decred/dcrd/chaincfg"
 	"github.com/decred/dcrd/wire"
 	"github.com/decred/dcrrpcclient"
@@ -109,21 +111,22 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		// Define rolling window range for this current block (i)
 		stakeVersionsWindow := stakeVersionResults.StakeVersions[i:windowEnd]
 		for _, stakeVersion := range stakeVersionsWindow {
-			_, ok := blockVersionsFound[stakeVersion.BlockVersion]
+			// Try to get an existing blockVersions struct (pointer)
+			theseBlockVersions, ok := blockVersionsFound[stakeVersion.BlockVersion]
 			if !ok {
 				// Had not found this block version yet
-				blockVersionsFound[stakeVersion.BlockVersion] = &blockVersions{}
-				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks =
+				theseBlockVersions = &blockVersions{}
+				blockVersionsFound[stakeVersion.BlockVersion] = theseBlockVersions
+				theseBlockVersions.RollingWindowLookBacks =
 					make([]int, templateInformation.BlockVersionWindowLength)
 				// Need to populate "back" to fill in values for previously missed window
 				for k := 0; k < elementNum; k++ {
-					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[k] = 0
+					theseBlockVersions.RollingWindowLookBacks[k] = 0
 				}
-				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[elementNum] = 1
+				theseBlockVersions.RollingWindowLookBacks[elementNum] = 1
 			} else {
 				// Already had that block version, so increment
-				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[elementNum] =
-					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[elementNum] + 1
+				theseBlockVersions.RollingWindowLookBacks[elementNum]++
 			}
 		}
 		elementNum++
@@ -131,33 +134,40 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.BlockVersionsHeights = blockVersionsHeights
 	templateInformation.BlockVersions = blockVersionsFound
 
-	// Calculate current block version and most popular version (and that percentage)
-	templateInformation.BlockVersionCurrent = int32(3)
-	mostPopularBlockVersionCount := 0
-	// Range across rolling window block version results.  If any of the rolling window look back
-	// counts are greater than the required threshold then that is assured to be the current block
-	// version at point in the chain.
-
-	for i, blockVersion := range templateInformation.BlockVersions {
-		tipBlockVersionCount := blockVersion.RollingWindowLookBacks[len(blockVersion.RollingWindowLookBacks)-1]
-		if templateInformation.BlockVersionCurrent != i && tipBlockVersionCount > mostPopularBlockVersionCount {
-			// Show Green
-			templateInformation.BlockVersionMostPopular = i
-			templateInformation.BlockVersionMostPopularPercentage = toFixed(float64(tipBlockVersionCount)/float64(templateInformation.BlockVersionWindowLength)*100, 2)
-			if tipBlockVersionCount >= int(activeNetParams.BlockRejectNumRequired) {
-				templateInformation.BlockVersionSuccess = true
-			}
-			mostPopularBlockVersionCount = tipBlockVersionCount
-		}
+	// Pick min block version (current version) out of most recent window
+	stakeVersionsWindow := stakeVersionResults.StakeVersions[:templateInformation.BlockVersionWindowLength]
+	blockVersionsCounts := make(map[int32]int64)
+	for _, sv := range stakeVersionsWindow {
+		blockVersionsCounts[sv.BlockVersion] = blockVersionsCounts[sv.BlockVersion] + 1
 	}
-	if templateInformation.BlockVersionCurrent == int32(maxVersion) {
-		for i := range templateInformation.BlockVersions {
-			if i < templateInformation.BlockVersionCurrent {
-				templateInformation.BlockVersionCurrent = i
-			}
+	var minBlockVersion, maxBlockVersion, popBlockVersion int32 = math.MaxInt32, -1, 0
+	popBlockVersionCount := int64(-1)
+	for v, c := range blockVersionsCounts {
+		if v < minBlockVersion {
+			minBlockVersion = v
+		}
+		if v > maxBlockVersion {
+			maxBlockVersion = v
+		}
+		if c > popBlockVersionCount {
+			popBlockVersionCount = c
+			popBlockVersion = v
 		}
 	}
 
+	blockWinUpgradePct := func(count int64) float64 {
+		return 100 * float64(count) / float64(activeNetParams.BlockUpgradeNumToCheck)
+	}
+
+	templateInformation.BlockVersionCurrent = minBlockVersion
+
+	templateInformation.BlockVersionMostPopular = popBlockVersion
+	templateInformation.BlockVersionMostPopularPercentage = toFixed(blockWinUpgradePct(popBlockVersionCount), 2)
+
+	templateInformation.BlockVersionNext = minBlockVersion + 1
+	templateInformation.BlockVersionNextPercentage = toFixed(blockWinUpgradePct(blockVersionsCounts[minBlockVersion+1]), 2)
+
+	// Voting intervals
 	blocksIntoStakeVersionWindow := (templateInformation.BlockHeight - activeNetParams.StakeValidationHeight) %
 		activeNetParams.StakeVersionInterval
 	// Rolling stake version window's
@@ -455,4 +465,13 @@ func round(num float64) int {
 func toFixed(num float64, precision int) float64 {
 	output := math.Pow(10, float64(precision))
 	return float64(round(num*output)) / output
+}
+
+func getBlockVersionFromWork(dcrdClient *dcrrpcclient.Client) (uint32, error) {
+	getWorkResult, err := dcrdClient.GetWork()
+	if err != nil {
+		return 0, err
+	}
+	blockVerBytes, _ := hex.DecodeString(getWorkResult.Data[0:8])
+	return binary.LittleEndian.Uint32(blockVerBytes), nil
 }

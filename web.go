@@ -40,6 +40,10 @@ type templateFields struct {
 	BlockVersionMostPopular int32
 	// BlockVersionMostPopularPercentage is the percentage of the most popular block version
 	BlockVersionMostPopularPercentage float64
+	// BlockVersionNext is teh next block version.
+	BlockVersionNext           int32
+	// BlockVersionNextPercentage is the share of the next block version in the current rolling window.
+	BlockVersionNextPercentage float64
 
 	// StakeVersion Information
 	//

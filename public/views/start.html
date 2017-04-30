@@ -27,7 +27,7 @@
   <script src="js/modernizr.js" type="text/javascript"></script>
   <style>
   .progress-percent.pow {
-  width: {{.BlockVersionMostPopularPercentage}}%;
+  width: {{.BlockVersionNextPercentage}}%;
   {{if not .BlockVersionSuccess}}
   background-color:#fd714b;
   {{end}}
@@ -95,8 +95,10 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
                 {{else}}
                 <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
                 {{end}}
-                <br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
-                <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>
+                <br> Next Version: <span class="highlight-text green">v{{.BlockVersionNext}}</span>
+                <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span>
+                <!--<br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
+                <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>-->
                 <br> Reject Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
                 <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
               </div>
@@ -107,7 +109,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
                 <div class="pow progress-percent"></div>
               </div>
               <div class="pow-pos-upgrade progress-bar-threshold"></div>
-              <div class="heading progress-bar-pow-pos-percent">{{.BlockVersionMostPopularPercentage}}%</div>
+              <div class="heading progress-bar-pow-pos-percent">{{.BlockVersionNextPercentage}}%</div>
             </div>
           </div>
           <div class="chart pow w-clearfix">
@@ -120,8 +122,10 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
                 {{else}}
                 <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
                 {{end}}
-                <br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
-                <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>
+                <br> Next Version: <span class="highlight-text green">v{{.BlockVersionNext}}</span>
+                <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span>
+                <!--<br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
+                <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>-->
                 <br> Reject Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
                 <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
               </div>
