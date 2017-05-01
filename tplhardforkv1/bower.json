@@ -1,0 +1,19 @@
+{
+  "name": "hardforkdemo",
+  "description": "decred",
+  "main": "index.html",
+  "authors": [
+    "karamble"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "decred governance monitor"
+  ],
+  "moduleType": [],
+  "homepage": "",
+  "dependencies": {
+    "bootstrap-sass": "^3.3.7",
+    "chart.js":"^2.5.0",
+    "less.js":"^2.7.2"
+  }
+}
