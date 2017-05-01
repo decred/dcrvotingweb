@@ -13,12 +13,34 @@ import (
 )
 
 type Agenda struct {
-	dcrjson.Agenda
+	dcrjson.Agenda            `storm:"inline"`
 	QuorumExpirationDate      string
 	QuorumVotedPercentage     float64
 	QuorumAbstainedPercentage float64
 	ChoiceIDs                 []string
 	ChoicePercentages         []float64
+	StartHeight               int64
+}
+
+// status: started, defined, lockedin, failed, active
+
+func (a *Agenda) IsActive() bool {
+	return a.Status == "active"
+}
+
+func (a *Agenda) IsStarted() bool {
+	return a.Status == "started"
+}
+
+func (a *Agenda) IsDefined() bool {
+	return a.Status == "defined"
+}
+func (a *Agenda) IsLockedIn() bool {
+	return a.Status == "lockedin"
+}
+
+func (a *Agenda) IsFailed() bool {
+	return a.Status == "failed"
 }
 
 // Overall data structure given to the template to render.
@@ -92,12 +114,6 @@ type templateFields struct {
 	Quorum bool
 	// QuorumThreshold is the percentage required for the RuleChange to become active.
 	QuorumThreshold float64
-	// QuorumVotedPercentage is the percentage of progress toward quorum XXX needs to be fixed.
-	QuorumVotedPercentage float64
-	// QuorumAbstainedPercentage is the abstain percentage.
-	QuorumAbstainedPercentage float64
-	// QuorumExpirationDate is the date in which the agenda is scheduled to expire.
-	QuorumExpirationDate string
 
 	LockedinPercentage float64
 

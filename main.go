@@ -278,6 +278,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	// There may be no agendas for this vote version
 	if len(getVoteInfo.Agendas) == 0 {
 		fmt.Printf("No agendas for vote version %d\n", mostPopularVersion)
+		templateInformation.Agendas = []Agenda{}
 		return
 	}
 
@@ -295,13 +296,6 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.Agendas = make([]Agenda, 0, len(getVoteInfo.Agendas))
 
 	for i := range getVoteInfo.Agendas {
-		// templateInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "started"
-		// templateInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "defined"
-		// templateInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
-		// templateInformation.VotingFailed = getVoteInfo.Agendas[0].Status == "failed"
-		// templateInformation.VotingActive = getVoteInfo.Agendas[0].Status == "active"
-		// templateInformation.QuorumAchieved = getVoteInfo.Agendas[0].QuorumProgress == 1
-
 		choiceIds := make([]string, len(getVoteInfo.Agendas[i].Choices))
 		choicePercentages := make([]float64, len(getVoteInfo.Agendas[i].Choices))
 		for i, choice := range getVoteInfo.Agendas[i].Choices {
@@ -318,6 +312,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 			QuorumAbstainedPercentage: toFixed(getVoteInfo.Agendas[i].Choices[0].Progress*100, 2),
 			ChoiceIDs:                 choiceIds,
 			ChoicePercentages:         choicePercentages,
+			StartHeight:               getVoteInfo.StartHeight,
 		})
 	}
 }
