@@ -12,6 +12,15 @@ import (
 	"github.com/decred/dcrd/dcrjson"
 )
 
+type Agenda struct {
+	dcrjson.Agenda
+	QuorumExpirationDate      string
+	QuorumVotedPercentage     float64
+	QuorumAbstainedPercentage float64
+	ChoiceIDs                 []string
+	ChoicePercentages         []float64
+}
+
 // Overall data structure given to the template to render.
 type templateFields struct {
 
@@ -89,36 +98,12 @@ type templateFields struct {
 	QuorumAbstainedPercentage float64
 	// QuorumExpirationDate is the date in which the agenda is scheduled to expire.
 	QuorumExpirationDate string
-	// All of these are already contained in GetVoteInfoResult, so we need to refactor the html
-	// to properly use these.
-	AgendaLockedinPercentage float64
-	AgendaID                 string
-	AgendaDescription        string
-	AgendaChoice1Id          string
-	AgendaChoice1Description string
-	AgendaChoice1Count       uint32
-	AgendaChoice1IsIgnore    bool
-	AgendaChoice1Bits        uint16
-	AgendaChoice1Progress    float64
-	AgendaChoice2Id          string
-	AgendaChoice2Description string
-	AgendaChoice2Count       uint32
-	AgendaChoice2IsIgnore    bool
-	AgendaChoice2Bits        uint16
-	AgendaChoice2Progress    float64
-	AgendaChoice3Id          string
-	AgendaChoice3Description string
-	AgendaChoice3Count       uint32
-	AgendaChoice3IsIgnore    bool
-	AgendaChoice3Bits        uint16
-	AgendaChoice3Progress    float64
-	// These are bools to determine what state a given agenda is at.  These need to be refactored with stuff above.
-	VotingStarted  bool
-	VotingDefined  bool
-	VotingLockedin bool
-	VotingFailed   bool
-	VotingActive   bool
-	QuorumAchieved bool
+
+	LockedinPercentage float64
+
+	// Agendas contains all the agendas and their statuses
+	Agendas []Agenda
+
 	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
 	GetVoteInfoResult *dcrjson.GetVoteInfoResult
 	// Choice Ids and percentages that have been scrubbed for graphing.
