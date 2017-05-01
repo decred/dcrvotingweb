@@ -12,6 +12,8 @@ import (
 	"github.com/decred/dcrd/dcrjson"
 )
 
+// Agenda embeds the Agenda returned by getvoteinfo with several fields to
+// facilitate the html template programming.
 type Agenda struct {
 	dcrjson.Agenda            `storm:"inline"`
 	QuorumExpirationDate      string
@@ -22,23 +24,29 @@ type Agenda struct {
 	StartHeight               int64
 }
 
-// status: started, defined, lockedin, failed, active
+// Agenda status may be: started, defined, lockedin, failed, active
 
+// IsActive indicates if the agenda is active
 func (a *Agenda) IsActive() bool {
 	return a.Status == "active"
 }
 
+// IsStarted indicates if the agenda is started
 func (a *Agenda) IsStarted() bool {
 	return a.Status == "started"
 }
 
+// IsDefined indicates if the agenda is defined
 func (a *Agenda) IsDefined() bool {
 	return a.Status == "defined"
 }
+
+// IsLockedIn indicates if the agenda is lockedin
 func (a *Agenda) IsLockedIn() bool {
 	return a.Status == "lockedin"
 }
 
+// IsFailed indicates if the agenda is failed
 func (a *Agenda) IsFailed() bool {
 	return a.Status == "failed"
 }
@@ -114,7 +122,7 @@ type templateFields struct {
 	Quorum bool
 	// QuorumThreshold is the percentage required for the RuleChange to become active.
 	QuorumThreshold float64
-
+	// LockedinPercentage is the percent of the voing window remaining
 	LockedinPercentage float64
 
 	// Agendas contains all the agendas and their statuses
@@ -122,9 +130,6 @@ type templateFields struct {
 
 	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
 	GetVoteInfoResult *dcrjson.GetVoteInfoResult
-	// Choice Ids and percentages that have been scrubbed for graphing.
-	ChoiceIds         []string
-	ChoicePercentages []float64
 }
 
 var funcMap = template.FuncMap{
