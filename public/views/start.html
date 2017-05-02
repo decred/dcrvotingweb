@@ -27,7 +27,7 @@
   <script src="js/modernizr.js" type="text/javascript"></script>
   <style>
   .progress-percent.pow {
-  width: {{.BlockVersionMostPopularPercentage}}%;
+  width: {{.BlockVersionNextPercentage}}%;
   {{if not .BlockVersionSuccess}}
   background-color:#fd714b;
   {{end}}
@@ -95,8 +95,10 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
                 {{else}}
                 <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
                 {{end}}
-                <br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
-                <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>
+                <br> Next Version: <span class="highlight-text green">v{{.BlockVersionNext}}</span>
+                <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span>
+                <!--<br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
+                <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>-->
                 <br> Reject Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
                 <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
               </div>
@@ -107,7 +109,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
                 <div class="pow progress-percent"></div>
               </div>
               <div class="pow-pos-upgrade progress-bar-threshold"></div>
-              <div class="heading progress-bar-pow-pos-percent">{{.BlockVersionMostPopularPercentage}}%</div>
+              <div class="heading progress-bar-pow-pos-percent">{{.BlockVersionNextPercentage}}%</div>
             </div>
           </div>
           <div class="chart pow w-clearfix">
@@ -120,8 +122,10 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
                 {{else}}
                 <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
                 {{end}}
-                <br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
-                <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>
+                <br> Next Version: <span class="highlight-text green">v{{.BlockVersionNext}}</span>
+                <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span>
+                <!--<br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
+                <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>-->
                 <br> Reject Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
                 <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
               </div>
@@ -213,43 +217,44 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
       <div class="agendas w-clearfix width-1180">
   
 <!-- agenda loop start -->
-        {{if or .VotingActive .VotingLockedin .VotingFailed}}
+    {{range $i, $agenda := .Agendas}}
+        {{if or $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
         <div class="agenda drop-shadow-n-element w-clearfix">
         {{end}}
-        {{if or .VotingDefined .VotingStarted}}
+        {{if or $agenda.IsDefined $agenda.IsStarted}}
         <div class="agenda drop-shadow-first-element w-clearfix">
         {{end}}
           <div class="agenda-section w-clearfix">
             <div class="agenda-indicator w-clearfix">
               <!-- labels -->
-              {{if .VotingDefined}}
+              {{if $agenda.IsDefined}}
               <div class="indicator upcoming">upcoming</div>
               {{end}}
-              {{if .VotingStarted}}
+              {{if $agenda.IsStarted}}
               <div class="in-progress indicator">in-progress</div>
               {{end}}
-              {{if .VotingActive}}
+              {{if $agenda.IsActive}}
               <div class="finished indicator">Finished</div>
               {{end}}
-              {{if .VotingFailed}}
+              {{if $agenda.IsFailed}}
               <div class="failed indicator">Failed</div>
               {{end}}
-              {{if .VotingLockedin}}
+              {{if $agenda.IsLockedIn}}
               <div class="finished indicator">Lockedin</div>
               {{end}}
 
               <!-- status icons -->
-              {{if .VotingLockedin}}
+              {{if $agenda.IsLockedIn}}
               <div class="indicator-icon lockin" data-tooltip-text="Lock-in phase, new rules not yet activated"></div>
               {{end}}
-              {{if .VotingActive}}
+              {{if $agenda.IsActive}}
                <div class="activated indicator-icon active" data-tooltip-text="Voting Succeeded, New Rules Activated"></div>
               {{end}}
 
               <!-- quorum indicator -->
-              {{if .VotingStarted}}
+              {{if $agenda.IsStarted}}
               <div class="quorum w-clearfix">Quorum: &nbsp;
-                {{if .QuorumAchieved}}
+                {{if eq $agenda.QuorumProgress 1.0}}
                 <span class="highlight-text green transparent quorum">Yes</span>
                 {{else}}
                 <span class="highlight-text orange transparent quorum">No</span>
@@ -260,31 +265,31 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
 
             <!-- agenda details -->
             <div class="w-clearfix width-half">
-              <div class="agenda heading">{{.AgendaID}}</div>
+              <div class="agenda heading">{{$agenda.Id}}</div>
               <div class="agenda-cfg w-clearfix">
-                <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#{{.AgendaID}}</span>
+                <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#{{$agenda.Id}}</span>
                 </div>
-                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{.GetVoteInfoResult.StartHeight}}-{{.GetVoteInfoResult.EndHeight}}</span>
+                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{$.GetVoteInfoResult.StartHeight}}-{{$.GetVoteInfoResult.EndHeight}}</span>
                 </div>
                 <div class="agenda-cfg-spec w-clearfix">If anything missing: &nbsp;<span class="highlight-text cyan transparent">Add here</span>
                 </div>
               </div>
               <div class="agenda-paragraph">
-                <p>{{.AgendaDescription}}</p>
-                {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}
-                <p>Blocks left {{if .VotingStarted}}for{{else}}until{{end}} voting: {{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}}</p>
+                <p>{{$agenda.Description}}</p>
+                {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
+                <p>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</p>
                 {{end}}
-                {{if .VotingStarted}}
-                  {{if .QuorumAchieved}}
-                    <p><strong>Success!</strong> We have reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.<br />
-                    There are <strong>{{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}}</strong> blocks left in the vote.
+                {{if $agenda.IsStarted}}
+                  {{if eq $agenda.QuorumProgress 1.0}}
+                    <p><strong>Success!</strong> We have reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.<br />
+                    There are <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks left in the vote.
                     </p>
                   {{else}}
-                    <p>We have yet not reached the minimum Quorum of {{.QuorumThreshold}}% actively made votes.
+                    <p>We have yet not reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.
                     </p>
                   {{end}}
                 {{end}}
-                {{if .VotingActive}}
+                {{if $agenda.IsActive}}
                     <p>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://forum.decred.org/forums/development-dispatches/" target="_blank">Forum</a> to get the latest Development Dispatches.
                     </p>
                 {{end}}
@@ -343,7 +348,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
           </div>
 
           <!-- agenda voting results barchart -->
-          {{if .VotingStarted}}
+          {{if $agenda.IsStarted}}
           <div class="agenda-section progress-bar w-clearfix">
             <div class="progress-bar-agenda w-clearfix">
               <div class="progress-bar-competing-options-and-total-votes w-clearfix">
@@ -361,28 +366,29 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
           {{end}}
 
           <!-- agenda toplabel -->
-          {{if and .StakeVersionSuccess .BlockVersionSuccess .VotingDefined}}
-          <div class="agenda-voting-begins">Starts in {{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}} blocks</div>
+          {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
+          <div class="agenda-voting-begins">Starts in {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}} blocks</div>
           {{end}}
-          {{if .VotingStarted}}
-            {{if .QuorumAchieved}}
+          {{if $agenda.IsStarted}}
+            {{if eq $agenda.QuorumProgress 1.0}}
               <div class="agenda-voting-begins">Quorum achieved
               </div>
             {{else}}
-              <div class="agenda-voting-begins">Quorum Progress: {{.QuorumVotedPercentage }}%
+              <div class="agenda-voting-begins">Quorum Progress: {{$agenda.QuorumVotedPercentage }}%
               </div>
             {{end}} 
           {{end}}
-          {{if .VotingLockedin}}
+          {{if $agenda.IsLockedIn}}
             <div class="agenda-voting-begins">
-              Success - Please Upgrade your Software - <strong>{{minus64 .GetVoteInfoResult.EndHeight .GetVoteInfoResult.CurrentHeight}}</strong> blocks left
+              Success - Please Upgrade your Software - <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks left
             </div>
           {{end}}
-          {{if .VotingFailed}}
+          {{if $agenda.IsFailed}}
             <div class="agenda-voting-begins">Voting failed
             </div>
           {{end}}
         </div>
+      {{end}}
 <!-- agenda loop end -->
 
 

@@ -12,6 +12,45 @@ import (
 	"github.com/decred/dcrd/dcrjson"
 )
 
+// Agenda embeds the Agenda returned by getvoteinfo with several fields to
+// facilitate the html template programming.
+type Agenda struct {
+	dcrjson.Agenda            `storm:"inline"`
+	QuorumExpirationDate      string
+	QuorumVotedPercentage     float64
+	QuorumAbstainedPercentage float64
+	ChoiceIDs                 []string
+	ChoicePercentages         []float64
+	StartHeight               int64
+}
+
+// Agenda status may be: started, defined, lockedin, failed, active
+
+// IsActive indicates if the agenda is active
+func (a *Agenda) IsActive() bool {
+	return a.Status == "active"
+}
+
+// IsStarted indicates if the agenda is started
+func (a *Agenda) IsStarted() bool {
+	return a.Status == "started"
+}
+
+// IsDefined indicates if the agenda is defined
+func (a *Agenda) IsDefined() bool {
+	return a.Status == "defined"
+}
+
+// IsLockedIn indicates if the agenda is lockedin
+func (a *Agenda) IsLockedIn() bool {
+	return a.Status == "lockedin"
+}
+
+// IsFailed indicates if the agenda is failed
+func (a *Agenda) IsFailed() bool {
+	return a.Status == "failed"
+}
+
 // Overall data structure given to the template to render.
 type templateFields struct {
 
@@ -40,6 +79,10 @@ type templateFields struct {
 	BlockVersionMostPopular int32
 	// BlockVersionMostPopularPercentage is the percentage of the most popular block version
 	BlockVersionMostPopularPercentage float64
+	// BlockVersionNext is teh next block version.
+	BlockVersionNext int32
+	// BlockVersionNextPercentage is the share of the next block version in the current rolling window.
+	BlockVersionNextPercentage float64
 
 	// StakeVersion Information
 	//
@@ -79,47 +122,14 @@ type templateFields struct {
 	Quorum bool
 	// QuorumThreshold is the percentage required for the RuleChange to become active.
 	QuorumThreshold float64
-	// QuorumVotedPercentage is the percentage of progress toward quorum XXX needs to be fixed.
-	QuorumVotedPercentage float64
-	// QuorumAbstainedPercentage is the abstain percentage.
-	QuorumAbstainedPercentage float64
-	// QuorumExpirationDate is the date in which the agenda is scheduled to expire.
-	QuorumExpirationDate string
-	// All of these are already contained in GetVoteInfoResult, so we need to refactor the html
-	// to properly use these.
-	AgendaLockedinPercentage float64
-	AgendaID                 string
-	AgendaDescription        string
-	AgendaChoice1Id          string
-	AgendaChoice1Description string
-	AgendaChoice1Count       uint32
-	AgendaChoice1IsIgnore    bool
-	AgendaChoice1Bits        uint16
-	AgendaChoice1Progress    float64
-	AgendaChoice2Id          string
-	AgendaChoice2Description string
-	AgendaChoice2Count       uint32
-	AgendaChoice2IsIgnore    bool
-	AgendaChoice2Bits        uint16
-	AgendaChoice2Progress    float64
-	AgendaChoice3Id          string
-	AgendaChoice3Description string
-	AgendaChoice3Count       uint32
-	AgendaChoice3IsIgnore    bool
-	AgendaChoice3Bits        uint16
-	AgendaChoice3Progress    float64
-	// These are bools to determine what state a given agenda is at.  These need to be refactored with stuff above.
-	VotingStarted  bool
-	VotingDefined  bool
-	VotingLockedin bool
-	VotingFailed   bool
-	VotingActive   bool
-	QuorumAchieved bool
+	// LockedinPercentage is the percent of the voing window remaining
+	LockedinPercentage float64
+
+	// Agendas contains all the agendas and their statuses
+	Agendas []Agenda
+
 	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
 	GetVoteInfoResult *dcrjson.GetVoteInfoResult
-	// Choice Ids and percentages that have been scrubbed for graphing.
-	ChoiceIds         []string
-	ChoicePercentages []float64
 }
 
 var funcMap = template.FuncMap{

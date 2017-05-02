@@ -16,6 +16,8 @@ import (
 	"sync"
 	"time"
 
+	"encoding/binary"
+	"encoding/hex"
 	"github.com/decred/dcrd/chaincfg"
 	"github.com/decred/dcrd/wire"
 	"github.com/decred/dcrrpcclient"
@@ -49,15 +51,19 @@ type intervalVersionCounts struct {
 // Set all activeNetParams fields since they don't change at runtime
 var templateInformation = &templateFields{
 	// BlockVersion params
-	BlockVersionEnforceThreshold: int(float64(activeNetParams.BlockEnforceNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
-	BlockVersionRejectThreshold:  int(float64(activeNetParams.BlockRejectNumRequired) / float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
-	BlockVersionWindowLength:     activeNetParams.BlockUpgradeNumToCheck,
+	BlockVersionEnforceThreshold: int(float64(activeNetParams.BlockEnforceNumRequired) /
+		float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
+	BlockVersionRejectThreshold: int(float64(activeNetParams.BlockRejectNumRequired) /
+		float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
+	BlockVersionWindowLength: activeNetParams.BlockUpgradeNumToCheck,
 	// StakeVersion params
 	StakeVersionWindowLength: activeNetParams.StakeVersionInterval,
-	StakeVersionThreshold:    toFixed(float64(activeNetParams.StakeMajorityMultiplier)/float64(activeNetParams.StakeMajorityDivisor)*100, 0),
+	StakeVersionThreshold: toFixed(float64(activeNetParams.StakeMajorityMultiplier)/
+		float64(activeNetParams.StakeMajorityDivisor)*100, 0),
 	// RuleChange params
 	RuleChangeActivationQuorum: activeNetParams.RuleChangeActivationQuorum,
-	QuorumThreshold:            float64(activeNetParams.RuleChangeActivationQuorum) / float64(activeNetParams.RuleChangeActivationInterval*uint32(activeNetParams.TicketsPerBlock)) * 100,
+	QuorumThreshold: float64(activeNetParams.RuleChangeActivationQuorum) /
+		float64(activeNetParams.RuleChangeActivationInterval*uint32(activeNetParams.TicketsPerBlock)) * 100,
 }
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
@@ -83,13 +89,13 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	//
 	// Request twice as many, so we can populate the rolling block version window's first
 	stakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
-		int32(templateInformation.BlockVersionWindowLength*2))
+		int32(activeNetParams.BlockUpgradeNumToCheck*2))
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	blockVersionsFound := make(map[int32]*blockVersions)
-	blockVersionsHeights := make([]int64, templateInformation.BlockVersionWindowLength)
+	blockVersionsHeights := make([]int64, activeNetParams.BlockUpgradeNumToCheck)
 	elementNum := 0
 
 	// The algorithm starts at the middle of the GetStakeVersionResults and decrements backwards toward
@@ -99,26 +105,28 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	// and calculate that blocks rolling window results.
 	for i := len(stakeVersionResults.StakeVersions)/2 - 1; i >= 0; i-- {
 		// Calculate the last block element in the window
-		windowEnd := i + int(templateInformation.BlockVersionWindowLength)
+		windowEnd := i + int(activeNetParams.BlockUpgradeNumToCheck)
 		// blockVersionsHeights lets us have a correctly ordered list of blockheights for xaxis label
 		blockVersionsHeights[elementNum] = stakeVersionResults.StakeVersions[i].Height
 		// Define rolling window range for this current block (i)
 		stakeVersionsWindow := stakeVersionResults.StakeVersions[i:windowEnd]
 		for _, stakeVersion := range stakeVersionsWindow {
-			_, ok := blockVersionsFound[stakeVersion.BlockVersion]
+			// Try to get an existing blockVersions struct (pointer)
+			theseBlockVersions, ok := blockVersionsFound[stakeVersion.BlockVersion]
 			if !ok {
 				// Had not found this block version yet
-				blockVersionsFound[stakeVersion.BlockVersion] = &blockVersions{}
-				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks = make([]int, templateInformation.BlockVersionWindowLength)
+				theseBlockVersions = &blockVersions{}
+				blockVersionsFound[stakeVersion.BlockVersion] = theseBlockVersions
+				theseBlockVersions.RollingWindowLookBacks =
+					make([]int, activeNetParams.BlockUpgradeNumToCheck)
 				// Need to populate "back" to fill in values for previously missed window
 				for k := 0; k < elementNum; k++ {
-					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[k] = 0
+					theseBlockVersions.RollingWindowLookBacks[k] = 0
 				}
-				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[elementNum] = 1
+				theseBlockVersions.RollingWindowLookBacks[elementNum] = 1
 			} else {
 				// Already had that block version, so increment
-				blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[elementNum] =
-					blockVersionsFound[stakeVersion.BlockVersion].RollingWindowLookBacks[elementNum] + 1
+				theseBlockVersions.RollingWindowLookBacks[elementNum]++
 			}
 		}
 		elementNum++
@@ -126,52 +134,69 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	templateInformation.BlockVersionsHeights = blockVersionsHeights
 	templateInformation.BlockVersions = blockVersionsFound
 
-	// Calculate current block version and most popular version (and that percentage)
-	templateInformation.BlockVersionCurrent = int32(3)
-	mostPopularBlockVersionCount := 0
-	// Range across rolling window block version results.  If any of the rolling window look back
-	// counts are greater than the required threshold then that is assured to be the current block
-	// version at point in the chain.
-
-	for i, blockVersion := range templateInformation.BlockVersions {
-		tipBlockVersionCount := blockVersion.RollingWindowLookBacks[len(blockVersion.RollingWindowLookBacks)-1]
-		if templateInformation.BlockVersionCurrent != i && tipBlockVersionCount > mostPopularBlockVersionCount {
-			// Show Green
-			templateInformation.BlockVersionMostPopular = i
-			templateInformation.BlockVersionMostPopularPercentage = toFixed(float64(tipBlockVersionCount)/float64(templateInformation.BlockVersionWindowLength)*100, 2)
-			if tipBlockVersionCount >= int(activeNetParams.BlockRejectNumRequired) {
-				templateInformation.BlockVersionSuccess = true
-			}
-			mostPopularBlockVersionCount = tipBlockVersionCount
+	// Pick min block version (current version) out of most recent window
+	stakeVersionsWindow := stakeVersionResults.StakeVersions[:activeNetParams.BlockUpgradeNumToCheck]
+	blockVersionsCounts := make(map[int32]int64)
+	for _, sv := range stakeVersionsWindow {
+		blockVersionsCounts[sv.BlockVersion] = blockVersionsCounts[sv.BlockVersion] + 1
+	}
+	var minBlockVersion, maxBlockVersion, popBlockVersion int32 = math.MaxInt32, -1, 0
+	for v := range blockVersionsCounts {
+		if v < minBlockVersion {
+			minBlockVersion = v
+		}
+		if v > maxBlockVersion {
+			maxBlockVersion = v
 		}
 	}
-	if templateInformation.BlockVersionCurrent == int32(maxVersion) {
-		for i := range templateInformation.BlockVersions {
-			if i < templateInformation.BlockVersionCurrent {
-				templateInformation.BlockVersionCurrent = i
-			}
+	popBlockVersionCount := int64(-1)
+	for v, c := range blockVersionsCounts {
+		if c > popBlockVersionCount && v != minBlockVersion {
+			popBlockVersionCount = c
+			popBlockVersion = v
 		}
 	}
 
-	blocksIntoStakeVersionWindow := (templateInformation.BlockHeight - activeNetParams.StakeValidationHeight) % activeNetParams.StakeVersionInterval
-	// Request twice as many, so we can populate the rolling block version window's first
-	heightstakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
-		int32(blocksIntoStakeVersionWindow))
+	blockWinUpgradePct := func(count int64) float64 {
+		return 100 * float64(count) / float64(activeNetParams.BlockUpgradeNumToCheck)
+	}
+
+	templateInformation.BlockVersionCurrent = minBlockVersion
+
+	templateInformation.BlockVersionMostPopular = popBlockVersion
+	templateInformation.BlockVersionMostPopularPercentage = toFixed(blockWinUpgradePct(popBlockVersionCount), 2)
+
+	templateInformation.BlockVersionNext = minBlockVersion + 1
+	templateInformation.BlockVersionNextPercentage = toFixed(blockWinUpgradePct(blockVersionsCounts[minBlockVersion+1]), 2)
+
+	if popBlockVersionCount > int64(activeNetParams.BlockEnforceNumRequired) {
+		templateInformation.BlockVersionSuccess = true
+	}
+
+	// Voting intervals ((height-4096) mod 2016)
+	blocksIntoStakeVersionInterval := (height - activeNetParams.StakeValidationHeight) %
+		activeNetParams.StakeVersionInterval
+	// Stake versions per block in current voting interval (getstakeversions hash blocksIntoInterval)
+	intervalStakeVersions, err := dcrdClient.GetStakeVersions(hash.String(),
+		int32(blocksIntoStakeVersionInterval))
 	if err != nil {
 		fmt.Println(err)
 	}
+	// Tally missed votes so far in this interval
 	missedVotesStakeInterval := 0
-	for _, stakeVersionResult := range heightstakeVersionResults.StakeVersions {
+	for _, stakeVersionResult := range intervalStakeVersions.StakeVersions {
 		missedVotesStakeInterval += int(activeNetParams.TicketsPerBlock) - len(stakeVersionResult.Votes)
 	}
 
-	numberOfIntervals := 4
-	stakeVersionInfo, err := dcrdClient.GetStakeVersionInfo(int32(numberOfIntervals))
+	// Vote tallies for previous intervals (getstakeversioninfo 4)
+	numberOfIntervalsToCheck := 4
+	stakeVersionInfo, err := dcrdClient.GetStakeVersionInfo(int32(numberOfIntervalsToCheck))
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	if len(stakeVersionInfo.Intervals) == 0 {
+	numIntervals := len(stakeVersionInfo.Intervals)
+	if numIntervals == 0 {
 		fmt.Println("StakeVersion info did not return usable information, intervals empty")
 		return
 	}
@@ -181,61 +206,68 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	// Hacky way of populating the Vote Version bar graph
 	// Each element in each dataset needs counts for each interval
 	// For example:
-	// version 1: [100, 200, 300, 400]
-	stakeVersionIntervalResults := make([]intervalVersionCounts, 0)
-	stakeVersionLabels := make([]string, len(stakeVersionInfo.Intervals))
-	for i := len(stakeVersionInfo.Intervals) - 1; i >= 0; i-- {
-		interval := stakeVersionInfo.Intervals[i]
-		stakeVersionLabels[len(stakeVersionInfo.Intervals)-1-i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
-		for _, stakeVersion := range interval.VoteVersions {
-			found := false
+	// version 1: [100, 200, 0, 400]
+	var stakeVersionIntervalResults []intervalVersionCounts
+	stakeVersionLabels := make([]string, numIntervals)
+	// Oldest to newest interval (charts are left to right)
+	for i := 0; i < numIntervals; i++ {
+		interval := &stakeVersionInfo.Intervals[numIntervals-1-i]
+		stakeVersionLabels[i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
+	versionloop:
+		for _, versionCount := range interval.VoteVersions {
+			// Is this a vote version we've seen in a previous interval?
 			for k, result := range stakeVersionIntervalResults {
-				if result.Version == stakeVersion.Version {
-					stakeVersionIntervalResults[k].Count[len(stakeVersionInfo.Intervals)-1-i] = stakeVersion.Count
-					stakeVersionIntervalResults[k].Version = stakeVersion.Version
-					found = true
+				if result.Version == versionCount.Version {
+					stakeVersionIntervalResults[k].Count[i] = versionCount.Count
+					continue versionloop
 				}
 			}
-			if !found && stakeVersion.Count > minimumNeededVoteVersions {
-				stakeVersionIntervalResult := intervalVersionCounts{}
-				stakeVersionIntervalResult.Count = make([]uint32, len(stakeVersionInfo.Intervals))
-				stakeVersionIntervalResult.Count[len(stakeVersionInfo.Intervals)-1-i] = stakeVersion.Count
-				stakeVersionIntervalResult.Version = stakeVersion.Version
+			if versionCount.Count > minimumNeededVoteVersions {
+				stakeVersionIntervalResult := intervalVersionCounts{
+					Version: versionCount.Version,
+					Count:   make([]uint32, numIntervals),
+				}
+				stakeVersionIntervalResult.Count[i] = versionCount.Count
 				stakeVersionIntervalResults = append(stakeVersionIntervalResults, stakeVersionIntervalResult)
 			}
 		}
 	}
-	stakeVersionLabels[len(stakeVersionInfo.Intervals)-1] = "Current Interval"
+	stakeVersionLabels[numIntervals-1] = "Current Interval"
+	currentInterval := stakeVersionInfo.Intervals[0]
+
+	maxPossibleVotes := activeNetParams.StakeVersionInterval*int64(activeNetParams.TicketsPerBlock) -
+		int64(missedVotesStakeInterval)
+
 	templateInformation.StakeVersionIntervalResults = stakeVersionIntervalResults
-	templateInformation.StakeVersionWindowVoteTotal = activeNetParams.StakeVersionInterval*5 - int64(missedVotesStakeInterval)
+	templateInformation.StakeVersionWindowVoteTotal = maxPossibleVotes
 	templateInformation.StakeVersionIntervalLabels = stakeVersionLabels
 	templateInformation.StakeVersionCurrent = blockHeader.StakeVersion
 
-	mostPopularVersion := uint32(0)
-	mostPopularVersionCount := uint32(0)
-	for _, stakeVersion := range stakeVersionInfo.Intervals[0].VoteVersions {
-		if stakeVersion.Version != templateInformation.StakeVersionCurrent &&
+	var mostPopularVersion, mostPopularVersionCount uint32
+	for _, stakeVersion := range currentInterval.VoteVersions {
+		if stakeVersion.Version > blockHeader.StakeVersion &&
 			stakeVersion.Count > mostPopularVersionCount {
 			mostPopularVersion = stakeVersion.Version
 			mostPopularVersionCount = stakeVersion.Count
 		}
 	}
-	if mostPopularVersion <= templateInformation.StakeVersionCurrent {
+
+	templateInformation.StakeVersionMostPopularCount = mostPopularVersionCount
+	templateInformation.StakeVersionMostPopularPercentage = toFixed(float64(mostPopularVersionCount)/
+		float64(maxPossibleVotes)*100, 2)
+	templateInformation.StakeVersionMostPopular = mostPopularVersion
+	templateInformation.StakeVersionRequiredVotes = int32(maxPossibleVotes) *
+		activeNetParams.StakeMajorityMultiplier / activeNetParams.StakeMajorityDivisor
+	if int32(mostPopularVersionCount) > templateInformation.StakeVersionRequiredVotes {
 		templateInformation.StakeVersionSuccess = true
 	}
-	templateInformation.StakeVersionMostPopularCount = mostPopularVersionCount
-	templateInformation.StakeVersionMostPopularPercentage = toFixed(float64(mostPopularVersionCount)/float64(templateInformation.StakeVersionWindowVoteTotal)*100, 2)
-	templateInformation.StakeVersionMostPopular = mostPopularVersion
-	templateInformation.StakeVersionRequiredVotes = int32(templateInformation.StakeVersionWindowVoteTotal) * activeNetParams.StakeMajorityMultiplier / activeNetParams.StakeMajorityDivisor
 
-	blocksIntoInterval := stakeVersionInfo.Intervals[0].EndHeight - stakeVersionInfo.Intervals[0].StartHeight
-	templateInformation.StakeVersionVotesRemaining = (activeNetParams.StakeVersionInterval - blocksIntoInterval) * 5
+	blocksIntoInterval := currentInterval.EndHeight - currentInterval.StartHeight
+	templateInformation.StakeVersionVotesRemaining =
+		(activeNetParams.StakeVersionInterval - blocksIntoInterval) * int64(activeNetParams.TicketsPerBlock)
 
 	// Quorum/vote information
-	// NOTE: vote version will not be hard coded as it will change with time,
-	// and the web page will show multiple agendas at once. This is temporary.
-	voteVersion := uint32(4)
-	getVoteInfo, err := dcrdClient.GetVoteInfo(voteVersion)
+	getVoteInfo, err := dcrdClient.GetVoteInfo(mostPopularVersion)
 	if err != nil {
 		fmt.Println("Get vote info err", err)
 		templateInformation.Quorum = false
@@ -245,68 +277,44 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 
 	// There may be no agendas for this vote version
 	if len(getVoteInfo.Agendas) == 0 {
-		fmt.Printf("No agendas for vote version %d\n", voteVersion)
+		fmt.Printf("No agendas for vote version %d\n", mostPopularVersion)
+		templateInformation.Agendas = []Agenda{}
 		return
 	}
 
-	// Set Quorum to true since we got a valid response back from GetVoteInfoResult
-	templateInformation.Quorum = true
-
-	// These fields can be refactored out of GetVoteInfoResults
-	templateInformation.QuorumExpirationDate = time.Unix(int64(getVoteInfo.Agendas[0].ExpireTime), int64(0)).Format(time.RFC850)
-	templateInformation.QuorumVotedPercentage = toFixed(getVoteInfo.Agendas[0].QuorumProgress*100, 2)
-	templateInformation.QuorumAbstainedPercentage = toFixed(getVoteInfo.Agendas[0].Choices[0].Progress*100, 2)
-	templateInformation.AgendaID = getVoteInfo.Agendas[0].Id
-	templateInformation.AgendaDescription = getVoteInfo.Agendas[0].Description
+	// Set Quorum to true since we got a valid response back from GetVoteInfoResult (?)
+	if getVoteInfo.TotalVotes >= getVoteInfo.Quorum {
+		templateInformation.Quorum = true
+	}
 
 	// Status LockedIn Circle3 Ring Indicates BlocksLeft until old versions gets denied
 	lockedinBlocksleft := float64(getVoteInfo.EndHeight) - float64(getVoteInfo.CurrentHeight)
 	lockedinWindowsize := float64(getVoteInfo.EndHeight) - float64(getVoteInfo.StartHeight)
 	lockedinPercentage := lockedinWindowsize / 100
-	templateInformation.AgendaLockedinPercentage = toFixed(lockedinBlocksleft/lockedinPercentage, 2)
 
-	// Recalculating Vote Percentages for Donut Chart
+	templateInformation.LockedinPercentage = toFixed(lockedinBlocksleft/lockedinPercentage, 2)
+	templateInformation.Agendas = make([]Agenda, 0, len(getVoteInfo.Agendas))
 
-	// XX instread of static linking there should be itteration trough the Choices array
-	templateInformation.AgendaChoice1Id = getVoteInfo.Agendas[0].Choices[0].Id
-	templateInformation.AgendaChoice1Description = getVoteInfo.Agendas[0].Choices[0].Description
-	templateInformation.AgendaChoice1Count = getVoteInfo.Agendas[0].Choices[0].Count
-	templateInformation.AgendaChoice1IsIgnore = getVoteInfo.Agendas[0].Choices[0].IsAbstain
-	templateInformation.AgendaChoice1Bits = getVoteInfo.Agendas[0].Choices[0].Bits
-	templateInformation.AgendaChoice1Progress = toFixed(getVoteInfo.Agendas[0].Choices[0].Progress*100, 2)
-	templateInformation.AgendaChoice2Id = getVoteInfo.Agendas[0].Choices[1].Id
-	templateInformation.AgendaChoice2Description = getVoteInfo.Agendas[0].Choices[1].Description
-	templateInformation.AgendaChoice2Count = getVoteInfo.Agendas[0].Choices[1].Count
-	templateInformation.AgendaChoice2IsIgnore = getVoteInfo.Agendas[0].Choices[1].IsAbstain
-	templateInformation.AgendaChoice2Bits = getVoteInfo.Agendas[0].Choices[1].Bits
-	templateInformation.AgendaChoice2Progress = toFixed(getVoteInfo.Agendas[0].Choices[1].Progress*100, 2)
-	templateInformation.AgendaChoice3Id = getVoteInfo.Agendas[0].Choices[2].Id
-	templateInformation.AgendaChoice3Description = getVoteInfo.Agendas[0].Choices[2].Description
-	templateInformation.AgendaChoice3Count = getVoteInfo.Agendas[0].Choices[2].Count
-	templateInformation.AgendaChoice3IsIgnore = getVoteInfo.Agendas[0].Choices[2].IsAbstain
-	templateInformation.AgendaChoice3Bits = getVoteInfo.Agendas[0].Choices[2].Bits
-	templateInformation.AgendaChoice3Progress = toFixed(getVoteInfo.Agendas[0].Choices[2].Progress*100, 2)
-
-	templateInformation.VotingStarted = getVoteInfo.Agendas[0].Status == "started"
-	templateInformation.VotingDefined = getVoteInfo.Agendas[0].Status == "defined"
-	templateInformation.VotingLockedin = getVoteInfo.Agendas[0].Status == "lockedin"
-	templateInformation.VotingFailed = getVoteInfo.Agendas[0].Status == "failed"
-	templateInformation.VotingActive = getVoteInfo.Agendas[0].Status == "active"
-	templateInformation.QuorumAchieved = getVoteInfo.Agendas[0].QuorumProgress == 1
-
-	choiceIds := make([]string, len(getVoteInfo.Agendas[0].Choices))
-	choicePercentages := make([]float64, len(getVoteInfo.Agendas[0].Choices))
-	for i, choice := range getVoteInfo.Agendas[0].Choices {
-		if choice.IsAbstain {
-
-		} else {
-			choiceIds[i] = choice.Id
-			choicePercentages[i] = toFixed(choice.Progress*100, 2)
+	for i := range getVoteInfo.Agendas {
+		choiceIds := make([]string, len(getVoteInfo.Agendas[i].Choices))
+		choicePercentages := make([]float64, len(getVoteInfo.Agendas[i].Choices))
+		for i, choice := range getVoteInfo.Agendas[i].Choices {
+			if !choice.IsAbstain {
+				choiceIds[i] = choice.Id
+				choicePercentages[i] = toFixed(choice.Progress*100, 2)
+			}
 		}
-	}
-	templateInformation.ChoiceIds = choiceIds
-	templateInformation.ChoicePercentages = choicePercentages
 
+		templateInformation.Agendas = append(templateInformation.Agendas, Agenda{
+			Agenda:                    getVoteInfo.Agendas[i],
+			QuorumExpirationDate:      time.Unix(int64(getVoteInfo.Agendas[i].ExpireTime), int64(0)).Format(time.RFC850),
+			QuorumVotedPercentage:     toFixed(getVoteInfo.Agendas[i].QuorumProgress*100, 2),
+			QuorumAbstainedPercentage: toFixed(getVoteInfo.Agendas[i].Choices[0].Progress*100, 2),
+			ChoiceIDs:                 choiceIds,
+			ChoicePercentages:         choicePercentages,
+			StartHeight:               getVoteInfo.StartHeight,
+		})
+	}
 }
 
 // main wraps mainCore, which does all the work, because deferred functions do
@@ -449,4 +457,13 @@ func round(num float64) int {
 func toFixed(num float64, precision int) float64 {
 	output := math.Pow(10, float64(precision))
 	return float64(round(num*output)) / output
+}
+
+func getBlockVersionFromWork(dcrdClient *dcrrpcclient.Client) (uint32, error) {
+	getWorkResult, err := dcrdClient.GetWork()
+	if err != nil {
+		return 0, err
+	}
+	blockVerBytes, _ := hex.DecodeString(getWorkResult.Data[0:8])
+	return binary.LittleEndian.Uint32(blockVerBytes), nil
 }
