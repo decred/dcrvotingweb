@@ -6,3 +6,5 @@ import:
   - dcrjson
   - wire
 - package: github.com/decred/dcrrpcclient
+- package: github.com/asdine/storm
+  version: ~0.8.0

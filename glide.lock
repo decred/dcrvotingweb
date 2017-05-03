@@ -1,6 +1,16 @@
-hash: 5a0626975c3c41c117dc6717a39e4099d68917c40ee94b73f377cf3c2afe1382
-updated: 2017-04-28T17:05:57.384979746-04:00
+hash: d6bf7b055f26b5f4a77e2f709e733d477ff3b4f1a56c11e957ca04914d9c3a9f
+updated: 2017-05-03T16:06:09.6198376-07:00
 imports:
+- name: github.com/asdine/storm
+  version: e8518cc1200f320e508639491f9390b9c7c37970
+  subpackages:
+  - codec
+  - codec/json
+  - index
+  - internal
+  - q
+- name: github.com/boltdb/bolt
+  version: e9cf4fae01b5a8ff89d0ec6b32f0d9c9f79aefdd
 - name: github.com/btcsuite/btclog
   version: 73889fb79bd687870312b6e40effcecffbd57d30
 - name: github.com/btcsuite/go-socks
@@ -14,7 +24,7 @@ imports:
 - name: github.com/decred/blake256
   version: a840e32d7c31fe2e0218607334cb120a683951a4
 - name: github.com/decred/dcrd
-  version: 5bed758f85159b2ee76240207ba775c40000a4c1
+  version: f656ceb652c8a31d3534e15dfa97dcc1956fa3bd
   subpackages:
   - blockchain/stake
   - blockchain/stake/internal/dbnamespace
@@ -40,8 +50,19 @@ imports:
   version: b0909d3f798b97a03c9e77023f97a5301a2a7900
   subpackages:
   - edwards25519
+- name: github.com/emirpasic/gods
+  version: f6c17b524822278a87e3b3bd809fec33b51f5b46
+  subpackages:
+  - containers
+  - trees
+  - trees/redblacktree
+  - utils
 - name: golang.org/x/crypto
-  version: c7af5bf2638a1164f2eb5467c39c6cffbd13a02e
+  version: 04eae0b62feaaf659a0ce2c4e8dc70b6ae2fff67
   subpackages:
   - ripemd160
+- name: golang.org/x/sys
+  version: 9ccfe848b9db8435a24c424abbc07a921adf1df5
+  subpackages:
+  - unix
 testImports: []
