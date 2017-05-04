@@ -93,6 +93,8 @@ type templateFields struct {
 	StakeVersionThreshold float64
 	// StakeVersionWindowLength is the activeNetParams of StakeVersionInterval
 	StakeVersionWindowLength int64
+	// StakeVersionIntervalBlocks shows the actual blocks for the current window
+	StakeVersionIntervalBlocks string
 	// StakeVersionWindowVoteTotal is the number of total possible votes in the windows.
 	// It is reduced by number of observed missed votes thus far in the window.
 	StakeVersionWindowVoteTotal int64

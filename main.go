@@ -46,8 +46,9 @@ type blockVersions struct {
 }
 
 type intervalVersionCounts struct {
-	Version uint32
-	Count   []uint32
+	Version        uint32
+	Count          []uint32
+	StaticInterval string
 }
 
 // Set all activeNetParams fields since they don't change at runtime
@@ -217,6 +218,9 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	for i := 0; i < numIntervals; i++ {
 		interval := &stakeVersionInfo.Intervals[numIntervals-1-i]
 		stakeVersionLabels[i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
+		if i == numIntervals-1 {
+			templateInformation.StakeVersionIntervalBlocks = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
+		}
 	versionloop:
 		for _, versionCount := range interval.VoteVersions {
 			// Is this a vote version we've seen in a previous interval?
@@ -241,7 +245,6 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 
 	maxPossibleVotes := activeNetParams.StakeVersionInterval*int64(activeNetParams.TicketsPerBlock) -
 		int64(missedVotesStakeInterval)
-
 	templateInformation.StakeVersionIntervalResults = stakeVersionIntervalResults
 	templateInformation.StakeVersionWindowVoteTotal = maxPossibleVotes
 	templateInformation.StakeVersionIntervalLabels = stakeVersionLabels
