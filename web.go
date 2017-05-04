@@ -54,6 +54,9 @@ func (a *Agenda) IsFailed() bool {
 // Overall data structure given to the template to render.
 type templateFields struct {
 
+	// Network
+	Network string
+
 	// Basic information
 	BlockHeight int64
 
@@ -124,7 +127,8 @@ type templateFields struct {
 	QuorumThreshold float64
 	// LockedinPercentage is the percent of the voing window remaining
 	LockedinPercentage float64
-
+	// Length of the static rule change interval
+	RuleChangeActivationInterval int64
 	// Agendas contains all the agendas and their statuses
 	Agendas []Agenda
 
