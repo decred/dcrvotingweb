@@ -67,6 +67,7 @@ var templateInformation = &templateFields{
 	RuleChangeActivationQuorum: activeNetParams.RuleChangeActivationQuorum,
 	QuorumThreshold: float64(activeNetParams.RuleChangeActivationQuorum) /
 		float64(activeNetParams.RuleChangeActivationInterval*uint32(activeNetParams.TicketsPerBlock)) * 100,
+	RuleChangeActivationInterval: int64(activeNetParams.RuleChangeActivationInterval),
 }
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
