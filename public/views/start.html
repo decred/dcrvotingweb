@@ -310,7 +310,7 @@ The second step of this process is the actual voting. The previously mentioned {
                   <div class="agenda-voting-overview-option w-clearfix">
                     <div class="_{{$cid1}} agenda-voting-overview-option-dot"></div>
                     <div class="agenda-voting-overview-option-percent">{{$choice}}</div>
-                    <div class="agenda-voting-overview-option-percent value">{{index $agenda.ChoicePercentagesActing $cid}}%</div>
+                    {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }} <div class="agenda-voting-overview-option-percent value">{{index $agenda.ChoicePercentagesActing $cid}}%</div>{{end}}
                   </div>
                   {{if modiszero $cid1 3}}
                 </div>
@@ -323,7 +323,7 @@ The second step of this process is the actual voting. The previously mentioned {
           </div>
 
           <!-- agenda voting results barchart -->
-          {{if $agenda.IsStarted}}
+          {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed}}
           <div class="agenda-section progress-bar w-clearfix">
             <div class="progress-bar-agenda w-clearfix">
               <div class="progress-bar-competing-options-and-total-votes w-clearfix">
