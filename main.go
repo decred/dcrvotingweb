@@ -19,10 +19,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/asdine/storm"
 	"github.com/decred/dcrd/chaincfg"
+	"github.com/decred/dcrd/dcrjson"
 	"github.com/decred/dcrd/wire"
 	"github.com/decred/dcrrpcclient"
+	"github.com/decred/hardforkdemo/agendadb"
 )
 
 // Set some high value to check version number
@@ -73,7 +74,7 @@ var templateInformation = &templateFields{
 }
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
-func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *storm.DB) {
+func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.AgendaDB) {
 	fmt.Println("updating hard fork information")
 
 	// Get the current best block (height and hash)
@@ -309,9 +310,14 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *storm.DB) {
 	templateInformation.Agendas = make([]Agenda, 0, len(getVoteInfo.Agendas))
 
 	for i := range getVoteInfo.Agendas {
-		choiceIds := make([]string, len(getVoteInfo.Agendas[i].Choices))
-		choicePercentages := make([]float64, len(getVoteInfo.Agendas[i].Choices))
-		for i, choice := range getVoteInfo.Agendas[i].Choices {
+		agenda := agendadb.AgendaTagged(getVoteInfo.Agendas[i])
+		if err = db.StoreAgenda(&agenda); err != nil {
+			fmt.Printf("Failed to store agenda %s: %v\n", agenda.Id, err)
+		}
+
+		choiceIds := make([]string, len(agenda.Choices))
+		choicePercentages := make([]float64, len(agenda.Choices))
+		for i, choice := range agenda.Choices {
 			if !choice.IsAbstain {
 				choiceIds[i] = choice.Id
 				choicePercentages[i] = toFixed(choice.Progress*100, 2)
@@ -319,10 +325,10 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *storm.DB) {
 		}
 
 		templateInformation.Agendas = append(templateInformation.Agendas, Agenda{
-			Agenda:                    getVoteInfo.Agendas[i],
-			QuorumExpirationDate:      time.Unix(int64(getVoteInfo.Agendas[i].ExpireTime), int64(0)).Format(time.RFC850),
-			QuorumVotedPercentage:     toFixed(getVoteInfo.Agendas[i].QuorumProgress*100, 2),
-			QuorumAbstainedPercentage: toFixed(getVoteInfo.Agendas[i].Choices[0].Progress*100, 2),
+			Agenda:                    dcrjson.Agenda(agenda),
+			QuorumExpirationDate:      time.Unix(int64(agenda.ExpireTime), int64(0)).Format(time.RFC850),
+			QuorumVotedPercentage:     toFixed(agenda.QuorumProgress*100, 2),
+			QuorumAbstainedPercentage: toFixed(agenda.Choices[0].Progress*100, 2),
 			ChoiceIDs:                 choiceIds,
 			ChoicePercentages:         choicePercentages,
 			StartHeight:               getVoteInfo.StartHeight,
@@ -400,8 +406,18 @@ func mainCore() int {
 	}
 
 	// Open DB for past agendas
-	db, err := storm.Open(filepath.Join("history", "agendas.db"))
+	dbPath, dbName := "history", "agendas.db"
+	err = os.Mkdir(dbPath, os.FileMode(750))
+	if err != nil && !os.IsExist(err) {
+		fmt.Printf("Unable to create database folder: %v", err)
+	}
+	db, err := agendadb.Open(filepath.Join(dbPath, dbName))
+	if err != nil {
+		fmt.Printf("Unable to open agendas DB: %v\n", err)
+		return 1
+	}
 	defer db.Close()
+	db.ListAgendas()
 
 	// Only accept a single CTRL+C
 	c := make(chan os.Signal, 1)
@@ -419,8 +435,6 @@ func mainCore() int {
 
 	// Run an initial templateInforation update based on current change
 	updatetemplateInformation(dcrdClient, db)
-
-	db.Save(&templateInformation.GetVoteInfoResult.Agendas[0])
 
 	// Run goroutine for notifications
 	var wg sync.WaitGroup
