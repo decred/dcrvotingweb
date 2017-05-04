@@ -273,9 +273,7 @@ The second step of this process is the actual voting. The previously mentioned {
               <div class="agenda-cfg w-clearfix">
                 <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#{{$agenda.Id}}</span>
                 </div>
-                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{$.GetVoteInfoResult.StartHeight}}-{{$.GetVoteInfoResult.EndHeight}}</span>
-                </div>
-                <div class="agenda-cfg-spec w-clearfix">If anything missing: &nbsp;<span class="highlight-text cyan transparent">Add here</span>
+                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{$.GetVoteInfoResult.StartHeight}} - {{$.GetVoteInfoResult.EndHeight}}</span>
                 </div>
               </div>
               <div class="agenda-paragraph">
@@ -307,45 +305,18 @@ The second step of this process is the actual voting. The previously mentioned {
               </div>
               <div class="agenda-voting-overview-options w-clearfix">
                 <div class="width-third">
+                  {{range $cid, $choice := .ChoiceIDs}}
+                  {{$cid1 := plus $cid 1}}
                   <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_1 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option 1</div>
-                    <div class="agenda-voting-overview-option-percent value">60%</div>
+                    <div class="_{{$cid1}} agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent">{{$choice}}</div>
+                    <div class="agenda-voting-overview-option-percent value">{{index $agenda.ChoicePercentages $cid}}%</div>
                   </div>
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_2 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option 2</div>
-                    <div class="agenda-voting-overview-option-percent value">30%</div>
-                  </div>
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_3 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option 3</div>
-                    <div class="agenda-voting-overview-option-percent value">10%</div>
-                  </div>
+                  {{if modiszero $cid1 3}}
                 </div>
                 <div class="width-third">
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_4 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option n</div>
-                    <div class="agenda-voting-overview-option-percent value">000%</div>
-                  </div>
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_5 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option n</div>
-                    <div class="agenda-voting-overview-option-percent value">000%</div>
-                  </div>
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_6 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option n</div>
-                    <div class="agenda-voting-overview-option-percent value">000%</div>
-                  </div>
-                </div>
-                <div class="w-clearfix width-third">
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="agenda-voting-overview-option-dot n"></div>
-                    <div class="agenda-voting-overview-option-percent">Option n</div>
-                    <div class="agenda-voting-overview-option-percent value">000%</div>
-                  </div>
+                  {{end}}
+                  {{end}}
                 </div>
               </div>
             </div>

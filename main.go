@@ -318,10 +318,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 		choiceIds := make([]string, len(agenda.Choices))
 		choicePercentages := make([]float64, len(agenda.Choices))
 		for i, choice := range agenda.Choices {
-			if !choice.IsAbstain {
-				choiceIds[i] = choice.Id
-				choicePercentages[i] = toFixed(choice.Progress*100, 2)
-			}
+			choiceIds[i] = choice.Id
+			choicePercentages[i] = toFixed(choice.Progress*100, 2)
 		}
 
 		templateInformation.Agendas = append(templateInformation.Agendas, Agenda{
