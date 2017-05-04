@@ -18,6 +18,7 @@ import (
 
 	"encoding/binary"
 	"encoding/hex"
+
 	"github.com/decred/dcrd/chaincfg"
 	"github.com/decred/dcrd/wire"
 	"github.com/decred/dcrrpcclient"
@@ -27,6 +28,7 @@ import (
 var maxVersion = 10000
 
 // Settings for daemon
+var network = flag.String("network", "mainnet", "current network being used")
 var host = flag.String("host", "127.0.0.1:9109", "node RPC host:port")
 var user = flag.String("user", "USER", "node RPC username")
 var pass = flag.String("pass", "PASSWORD", "node RPC password")
@@ -50,6 +52,7 @@ type intervalVersionCounts struct {
 
 // Set all activeNetParams fields since they don't change at runtime
 var templateInformation = &templateFields{
+	Network: *network,
 	// BlockVersion params
 	BlockVersionEnforceThreshold: int(float64(activeNetParams.BlockEnforceNumRequired) /
 		float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
