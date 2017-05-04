@@ -50,7 +50,7 @@ func TestAgendaDBOpenClose(t *testing.T) {
 
 func TestSaveLoadAgenda(t *testing.T) {
 	A := AgendaTagged{
-		Id:     "fakeagenda",
+		ID:     "fakeagenda",
 		Status: "active",
 	}
 
@@ -70,7 +70,7 @@ func TestSaveLoadAgenda(t *testing.T) {
 	}
 
 	var Aloaded AgendaTagged
-	err = db.One("Id", "fakeagenda", &Aloaded)
+	err = db.One("ID", "fakeagenda", &Aloaded)
 	if err != nil {
 		t.Errorf("Failed to load AgendaTagged: %v", err)
 	}
@@ -80,9 +80,9 @@ func TestSaveLoadAgenda(t *testing.T) {
 			A.Status, Aloaded.Status)
 	}
 
-	if Aloaded.Id != A.Id {
-		t.Errorf(`Loaded Id incorrect: expected "%s", got "%s"`,
-			A.Id, Aloaded.Id)
+	if Aloaded.ID != A.ID {
+		t.Errorf(`Loaded ID incorrect: expected "%s", got "%s"`,
+			A.ID, Aloaded.ID)
 	}
 
 	t.Log(Aloaded)

@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"github.com/decred/dcrd/chaincfg"
-	"github.com/decred/dcrd/dcrjson"
 	"github.com/decred/dcrd/wire"
 	"github.com/decred/dcrrpcclient"
 	"github.com/decred/hardforkdemo/agendadb"
@@ -310,9 +309,11 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	templateInformation.Agendas = make([]Agenda, 0, len(getVoteInfo.Agendas))
 
 	for i := range getVoteInfo.Agendas {
-		agenda := agendadb.AgendaTagged(getVoteInfo.Agendas[i])
-		if err = db.StoreAgenda(&agenda); err != nil {
-			fmt.Printf("Failed to store agenda %s: %v\n", agenda.Id, err)
+		// Direct conversion works with go1.8, but angers Travis b/c "Id"!="ID"
+		//agenda := agendadb.AgendaTagged(getVoteInfo.Agendas[i])
+		agenda := agendadb.FromDcrJSONAgenda(&getVoteInfo.Agendas[i])
+		if err = db.StoreAgenda(agenda); err != nil {
+			fmt.Printf("Failed to store agenda %s: %v\n", agenda.ID, err)
 		}
 
 		actingPct := 1.0
@@ -337,7 +338,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 		}
 
 		templateInformation.Agendas = append(templateInformation.Agendas, Agenda{
-			Agenda:                    dcrjson.Agenda(agenda),
+			Agenda:                    *agenda.ToDcrJSONAgenda(),
 			QuorumExpirationDate:      time.Unix(int64(agenda.ExpireTime), int64(0)).Format(time.RFC850),
 			QuorumVotedPercentage:     toFixed(agenda.QuorumProgress*100, 2),
 			QuorumAbstainedPercentage: toFixed(agenda.Choices[0].Progress*100, 2),
