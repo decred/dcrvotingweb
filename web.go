@@ -59,7 +59,8 @@ type templateFields struct {
 
 	// Basic information
 	BlockHeight int64
-
+	// Link to current block on explorer
+	BlockExplorerLink string
 	// BlockVersion Information
 	//
 	// BlockVersions is the data after it has been prepared for graphing.

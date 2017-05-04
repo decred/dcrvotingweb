@@ -83,7 +83,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 	// Set Current block height
 	templateInformation.BlockHeight = height
-
+	templateInformation.BlockExplorerLink = fmt.Sprintf("https://%s.decred.org/block/%v", *network, hash)
 	// Request the current block header
 	blockHeader, err := dcrdClient.GetBlockHeader(hash)
 	if err != nil {
@@ -219,7 +219,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		interval := &stakeVersionInfo.Intervals[numIntervals-1-i]
 		stakeVersionLabels[i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
 		if i == numIntervals-1 {
-			templateInformation.StakeVersionIntervalBlocks = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
+			templateInformation.StakeVersionIntervalBlocks = fmt.Sprintf("%v - %v", interval.StartHeight, interval.StartHeight+activeNetParams.StakeVersionInterval)
 		}
 	versionloop:
 		for _, versionCount := range interval.VoteVersions {
