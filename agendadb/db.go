@@ -68,7 +68,7 @@ func (db *AgendaDB) LoadAgenda(agendaID string) (*AgendaTagged, error) {
 		return nil, fmt.Errorf("AgendaDB not initialized")
 	}
 	agenda := new(AgendaTagged)
-	if err := db.sdb.One("Id", agendaID, agenda); err != nil {
+	if err := db.sdb.One("ID", agendaID, agenda); err != nil {
 		return nil, err
 	}
 	return agenda, nil
@@ -83,7 +83,7 @@ func (db *AgendaDB) ListAgendas() error {
 	i := 0
 	return q.Each(new(AgendaTagged), func(record interface{}) error {
 		a := record.(*AgendaTagged)
-		fmt.Printf("%d: %s\n", i, a.Id)
+		fmt.Printf("%d: %s\n", i, a.ID)
 		i++
 		return nil
 	})
@@ -93,7 +93,7 @@ func (db *AgendaDB) ListAgendas() error {
 // marked as the primary key via the `storm:"id"` tag. Fields tagged for
 // indexing by the DB are: StartTime, ExpireTime, Status, and QuorumProgress.
 type AgendaTagged struct {
-	Id             string           `json:"id" storm:"id"`
+	ID             string           `json:"id" storm:"id"`
 	Description    string           `json:"description"`
 	Mask           uint16           `json:"mask"`
 	StartTime      uint64           `json:"starttime" storm:"index"`
@@ -110,4 +110,34 @@ type ChoiceLabeled struct {
 	AgendaChoice   [2]string `storm:"id"`
 	AgendaID       string    `json:"agendaid" storm:"index"`
 	dcrjson.Choice `storm:"inline"`
+}
+
+// FromDcrJSONAgenda creates an AgendaTagged from a dcrjson.Agenda. This is
+// only necessary because the ID field is not named the same as Id in dcrjson.
+func FromDcrJSONAgenda(a *dcrjson.Agenda) *AgendaTagged {
+	return &AgendaTagged{
+		ID:             a.Id,
+		Description:    a.Description,
+		Mask:           a.Mask,
+		StartTime:      a.StartTime,
+		ExpireTime:     a.ExpireTime,
+		Status:         a.Status,
+		QuorumProgress: a.QuorumProgress,
+		Choices:        a.Choices,
+	}
+}
+
+// ToDcrJSONAgenda creates a dcrjson.Agenda from the AgendaTagged. This is only
+// necessary because the ID field is not named the same as Id in dcrjson.
+func (a *AgendaTagged) ToDcrJSONAgenda() *dcrjson.Agenda {
+	return &dcrjson.Agenda{
+		Id:             a.ID,
+		Description:    a.Description,
+		Mask:           a.Mask,
+		StartTime:      a.StartTime,
+		ExpireTime:     a.ExpireTime,
+		Status:         a.Status,
+		QuorumProgress: a.QuorumProgress,
+		Choices:        a.Choices,
+	}
 }
