@@ -21,6 +21,8 @@ type Agenda struct {
 	QuorumAbstainedPercentage float64
 	ChoiceIDs                 []string
 	ChoicePercentages         []float64
+	ChoiceIDsActing           []string
+	ChoicePercentagesActing   []float64
 	StartHeight               int64
 }
 
@@ -141,15 +143,23 @@ type templateFields struct {
 }
 
 var funcMap = template.FuncMap{
-	"minus":   minus,
-	"minus64": minus64,
+	"plus":      plus,
+	"minus":     minus,
+	"minus64":   minus64,
+	"modiszero": modiszero,
 }
 
+func plus(a, b int) int {
+	return a + b
+}
 func minus(a, b int) int {
 	return a - b
 }
 func minus64(a, b int64) int64 {
 	return a - b
+}
+func modiszero(a, b int) bool {
+	return (a % b) == 0
 }
 
 // TemplateExecToString executes the specified template with given data, writing

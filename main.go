@@ -315,12 +315,24 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 			fmt.Printf("Failed to store agenda %s: %v\n", agenda.Id, err)
 		}
 
+		actingPct := 1.0
 		choiceIds := make([]string, len(agenda.Choices))
 		choicePercentages := make([]float64, len(agenda.Choices))
 		for i, choice := range agenda.Choices {
+			choiceIds[i] = choice.Id
+			choicePercentages[i] = toFixed(choice.Progress*100, 2)
+			if !choice.IsAbstain && choice.Progress < 1 {
+				actingPct = 1 - choice.Progress
+			}
+		}
+
+		choiceIdsActing := make([]string, 0, len(agenda.Choices)-1)
+		choicePercentagesActing := make([]float64, 0, len(agenda.Choices)-1)
+		for _, choice := range agenda.Choices {
 			if !choice.IsAbstain {
-				choiceIds[i] = choice.Id
-				choicePercentages[i] = toFixed(choice.Progress*100, 2)
+				choiceIdsActing = append(choiceIdsActing, choice.Id)
+				choicePercentagesActing = append(choicePercentagesActing,
+					toFixed(choice.Progress/actingPct*100, 2))
 			}
 		}
 
@@ -331,6 +343,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 			QuorumAbstainedPercentage: toFixed(agenda.Choices[0].Progress*100, 2),
 			ChoiceIDs:                 choiceIds,
 			ChoicePercentages:         choicePercentages,
+			ChoiceIDsActing:           choiceIdsActing,
+			ChoicePercentagesActing:   choicePercentagesActing,
 			StartHeight:               getVoteInfo.StartHeight,
 		})
 	}
