@@ -1706,7 +1706,7 @@ body {
 .heading.progress-bar-pow-pos-percent {
   position: absolute;
   top: 0px;
-  right: 0px;
+  left: 0px;
   line-height: 17px;
 }
 
