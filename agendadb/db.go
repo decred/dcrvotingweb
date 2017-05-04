@@ -8,12 +8,15 @@ import (
 	"github.com/decred/dcrd/dcrjson"
 )
 
+// AgendaDB manages a database of agendas and their choices
 type AgendaDB struct {
 	sdb        *storm.DB
 	NumAgendas int
 	NumChoices int
 }
 
+// Open will either open and existing database or create a new one using with
+// the specified file name.
 func Open(dbPath string) (*AgendaDB, error) {
 	_, err := os.Stat(dbPath)
 	isNewDB := os.IsNotExist(err)
@@ -44,10 +47,13 @@ func Open(dbPath string) (*AgendaDB, error) {
 	return agendaDB, err
 }
 
+// Close should be called when you are done with the AgendaDB to close the
+// underlying database.
 func (db *AgendaDB) Close() error {
 	return db.sdb.Close()
 }
 
+// StoreAgenda saves an agenda in the database.
 func (db *AgendaDB) StoreAgenda(agenda *AgendaTagged) error {
 	if db == nil || db.sdb == nil {
 		return fmt.Errorf("AgendaDB not initialized")
@@ -55,6 +61,8 @@ func (db *AgendaDB) StoreAgenda(agenda *AgendaTagged) error {
 	return db.sdb.Save(agenda)
 }
 
+// LoadAgenda retrieves an agenda corresponding to the specified unique agenda
+// ID, or nil if it does not exist.
 func (db *AgendaDB) LoadAgenda(agendaID string) (*AgendaTagged, error) {
 	if db == nil || db.sdb == nil {
 		return nil, fmt.Errorf("AgendaDB not initialized")
@@ -66,6 +74,7 @@ func (db *AgendaDB) LoadAgenda(agendaID string) (*AgendaTagged, error) {
 	return agenda, nil
 }
 
+// ListAgendas lists all agendas stored in the database in order of StartTime.
 func (db *AgendaDB) ListAgendas() error {
 	if db == nil || db.sdb == nil {
 		return fmt.Errorf("AgendaDB not initialized")
