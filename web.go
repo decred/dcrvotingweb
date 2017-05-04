@@ -54,6 +54,9 @@ func (a *Agenda) IsFailed() bool {
 // Overall data structure given to the template to render.
 type templateFields struct {
 
+	// Network
+	Network string
+
 	// Basic information
 	BlockHeight int64
 
