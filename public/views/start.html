@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8">
-  <title>Decred PoW &amp; PoS voting results</title>
+  <title>Decred Voting Dashboard</title>
   <meta content="Decred PoW &amp; PoS voting results" name="description">
   <meta content="Decred PoW &amp; PoS voting results" property="og:title">
   <meta content="Decred PoW &amp; PoS voting results" property="og:description">
@@ -307,9 +307,10 @@ The second step of this process is the actual voting. The previously mentioned {
                 <div class="width-third">
                   {{range $cid, $choice := .ChoiceIDsActing}}
                   {{$cid1 := plus $cid 1}}
+                  {{$ch := index $agenda.Choices $cid}}
                   <div class="agenda-voting-overview-option w-clearfix">
                     <div class="_{{$cid1}} agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">{{$choice}}</div>
+                    <div class="agenda-voting-overview-option-percent" data-tooltip-text="">{{$choice}}</div>
                     {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }} <div class="agenda-voting-overview-option-percent value">{{index $agenda.ChoicePercentagesActing $cid}}%</div>{{end}}
                   </div>
                   {{if modiszero $cid1 3}}
