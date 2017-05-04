@@ -215,7 +215,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
       </div>
     </div>
     <div class="agendas w-clearfix">
-      <div class="agendas w-clearfix width-1180">
+      <div id="agendalisting" class="agendas w-clearfix width-1180">
   
 <!-- agenda loop start -->
     {{range $i, $agenda := .Agendas}}
@@ -390,98 +390,7 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
           {{end}}
         </div>
       {{end}}
-<!-- agenda loop end -->
-
-
-        <div class="agenda drop-shadow-n-element w-clearfix">
-          <div class="agenda-section w-clearfix">
-            <div class="agenda-indicator w-clearfix">
-              <div class="in-progress indicator">in-progress</div>
-              <div class="indicator-icon lockin" data-tooltip-text="Lock-in phase, new rules not yet activated"></div>
-              <div class="activated indicator-icon" data-tooltip-text="Voting Succeeded, New Rules Activated"></div>
-              <div class="quorum w-clearfix">Quorum: &nbsp;<span class="highlight-text orange transparent quorum">No</span>
-              </div>
-            </div>
-            <div class="w-clearfix width-half">
-              <div class="agenda heading">Agenda name</div>
-              <div class="agenda-cfg w-clearfix">
-                <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#maxblocksize</span>
-                </div>
-                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">288048-293087</span>
-                </div>
-                <div class="agenda-cfg-spec w-clearfix">If anything missing: &nbsp;<span class="highlight-text cyan transparent">Add here</span>
-                </div>
-              </div>
-              <div class="agenda-paragraph">Change maximum allowed block size from 1MB to 1.25MiB
-                <br> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo&nbsp;</div>
-            </div>
-            <div class="left-padding-50 w-clearfix width-half">
-              <div class="agenda-voting-overview-options-title w-clearfix">
-                <div class="agenda-voting-overview">voting overview:</div>
-              </div>
-              <div class="agenda-voting-overview-options w-clearfix">
-                <div class="width-third">
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_1 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option 1</div>
-                    <div class="agenda-voting-overview-option-percent value">60%</div>
-                  </div>
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_2 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option 2</div>
-                    <div class="agenda-voting-overview-option-percent value">30%</div>
-                  </div>
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_3 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option 3</div>
-                    <div class="agenda-voting-overview-option-percent value">10%</div>
-                  </div>
-                </div>
-                <div class="width-third">
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_4 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option n</div>
-                    <div class="agenda-voting-overview-option-percent value">000%</div>
-                  </div>
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_5 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option n</div>
-                    <div class="agenda-voting-overview-option-percent value">000%</div>
-                  </div>
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_6 agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent">Option n</div>
-                    <div class="agenda-voting-overview-option-percent value">000%</div>
-                  </div>
-                </div>
-                <div class="w-clearfix width-third">
-                  <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="agenda-voting-overview-option-dot n"></div>
-                    <div class="agenda-voting-overview-option-percent">Option n</div>
-                    <div class="agenda-voting-overview-option-percent value">000%</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="agenda-section progress-bar w-clearfix">
-            <div class="progress-bar-agenda w-clearfix">
-              <div class="progress-bar-competing-options-and-total-votes w-clearfix">
-                <div class="progress-bar-competing-options w-clearfix">
-                  <div class="option-1 option-progress" data-tooltip-text="Option 1" data-tooltip-value="60"></div>
-                  <div class="option-2 option-progress" data-tooltip-text="Option 2" data-tooltip-value="30"></div>
-                  <div class="option-3 option-progress" data-tooltip-text="Option 3" data-tooltip-value="10"></div>
-                </div>
-                <div class="total-votes-cast" data-tooltip-text="Total Votes Cast" data-tooltip-value="0"></div>
-              </div>
-              <div class="agenda progress-bar-threshold"></div>
-              <div class="heading progress-bar-agenda-voting-percent">0%</div>
-            </div>
-          </div>
-        </div>
-        <!-- Agenda card end -->
-
-      
+<!-- agenda loop end -->     
       </div>
     </div>
   </div>
@@ -618,7 +527,6 @@ The second step of this process is the actual voting. The previous {{.StakeVersi
       {
 			data: {{$element.Count}},
 			backgroundColor: "rgba("+voteVersionGraphColors[{{.Version}}]+",1)",
-			borderColor: 'rgba(143,143,143,0.5)',
 			pointBorderColor: 'rgba(143,143,143,0.5)',
 			label: 'Vote v{{$element.Version}}'
 		},
