@@ -212,6 +212,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	// Each element in each dataset needs counts for each interval
 	// For example:
 	// version 1: [100, 200, 0, 400]
+	var stakeVersionIntervalEndHeight = int64(0)
 	var stakeVersionIntervalResults []intervalVersionCounts
 	stakeVersionLabels := make([]string, numIntervals)
 	// Oldest to newest interval (charts are left to right)
@@ -219,6 +220,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 		interval := &stakeVersionInfo.Intervals[numIntervals-1-i]
 		stakeVersionLabels[i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
 		if i == numIntervals-1 {
+			stakeVersionIntervalEndHeight = interval.StartHeight + activeNetParams.StakeVersionInterval
 			templateInformation.StakeVersionIntervalBlocks = fmt.Sprintf("%v - %v", interval.StartHeight, interval.StartHeight+activeNetParams.StakeVersionInterval)
 		}
 	versionloop:
@@ -240,6 +242,9 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 			}
 		}
 	}
+	blocksRemainingStakeInterval := stakeVersionIntervalEndHeight - height
+	timeLeftDuration := activeNetParams.TargetTimePerBlock * time.Duration(blocksRemainingStakeInterval)
+	templateInformation.StakeVersionTimeRemaining = fmt.Sprintf("%s remaining", timeLeftDuration.String())
 	stakeVersionLabels[numIntervals-1] = "Current Interval"
 	currentInterval := stakeVersionInfo.Intervals[0]
 

@@ -119,7 +119,8 @@ type templateFields struct {
 	StakeVersionMostPopularPercentage float64
 	// StakeVersionRequiredVotes is the number of stake version votes required for the stake version to change.
 	StakeVersionRequiredVotes int32
-
+	// StakeVersionTimeRemaining is a string to show how much estimated time is remaining in the stake version interval.
+	StakeVersionTimeRemaining string
 	// Quorum and Rule Change Information
 	// RuleChangeActivationQuorum is the activeNetParams of RuleChangeActivationQuorum
 	RuleChangeActivationQuorum uint32
