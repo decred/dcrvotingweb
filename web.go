@@ -21,6 +21,8 @@ type Agenda struct {
 	QuorumAbstainedPercentage float64
 	ChoiceIDs                 []string
 	ChoicePercentages         []float64
+	ChoiceIDsActing           []string
+	ChoicePercentagesActing   []float64
 	StartHeight               int64
 }
 

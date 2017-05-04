@@ -305,12 +305,12 @@ The second step of this process is the actual voting. The previously mentioned {
               </div>
               <div class="agenda-voting-overview-options w-clearfix">
                 <div class="width-third">
-                  {{range $cid, $choice := .ChoiceIDs}}
+                  {{range $cid, $choice := .ChoiceIDsActing}}
                   {{$cid1 := plus $cid 1}}
                   <div class="agenda-voting-overview-option w-clearfix">
                     <div class="_{{$cid1}} agenda-voting-overview-option-dot"></div>
                     <div class="agenda-voting-overview-option-percent">{{$choice}}</div>
-                    <div class="agenda-voting-overview-option-percent value">{{index $agenda.ChoicePercentages $cid}}%</div>
+                    <div class="agenda-voting-overview-option-percent value">{{index $agenda.ChoicePercentagesActing $cid}}%</div>
                   </div>
                   {{if modiszero $cid1 3}}
                 </div>
