@@ -328,9 +328,10 @@ The second step of this process is the actual voting. The previously mentioned {
             <div class="progress-bar-agenda w-clearfix">
               <div class="progress-bar-competing-options-and-total-votes w-clearfix">
                 <div class="progress-bar-competing-options w-clearfix">
-                  <div class="option-1 option-progress" data-tooltip-text="Option 1" data-tooltip-value="60"></div>
-                  <div class="option-2 option-progress" data-tooltip-text="Option 2" data-tooltip-value="30"></div>
-                  <div class="option-3 option-progress" data-tooltip-text="Option 3" data-tooltip-value="10"></div>
+                  {{range $cid, $choice := .ChoiceIDsActing}}
+                  {{$cid1 := plus $cid 1}}
+                  <div class="option-{{$cid1}} option-progress" data-tooltip-text="{{$choice}}" data-tooltip-value="{{index $agenda.ChoicePercentagesActing $cid}}"></div>
+                  {{end}}
                 </div>
                 <div class="total-votes-cast" data-tooltip-text="Total Votes Cast" data-tooltip-value="0"></div>
               </div>
