@@ -54,8 +54,9 @@
       <div class="header w-clearfix width-1180">
         <a class="header-logo w-inline-block" href="http://www.decred.org"></a>
         {{if eq .Network "testnet"}}
-        <a class="header-link w-button" href="#">Testnet Faucet</a>
+        <a class="header-link w-button" href="faucet.decred.org">Testnet Faucet</a>
         {{end}}
+        <a class="header-link w-button" href="{{.BlockExplorerLink}}">Block #{{.BlockHeight}}</a>
       </div>
     </div>
     <div class="voting-overview">
@@ -172,9 +173,9 @@ The second step of this process is the actual voting. The previously mentioned {
                 <br> Most Popular Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
                 <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
                 <br> Reject Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
-                <br> Static Interval: <span class="highlight-text">{{.StakeVersionWindowLength}} Blocks</span>
+                <br> Static Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
               </div>
-              <div class="pow-pos-time-remaining transition">5h 43 min remaining</div>
+              <div class="pow-pos-time-remaining transition">{{.StakeVersionTimeRemaining}}</div>
             </div>
             <div class="progress-bar-pow-pos-upgrade">
               <div class="progress-indicator w-clearfix">
@@ -196,7 +197,7 @@ The second step of this process is the actual voting. The previously mentioned {
                 <br> Most Popular Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
                 <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
                 <br> Reject Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
-                <br> Static Interval: <span class="highlight-text">{{.StakeVersionWindowLength}} Blocks</span>
+                <br> Static Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
               </div>
             </div>
             <div class="chart-draw lines-big w-clearfix">

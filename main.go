@@ -46,8 +46,9 @@ type blockVersions struct {
 }
 
 type intervalVersionCounts struct {
-	Version uint32
-	Count   []uint32
+	Version        uint32
+	Count          []uint32
+	StaticInterval string
 }
 
 // Set all activeNetParams fields since they don't change at runtime
@@ -82,7 +83,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	}
 	// Set Current block height
 	templateInformation.BlockHeight = height
-
+	templateInformation.BlockExplorerLink = fmt.Sprintf("https://%s.decred.org/block/%v", *network, hash)
 	// Request the current block header
 	blockHeader, err := dcrdClient.GetBlockHeader(hash)
 	if err != nil {
@@ -211,12 +212,17 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 	// Each element in each dataset needs counts for each interval
 	// For example:
 	// version 1: [100, 200, 0, 400]
+	var stakeVersionIntervalEndHeight = int64(0)
 	var stakeVersionIntervalResults []intervalVersionCounts
 	stakeVersionLabels := make([]string, numIntervals)
 	// Oldest to newest interval (charts are left to right)
 	for i := 0; i < numIntervals; i++ {
 		interval := &stakeVersionInfo.Intervals[numIntervals-1-i]
 		stakeVersionLabels[i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
+		if i == numIntervals-1 {
+			stakeVersionIntervalEndHeight = interval.StartHeight + activeNetParams.StakeVersionInterval - 1
+			templateInformation.StakeVersionIntervalBlocks = fmt.Sprintf("%v - %v", interval.StartHeight, stakeVersionIntervalEndHeight)
+		}
 	versionloop:
 		for _, versionCount := range interval.VoteVersions {
 			// Is this a vote version we've seen in a previous interval?
@@ -236,12 +242,14 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client) {
 			}
 		}
 	}
+	blocksRemainingStakeInterval := stakeVersionIntervalEndHeight - height
+	timeLeftDuration := activeNetParams.TargetTimePerBlock * time.Duration(blocksRemainingStakeInterval)
+	templateInformation.StakeVersionTimeRemaining = fmt.Sprintf("%s remaining", timeLeftDuration.String())
 	stakeVersionLabels[numIntervals-1] = "Current Interval"
 	currentInterval := stakeVersionInfo.Intervals[0]
 
 	maxPossibleVotes := activeNetParams.StakeVersionInterval*int64(activeNetParams.TicketsPerBlock) -
 		int64(missedVotesStakeInterval)
-
 	templateInformation.StakeVersionIntervalResults = stakeVersionIntervalResults
 	templateInformation.StakeVersionWindowVoteTotal = maxPossibleVotes
 	templateInformation.StakeVersionIntervalLabels = stakeVersionLabels
