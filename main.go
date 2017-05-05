@@ -395,10 +395,11 @@ func mainCore() int {
 			var blockHeader wire.BlockHeader
 			errLocal := blockHeader.Deserialize(bytes.NewReader(serializedBlockHeader))
 			if errLocal != nil {
-				fmt.Printf("Failed to deserialize block header: %v\n", errLocal.Error())
+				fmt.Printf("Failed to deserialize block header: %v\n", errLocal)
 				return
 			}
-			fmt.Println("got a new block passing it", blockHeader.Height)
+			fmt.Printf("received new block %v (height %d)", blockHeader.BlockHash(),
+				blockHeader.Height)
 			connectChan <- blockHeader
 		},
 	}
@@ -418,7 +419,7 @@ func mainCore() int {
 	// Attempt to connect rpcclient and daemon
 	dcrdClient, err := dcrrpcclient.New(connCfgDaemon, &ntfnHandlersDaemon)
 	if err != nil {
-		fmt.Printf("Failed to start dcrd rpcclient: %s\n", err.Error())
+		fmt.Printf("Failed to start dcrd rpcclient: %v\n", err)
 		return 1
 	}
 	defer func() {
@@ -429,7 +430,7 @@ func mainCore() int {
 	// Subscribe to block notifications
 	if err = dcrdClient.NotifyBlocks(); err != nil {
 		fmt.Printf("Failed to start register daemon rpc client for  "+
-			"block notifications: %s\n", err.Error())
+			"block notifications: %v\n", err)
 		return 1
 	}
 
@@ -437,7 +438,7 @@ func mainCore() int {
 	dbPath, dbName := "history", "agendas.db"
 	err = os.Mkdir(dbPath, os.FileMode(750))
 	if err != nil && !os.IsExist(err) {
-		fmt.Printf("Unable to create database folder: %v", err)
+		fmt.Printf("Unable to create database folder: %v\n", err)
 	}
 	db, err := agendadb.Open(filepath.Join(dbPath, dbName))
 	if err != nil {
@@ -476,7 +477,7 @@ func mainCore() int {
 					blkHdr.BlockHash(), blkHdr.Height)
 				updatetemplateInformation(dcrdClient, db)
 			case <-quit:
-				fmt.Printf("Closing hardfork demo.\n")
+				fmt.Println("Closing hardfork demo.")
 				wg.Done()
 				return
 			}
@@ -501,7 +502,7 @@ func mainCore() int {
 	go func() {
 		err = http.ListenAndServe(*listenPort, nil)
 		if err != nil {
-			fmt.Printf("Failed to bind http server: %s\n", err.Error())
+			fmt.Printf("Failed to bind http server: %v\n", err)
 			close(quit)
 		}
 	}()
@@ -527,6 +528,9 @@ func getBlockVersionFromWork(dcrdClient *dcrrpcclient.Client) (uint32, error) {
 	if err != nil {
 		return 0, err
 	}
-	blockVerBytes, _ := hex.DecodeString(getWorkResult.Data[0:8])
+	blockVerBytes, err := hex.DecodeString(getWorkResult.Data[0:8])
+	if err != nil {
+		return 0, err
+	}
 	return binary.LittleEndian.Uint32(blockVerBytes), nil
 }
