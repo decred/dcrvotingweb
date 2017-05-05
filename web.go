@@ -60,7 +60,7 @@ type templateFields struct {
 	Network string
 
 	// Basic information
-	BlockHeight int64
+	BlockHeight uint32
 	// Link to current block on explorer
 	BlockExplorerLink string
 	// BlockVersion Information
