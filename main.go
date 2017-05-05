@@ -40,6 +40,9 @@ var listenPort = flag.String("listen", ":8000", "web app listening port")
 // Daemon Params to use
 var activeNetParams = &chaincfg.MainNetParams
 
+// Latest BlockHeader
+var latestBlockHeader *wire.BlockHeader
+
 // Contains a certain block version's count of blocks in the
 // rolling window (which has a length of activeNetParams.BlockUpgradeNumToCheck)
 type blockVersions struct {
@@ -76,21 +79,29 @@ var templateInformation = &templateFields{
 func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.AgendaDB) {
 	fmt.Println("updating hard fork information")
 
-	// Get the current best block (height and hash)
-	hash, height, err := dcrdClient.GetBestBlock()
-	if err != nil {
-		fmt.Println(err)
-		return
+	if latestBlockHeader == nil {
+		// Get the current best block (height and hash)
+		hash, err := dcrdClient.GetBestBlockHash()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		// Request the current block header
+		latestBlockHeader, err = dcrdClient.GetBlockHeader(hash)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
+
+	hash := latestBlockHeader.BlockHash()
+	height := latestBlockHeader.Height
+
 	// Set Current block height
 	templateInformation.BlockHeight = height
-	templateInformation.BlockExplorerLink = fmt.Sprintf("https://%s.decred.org/block/%v", *network, hash)
-	// Request the current block header
-	blockHeader, err := dcrdClient.GetBlockHeader(hash)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	templateInformation.BlockExplorerLink = fmt.Sprintf("https://%s.decred.org/block/%v",
+		*network, hash)
+
 	// Request GetStakeVersions to receive information about past block versions.
 	//
 	// Request twice as many, so we can populate the rolling block version window's first
@@ -180,7 +191,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	}
 
 	// Voting intervals ((height-4096) mod 2016)
-	blocksIntoStakeVersionInterval := (height - activeNetParams.StakeValidationHeight) %
+	blocksIntoStakeVersionInterval := (int64(height) - activeNetParams.StakeValidationHeight) %
 		activeNetParams.StakeVersionInterval
 	// Stake versions per block in current voting interval (getstakeversions hash blocksIntoInterval)
 	intervalStakeVersions, err := dcrdClient.GetStakeVersions(hash.String(),
@@ -243,7 +254,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 			}
 		}
 	}
-	blocksRemainingStakeInterval := stakeVersionIntervalEndHeight - height
+	blocksRemainingStakeInterval := stakeVersionIntervalEndHeight - int64(height)
 	timeLeftDuration := activeNetParams.TargetTimePerBlock * time.Duration(blocksRemainingStakeInterval)
 	templateInformation.StakeVersionTimeRemaining = fmt.Sprintf("%s remaining", timeLeftDuration.String())
 	stakeVersionLabels[numIntervals-1] = "Current Interval"
@@ -254,11 +265,11 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	templateInformation.StakeVersionIntervalResults = stakeVersionIntervalResults
 	templateInformation.StakeVersionWindowVoteTotal = maxPossibleVotes
 	templateInformation.StakeVersionIntervalLabels = stakeVersionLabels
-	templateInformation.StakeVersionCurrent = blockHeader.StakeVersion
+	templateInformation.StakeVersionCurrent = latestBlockHeader.StakeVersion
 
 	var mostPopularVersion, mostPopularVersionCount uint32
 	for _, stakeVersion := range currentInterval.VoteVersions {
-		if stakeVersion.Version > blockHeader.StakeVersion &&
+		if stakeVersion.Version > latestBlockHeader.StakeVersion &&
 			stakeVersion.Count > mostPopularVersionCount {
 			mostPopularVersion = stakeVersion.Version
 			mostPopularVersionCount = stakeVersion.Count
@@ -363,7 +374,7 @@ func mainCore() int {
 	flag.Parse()
 
 	// Chans for rpccclient notification handlers
-	connectChan := make(chan int64, 100)
+	connectChan := make(chan wire.BlockHeader, 100)
 	quit := make(chan struct{})
 
 	// Read in current dcrd cert
@@ -384,11 +395,12 @@ func mainCore() int {
 			var blockHeader wire.BlockHeader
 			errLocal := blockHeader.Deserialize(bytes.NewReader(serializedBlockHeader))
 			if errLocal != nil {
-				fmt.Printf("Failed to deserialize block header: %v\n", errLocal.Error())
+				fmt.Printf("Failed to deserialize block header: %v\n", errLocal)
 				return
 			}
-			fmt.Println("got a new block passing it", blockHeader.Height)
-			connectChan <- int64(blockHeader.Height)
+			fmt.Printf("received new block %v (height %d)", blockHeader.BlockHash(),
+				blockHeader.Height)
+			connectChan <- blockHeader
 		},
 	}
 
@@ -407,7 +419,7 @@ func mainCore() int {
 	// Attempt to connect rpcclient and daemon
 	dcrdClient, err := dcrrpcclient.New(connCfgDaemon, &ntfnHandlersDaemon)
 	if err != nil {
-		fmt.Printf("Failed to start dcrd rpcclient: %s\n", err.Error())
+		fmt.Printf("Failed to start dcrd rpcclient: %v\n", err)
 		return 1
 	}
 	defer func() {
@@ -418,7 +430,7 @@ func mainCore() int {
 	// Subscribe to block notifications
 	if err = dcrdClient.NotifyBlocks(); err != nil {
 		fmt.Printf("Failed to start register daemon rpc client for  "+
-			"block notifications: %s\n", err.Error())
+			"block notifications: %v\n", err)
 		return 1
 	}
 
@@ -426,7 +438,7 @@ func mainCore() int {
 	dbPath, dbName := "history", "agendas.db"
 	err = os.Mkdir(dbPath, os.FileMode(750))
 	if err != nil && !os.IsExist(err) {
-		fmt.Printf("Unable to create database folder: %v", err)
+		fmt.Printf("Unable to create database folder: %v\n", err)
 	}
 	db, err := agendadb.Open(filepath.Join(dbPath, dbName))
 	if err != nil {
@@ -459,11 +471,13 @@ func mainCore() int {
 	go func() {
 		for {
 			select {
-			case height := <-connectChan:
-				fmt.Printf("Block height %v connected\n", height)
+			case blkHdr := <-connectChan:
+				latestBlockHeader = &blkHdr
+				fmt.Printf("Block %v (height %v) connected\n",
+					blkHdr.BlockHash(), blkHdr.Height)
 				updatetemplateInformation(dcrdClient, db)
 			case <-quit:
-				fmt.Printf("Closing hardfork demo.\n")
+				fmt.Println("Closing hardfork demo.")
 				wg.Done()
 				return
 			}
@@ -488,7 +502,7 @@ func mainCore() int {
 	go func() {
 		err = http.ListenAndServe(*listenPort, nil)
 		if err != nil {
-			fmt.Printf("Failed to bind http server: %s\n", err.Error())
+			fmt.Printf("Failed to bind http server: %v\n", err)
 			close(quit)
 		}
 	}()
@@ -514,6 +528,9 @@ func getBlockVersionFromWork(dcrdClient *dcrrpcclient.Client) (uint32, error) {
 	if err != nil {
 		return 0, err
 	}
-	blockVerBytes, _ := hex.DecodeString(getWorkResult.Data[0:8])
+	blockVerBytes, err := hex.DecodeString(getWorkResult.Data[0:8])
+	if err != nil {
+		return 0, err
+	}
 	return binary.LittleEndian.Uint32(blockVerBytes), nil
 }
