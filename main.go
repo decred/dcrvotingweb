@@ -219,7 +219,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	// Oldest to newest interval (charts are left to right)
 	for i := 0; i < numIntervals; i++ {
 		interval := &stakeVersionInfo.Intervals[numIntervals-1-i]
-		stakeVersionLabels[i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight)
+		stakeVersionLabels[i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight-1)
 		if i == numIntervals-1 {
 			stakeVersionIntervalEndHeight = interval.StartHeight + activeNetParams.StakeVersionInterval - 1
 			templateInformation.StakeVersionIntervalBlocks = fmt.Sprintf("%v - %v", interval.StartHeight, stakeVersionIntervalEndHeight)
@@ -316,13 +316,15 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 			fmt.Printf("Failed to store agenda %s: %v\n", agenda.ID, err)
 		}
 
+		// Acting (non-abstaining) fraction of votes
 		actingPct := 1.0
 		choiceIds := make([]string, len(agenda.Choices))
 		choicePercentages := make([]float64, len(agenda.Choices))
 		for i, choice := range agenda.Choices {
 			choiceIds[i] = choice.Id
 			choicePercentages[i] = toFixed(choice.Progress*100, 2)
-			if !choice.IsAbstain && choice.Progress < 1 {
+			// non-abstain pct = 1 - abstain pct
+			if choice.IsAbstain && choice.Progress < 1 {
 				actingPct = 1 - choice.Progress
 			}
 		}
