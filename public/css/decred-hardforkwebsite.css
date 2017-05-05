@@ -1967,7 +1967,7 @@ body {
 
 .upgrade-content-statistics-numbers {
   display: inline-block;
-  max-width: 50%;
+  max-width: 60%;
   float: left;
   line-height: 26px;
 }
@@ -1989,7 +1989,7 @@ body {
 
 .pow-pos-time-remaining {
   display: inline-block;
-  width: 50%;
+  width: 40%;
   float: right;
   font-family: Inconsolata, monospace;
   line-height: 26px;
