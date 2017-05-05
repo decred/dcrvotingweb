@@ -2097,7 +2097,7 @@ body {
 
 .chart-info {
   display: inline-block;
-  padding-right: 50px;
+  margin-right: 20px;
   float: left;
 }
 
@@ -2112,7 +2112,7 @@ body {
 
 .chart-draw.bars-small {
   width: 140px;
-  margin-right: 100px;
+  margin-right: 50px;
   float: right;
 }
 

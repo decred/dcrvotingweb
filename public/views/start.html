@@ -83,7 +83,7 @@ The second step of this process is the actual voting. The previously mentioned {
           <div class="chart-toggle-side pow"></div>
           <div class="pow-upgrade transition upgrade-content">
             <div class="upgrade-content-statistics-header w-clearfix">
-              <div class="heading pow-pos">PoW Upgrade</div>
+              <div class="heading pow-pos">Miner (PoW) Upgrade Progress</div>
 <!--  POW STATUS LABEL SWITCH -->
               {{if .BlockVersionSuccess}}
               <div class="finished indicator pow-pos transition">finished</div>
@@ -118,7 +118,7 @@ The second step of this process is the actual voting. The previously mentioned {
           </div>
           <div class="chart pow w-clearfix">
             <div class="chart-info w-clearfix">
-              <div class="heading pow-pos">PoW Upgrade</div>
+              <div class="heading pow-pos">Miner (PoW) Upgrade Progress</div>
               <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: 
 <!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
                 {{if .BlockVersionSuccess}}
@@ -154,7 +154,7 @@ The second step of this process is the actual voting. The previously mentioned {
           <div class="chart-toggle-side pos"></div>
           <div class="pos-upgrade transition upgrade-content">
             <div class="upgrade-content-statistics-header w-clearfix">
-              <div class="heading pow-pos">PoS Upgrade</div>
+              <div class="heading pow-pos">Voter (PoS) Upgrade Progress</div>
 <!--  POS STATUS LABEL SWITCH -->
               {{if .StakeVersionSuccess}}
               <div class="finished indicator pow-pos transition">finished</div>
@@ -187,7 +187,7 @@ The second step of this process is the actual voting. The previously mentioned {
           </div>
           <div class="chart pos w-clearfix">
             <div class="chart-info w-clearfix">
-              <div class="heading pow-pos">PoS Upgrade</div>
+              <div class="heading pow-pos">Voter (PoS) Upgrade Progress</div>
               <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: 
                 {{if .StakeVersionSuccess}}                
                 <span class="highlight-text green">v{{.StakeVersionCurrent}}</span>
