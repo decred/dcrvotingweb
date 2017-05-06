@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"regexp"
 
 	"github.com/decred/dcrd/dcrjson"
 )
@@ -51,6 +52,12 @@ func (a *Agenda) IsLockedIn() bool {
 // IsFailed indicates if the agenda is failed
 func (a *Agenda) IsFailed() bool {
 	return a.Status == "failed"
+}
+
+// IsDCP indicates if agenda has a dcp paper
+func (a *Agenda) IsDcp() bool {
+	var dcpMustHave = regexp.MustCompile(`\DCP(\d{4})`)
+	return dcpMustHave.MatchString(a.Description)
 }
 
 // Overall data structure given to the template to render.
