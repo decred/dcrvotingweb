@@ -56,7 +56,7 @@ func (a *Agenda) IsFailed() bool {
 
 // IsDCP indicates if agenda has a dcp paper
 func (a *Agenda) IsDcp() bool {
-	var dcpMustHave = regexp.MustCompile(`\DCP(\d{4})`)
+	var dcpMustHave = regexp.MustCompile(`\DCP\-?(\d{4})`)
 	return dcpMustHave.MatchString(a.Description)
 }
 
