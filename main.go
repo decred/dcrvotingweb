@@ -186,7 +186,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	templateInformation.BlockVersionNext = minBlockVersion + 1
 	templateInformation.BlockVersionNextPercentage = toFixed(blockWinUpgradePct(blockVersionsCounts[minBlockVersion+1]), 2)
 
-	if popBlockVersionCount > int64(activeNetParams.BlockEnforceNumRequired) {
+	if popBlockVersionCount > int64(activeNetParams.BlockRejectNumRequired) {
 		templateInformation.BlockVersionSuccess = true
 	}
 
