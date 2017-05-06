@@ -54,7 +54,14 @@
       <div class="header w-clearfix width-1180">
         <a class="header-logo w-inline-block" href="http://www.decred.org"></a>
         {{if eq .Network "testnet"}}
-        <a class="header-link w-button" href="faucet.decred.org">Testnet Faucet</a>
+        <a class="header-link w-button" href="faucet.decred.org"> | &nbsp;Testnet Faucet</a>
+        {{end}}
+        {{if not .BlockVersionSuccess}}
+        <a class="header-link w-button" href="#"> | &nbsp;Current phase: Upgrading v{{.BlockVersionCurrent}} -> v{{.BlockVersionNext}} ({{.BlockVersionNextPercentage}}% PoW, {{.StakeVersionMostPopularPercentage}}% PoS)</a>
+        {{else}}
+        {{if not .StakeVersionSuccess}}
+        <a class="header-link w-button" href="#"> | &nbsp;Current phase: Upgrading v{{.StakeVersionCurrent}} -> v{{.StakeVersionMostPopular}} ({{.BlockVersionNextPercentage}}% PoW, {{.StakeVersionMostPopularPercentage}}% PoS)</a>
+        {{end}}
         {{end}}
         <a class="header-link w-button" href="{{.BlockExplorerLink}}">Block #{{.BlockHeight}}</a>
       </div>
@@ -69,10 +76,15 @@
 There is a two-phase process for voting to implement consensus changes that would create a hard fork.
             </p>
             <p>
-The first step is to meet the upgrade threshold on the network. After the updated consensus code is released, a majority of the nodes on the network participating in PoW/PoS need to first upgrade before the voting can begin. For Proof-of-Work, at least {{.BlockVersionRejectThreshold}}% of the {{.BlockVersionWindowLength}} most recent blocks must have the latest block version. For Proof-of-Stake, {{.StakeVersionThreshold}}% of the votes cast within a static {{.StakeVersionWindowLength}} block interval must have the latest vote version.
+The first is meeting the upgrade threshold on the network. A majority of PoS/PoW nodes on the network must upgrade before voting can begin. 
+This is measured in the following ways:
             </p>
             <p>
-The second step of this process is the actual voting. The previously mentioned {{.StakeVersionWindowLength}} block static interval will fall somewhere within a larger {{.RuleChangeActivationInterval}} block interval and thus the network must wait for that larger {{.RuleChangeActivationInterval}} block interval to end. Because of the different interval lengths, it might take up to an additional {{minus64 .RuleChangeActivationInterval .StakeVersionWindowLength}} blocks before the voting window begins. After that, a static {{.RuleChangeActivationInterval}} block interval transpires while votes are cast and if 75% of the votes mined within that interval signal a ‘yes’ vote to the proposed changes, the changes are fully implemented after one additional block interval (to give any remaining nodes the time needed to update to avoid being forked off the blockchain).
+- For PoW, at least {{.BlockVersionRejectThreshold}}% of the {{.BlockVersionWindowLength}} most recent blocks must have the latest block version.<br />
+- For PoS, {{.StakeVersionThreshold}}% of the votes cast within a static {{.StakeVersionWindowLength}} block interval must have the latest vote version.
+            </p>
+            <p>
+The second phase is the voting itself. Voting takes place within a static {{.RuleChangeActivationInterval}} block interval. If 75% of votes mined within that interval signal a ‘yes’ vote to the proposals, the changes are implemented. Implementation happens after one additional block interval to allow any remaining nodes to update prior to the fork.
             </p>
         </div>
       </div>
@@ -99,7 +111,11 @@ The second step of this process is the actual voting. The previously mentioned {
                 {{else}}
                 <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
                 {{end}}
+                {{if .BlockVersionSuccess}}
                 <br> Next Version: <span class="highlight-text green">v{{.BlockVersionNext}}</span>
+                {{else}}
+                <br> Next Version: <span class="highlight-text orange">v{{.BlockVersionNext}}</span>
+                {{end}}
                 <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span>
                 <!--<br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
                 <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>-->
@@ -126,7 +142,11 @@ The second step of this process is the actual voting. The previously mentioned {
                 {{else}}
                 <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
                 {{end}}
+                {{if .BlockVersionSuccess}}
                 <br> Next Version: <span class="highlight-text green">v{{.BlockVersionNext}}</span>
+                {{else}}
+                <br> Next Version: <span class="highlight-text orange">v{{.BlockVersionNext}}</span>
+                {{end}}
                 <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span>
                 <!--<br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
                 <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>-->
@@ -170,7 +190,11 @@ The second step of this process is the actual voting. The previously mentioned {
                 {{else}}
                 <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
                 {{end}}
+                {{if .StakeVersionSuccess}}
                 <br> Most Popular Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
+                {{else}}
+                <br> Most Popular Version: <span class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
+                {{end}}
                 <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
                 <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
@@ -194,7 +218,11 @@ The second step of this process is the actual voting. The previously mentioned {
                 {{else}}
                 <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
                 {{end}}                
+                {{if .StakeVersionSuccess}}
                 <br> Most Popular Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
+                {{else}}
+                <br> Most Popular Version: <span class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
+                {{end}}
                 <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
                 <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
