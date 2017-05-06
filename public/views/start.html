@@ -111,7 +111,11 @@ The second phase is the voting itself. Voting takes place within a static {{.Rul
                 {{else}}
                 <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
                 {{end}}
+                {{if .BlockVersionSuccess}}
                 <br> Next Version: <span class="highlight-text green">v{{.BlockVersionNext}}</span>
+                {{else}}
+                <br> Next Version: <span class="highlight-text orange">v{{.BlockVersionNext}}</span>
+                {{end}}
                 <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span>
                 <!--<br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
                 <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>-->
@@ -138,7 +142,11 @@ The second phase is the voting itself. Voting takes place within a static {{.Rul
                 {{else}}
                 <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
                 {{end}}
+                {{if .BlockVersionSuccess}}
                 <br> Next Version: <span class="highlight-text green">v{{.BlockVersionNext}}</span>
+                {{else}}
+                <br> Next Version: <span class="highlight-text orange">v{{.BlockVersionNext}}</span>
+                {{end}}
                 <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span>
                 <!--<br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
                 <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>-->
@@ -182,7 +190,11 @@ The second phase is the voting itself. Voting takes place within a static {{.Rul
                 {{else}}
                 <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
                 {{end}}
+                {{if .StakeVersionSuccess}}
                 <br> Most Popular Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
+                {{else}}
+                <br> Most Popular Version: <span class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
+                {{end}}
                 <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
                 <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
@@ -206,7 +218,11 @@ The second phase is the voting itself. Voting takes place within a static {{.Rul
                 {{else}}
                 <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
                 {{end}}                
+                {{if .StakeVersionSuccess}}
                 <br> Most Popular Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
+                {{else}}
+                <br> Most Popular Version: <span class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
+                {{end}}
                 <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
                 <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
