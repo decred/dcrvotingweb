@@ -60,6 +60,18 @@ func (a *Agenda) IsDCP() bool {
 	return dcpMustHave.MatchString(a.Description)
 }
 
+// DCPNumber gets the DCP number as a string with any leading zeros
+func (a *Agenda) DCPNumber() string {
+	re := regexp.MustCompile(`(?i)DCP\-?(\d{4,6})`)
+	if re.MatchString(a.Description) {
+		matches := re.FindStringSubmatch(a.Description)
+		if len(matches) > 1 {
+			return matches[1]
+		}
+	}
+	return ""
+}
+
 // Overall data structure given to the template to render.
 type templateFields struct {
 
