@@ -302,10 +302,9 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	// Check if Phase Upgrading or Voting
 	if templateInformation.StakeVersionSuccess && templateInformation.BlockVersionSuccess {
 		templateInformation.IsUpgrading = false
-	}else{
+	} else {
 		templateInformation.IsUpgrading = true
 	}
-	
 
 	// There may be no agendas for this vote version
 	if len(getVoteInfo.Agendas) == 0 {
