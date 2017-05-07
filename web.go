@@ -156,6 +156,8 @@ type templateFields struct {
 	RuleChangeActivationInterval int64
 	// Agendas contains all the agendas and their statuses
 	Agendas []Agenda
+	// Phase Upgrading or Voting
+	IsUpgrading bool
 
 	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
 	GetVoteInfoResult *dcrjson.GetVoteInfoResult

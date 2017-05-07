@@ -1388,7 +1388,7 @@ body {
 }
 
 .voting-overview {
-  height: 320px;
+  height: 400px;
   background-color: #596d81;
 }
 
@@ -1448,8 +1448,8 @@ body {
 }
 
 .width-590.voting-overview {
-  padding-top: 30px;
-  padding-bottom: 45px;
+  padding-top: 40px;
+  padding-bottom: 60px;
   padding-left: 50px;
   float: right;
 }
@@ -1457,6 +1457,7 @@ body {
 .width-590.voting-overview-graph {
   height: 320px;
   float: left;
+  margin-top: 30px;
   background-image: url('../images/infographic.svg');
   background-position: 50% 50%;
   background-size: contain;
@@ -1801,6 +1802,10 @@ body {
   float: left;
   font-size: 14px;
   line-height: 16px;
+  max-width: 440px;
+}
+.highlightoverview {
+  color: #18173F;
 }
 
 .chart-toggle-side {

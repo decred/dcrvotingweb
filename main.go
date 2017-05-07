@@ -299,6 +299,13 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	}
 	templateInformation.GetVoteInfoResult = getVoteInfo
 
+	// Check if Phase Upgrading or Voting
+	if templateInformation.StakeVersionSuccess && templateInformation.BlockVersionSuccess {
+		templateInformation.IsUpgrading = false
+	} else {
+		templateInformation.IsUpgrading = true
+	}
+
 	// There may be no agendas for this vote version
 	if len(getVoteInfo.Agendas) == 0 {
 		fmt.Printf("No agendas for vote version %d\n", mostPopularVersion)
