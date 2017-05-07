@@ -56,12 +56,14 @@
         {{if eq .Network "testnet"}}
         <a class="header-link w-button" href="faucet.decred.org"> | &nbsp;Testnet Faucet</a>
         {{end}}
-        {{if not .BlockVersionSuccess}}
-        <a class="header-link w-button" href="#"> | &nbsp;Current phase: Upgrading v{{.BlockVersionCurrent}} -> v{{.BlockVersionNext}} ({{.BlockVersionNextPercentage}}% PoW, {{.StakeVersionMostPopularPercentage}}% PoS)</a>
+        {{if .IsUpgrading}}
+<!-- Phase 1 Upgrading -->
+        <a class="header-link w-button" href="#"> | &nbsp;Current phase: Upgrading 
+          {{if .StakeVersionSuccess}}<div class="finished indicator transition">PoS</div>{{else}}<div class="in-progress indicator transition">PoS {{.StakeVersionMostPopularPercentage}}</div>{{end}}
+          {{if .BlockVersionSuccess}}<div class="finished indicator transition">PoW</div>{{else}}<div class="in-progress indicator transition">PoW {{.BlockVersionNextPercentage}}%</div>{{end}}
         {{else}}
-        {{if not .StakeVersionSuccess}}
-        <a class="header-link w-button" href="#"> | &nbsp;Current phase: Upgrading v{{.StakeVersionCurrent}} -> v{{.StakeVersionMostPopular}} ({{.BlockVersionNextPercentage}}% PoW, {{.StakeVersionMostPopularPercentage}}% PoS)</a>
-        {{end}}
+<!-- Phase 2 Voting -->
+
         {{end}}
         <a class="header-link w-button" href="{{.BlockExplorerLink}}">Block #{{.BlockHeight}}</a>
       </div>
