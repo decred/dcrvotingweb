@@ -61,9 +61,28 @@
         <a class="header-link w-button" href="#"> | &nbsp;Current phase: Upgrading 
           {{if .StakeVersionSuccess}}<div class="finished indicator transition">PoS</div>{{else}}<div class="in-progress indicator transition">PoS {{.StakeVersionMostPopularPercentage}}</div>{{end}}
           {{if .BlockVersionSuccess}}<div class="finished indicator transition">PoW</div>{{else}}<div class="in-progress indicator transition">PoW {{.BlockVersionNextPercentage}}%</div>{{end}}
+        </a>
         {{else}}
 <!-- Phase 2 Voting -->
-
+        <a class="header-link w-button" href="#"> | &nbsp;Current phase: Voting
+          {{range $i, $agenda := .Agendas}}
+              {{if $agenda.IsDefined}}
+              <div class="indicator upcoming">{{$agenda.Id}}</div>
+              {{end}}
+              {{if $agenda.IsStarted}}
+              <div class="in-progress indicator">{{$agenda.Id}} {{$agenda.QuorumVotedPercentage }}%</div>
+              {{end}}
+              {{if $agenda.IsActive}}
+              <div class="finished indicator">{{$agenda.Id}}</div>
+              {{end}}
+              {{if $agenda.IsFailed}}
+              <div class="failed indicator">{{$agenda.Id}}</div>
+              {{end}}
+              {{if $agenda.IsLockedIn}}
+              <div class="finished indicator">{{$agenda.Id}}</div>
+              {{end}}
+          {{end}}
+        </a>
         {{end}}
         <a class="header-link w-button" href="{{.BlockExplorerLink}}">Block #{{.BlockHeight}}</a>
       </div>
