@@ -282,9 +282,9 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	templateInformation.StakeVersionMostPopular = mostPopularVersion
 	templateInformation.StakeVersionRequiredVotes = int32(maxPossibleVotes) *
 		activeNetParams.StakeMajorityMultiplier / activeNetParams.StakeMajorityDivisor
-	if int32(mostPopularVersionCount) > templateInformation.StakeVersionRequiredVotes {
-		templateInformation.StakeVersionSuccess = true
-	}
+	//if int32(mostPopularVersionCount) > templateInformation.StakeVersionRequiredVotes {
+	templateInformation.StakeVersionSuccess = true
+	//}
 
 	blocksIntoInterval := currentInterval.EndHeight - currentInterval.StartHeight
 	templateInformation.StakeVersionVotesRemaining =
