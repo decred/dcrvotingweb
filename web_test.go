@@ -10,7 +10,8 @@ func TestIsDCP(t *testing.T) {
 		r bool
 	}{
 		{"DCP0001", true},
-		{"CP0001", false},
+		{" CP0001", false},
+		{"XCP0001", false},
 		{"dcp0001", true},
 		{"DCP-0001", true},
 		{"DTP0001", false},
