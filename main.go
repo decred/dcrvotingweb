@@ -291,7 +291,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 		(activeNetParams.StakeVersionInterval - blocksIntoInterval) * int64(activeNetParams.TicketsPerBlock)
 
 	// Quorum/vote information
-	getVoteInfo, err := dcrdClient.GetVoteInfo(mostPopularVersion)
+	getVoteInfo, err := dcrdClient.GetVoteInfo(latestBlockHeader.StakeVersion)
 	if err != nil {
 		fmt.Println("Get vote info err", err)
 		templateInformation.Quorum = false
