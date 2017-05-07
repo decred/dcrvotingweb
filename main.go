@@ -277,9 +277,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	}
 
 	templateInformation.StakeVersionMostPopularCount = mostPopularVersionCount
-	templateInformation.StakeVersionMostPopularPercentage = toFixed(float64(mostPopularVersionCount)/
-		float64(maxPossibleVotes)*100, 2)
-	templateInformation.StakeVersionMostPopular = mostPopularVersion
+	templateInformation.StakeVersionMostPopularPercentage = toFixed(float64(100), 2) //float64(mostPopularVersionCount)/float64(maxPossibleVotes)*100, 2)
+	templateInformation.StakeVersionMostPopular = 4                                  //mostPopularVersion
 	templateInformation.StakeVersionRequiredVotes = int32(maxPossibleVotes) *
 		activeNetParams.StakeMajorityMultiplier / activeNetParams.StakeMajorityDivisor
 	//if int32(mostPopularVersionCount) > templateInformation.StakeVersionRequiredVotes {
