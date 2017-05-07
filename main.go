@@ -178,7 +178,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 		return 100 * float64(count) / float64(activeNetParams.BlockUpgradeNumToCheck)
 	}
 
-	templateInformation.BlockVersionCurrent = minBlockVersion
+	templateInformation.BlockVersionCurrent = 4
 
 	templateInformation.BlockVersionMostPopular = popBlockVersion
 	templateInformation.BlockVersionMostPopularPercentage = toFixed(blockWinUpgradePct(popBlockVersionCount), 2)
