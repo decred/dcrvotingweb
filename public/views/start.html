@@ -220,7 +220,9 @@ This is measured in the following ways:
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
                 <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
               </div>
+              {{if not .StakeVersionSuccess}}
               <div class="pow-pos-time-remaining transition">{{.StakeVersionTimeRemaining}}</div>
+              {{end}}
             </div>
             <div class="progress-bar-pow-pos-upgrade">
               <div class="progress-indicator w-clearfix">
