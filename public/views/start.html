@@ -328,7 +328,7 @@ This is measured in the following ways:
                 </div>
               </div>
               <div class="agenda-paragraph">
-                <p>{{$agenda.Description}}</p>
+                <p>{{$agenda.DescriptionWithDCPURL}}</p>
                 {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
                 <p>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</p>
                 {{end}}
