@@ -27,6 +27,8 @@ type Agenda struct {
 	StartHeight               int64
 }
 
+var dcpRE = regexp.MustCompile(`(?i)DCP\-?(\d{4})`)
+
 // Agenda status may be: started, defined, lockedin, failed, active
 
 // IsActive indicates if the agenda is active
@@ -56,20 +58,26 @@ func (a *Agenda) IsFailed() bool {
 
 // IsDCP indicates if agenda has a DCP paper
 func (a *Agenda) IsDCP() bool {
-	var dcpMustHave = regexp.MustCompile(`(?i)DCP\-?(\d{4,6})`)
-	return dcpMustHave.MatchString(a.Description)
+	return dcpRE.MatchString(a.Description)
 }
 
 // DCPNumber gets the DCP number as a string with any leading zeros
 func (a *Agenda) DCPNumber() string {
-	re := regexp.MustCompile(`(?i)DCP\-?(\d{4,6})`)
-	if re.MatchString(a.Description) {
-		matches := re.FindStringSubmatch(a.Description)
+	if a.IsDCP() {
+		matches := dcpRE.FindStringSubmatch(a.Description)
 		if len(matches) > 1 {
 			return matches[1]
 		}
 	}
 	return ""
+}
+
+// DescriptionWithDCPURL writes a new description with an link to any DCP that
+// is detected in the text.  It is written to a template.HTML type so the link
+// is not escaped when the template is executed.
+func (a *Agenda) DescriptionWithDCPURL() template.HTML {
+	subst := `<a href="https://github.com/decred/dcps/blob/master/dcp-${1}/dcp-${1}.mediawiki" target="_blank">${0}</a>`
+	return template.HTML(dcpRE.ReplaceAllString(a.Description, subst))
 }
 
 // Overall data structure given to the template to render.
