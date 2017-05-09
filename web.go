@@ -76,7 +76,7 @@ func (a *Agenda) DCPNumber() string {
 // is detected in the text.  It is written to a template.HTML type so the link
 // is not escaped when the template is executed.
 func (a *Agenda) DescriptionWithDCPURL() template.HTML {
-	subst := `<a href="https://github.com/decred/dcps/blob/master/dcp-${1}/dcp-${1}.mediawiki">${0}</a>`
+	subst := `<a href="https://github.com/decred/dcps/blob/master/dcp-${1}/dcp-${1}.mediawiki" target="_blank">${0}</a>`
 	return template.HTML(dcpRE.ReplaceAllString(a.Description, subst))
 }
 
