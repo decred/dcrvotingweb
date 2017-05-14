@@ -39,6 +39,18 @@
   background-color:#fd714b;
   {{end}}
   }
+
+  {{range $i, $agenda := .Agendas}}
+    {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
+      {{range $cid, $choice := .ChoiceIDsActing}}
+      {{$cid1 := plus $cid 1}}
+      {{$ch := index $agenda.Choices $cid}}
+  .option-progress.option-1-a_{{$agenda.Id}}-c{{$choice}} {
+  width: {{index $agenda.ChoicePercentagesActing $cid}}%;
+  }
+      {{end}}
+    {{end}}
+  {{end}}
   </style>
 
 </head>
@@ -382,13 +394,13 @@ This is measured in the following ways:
                 <div class="progress-bar-competing-options w-clearfix">
                   {{range $cid, $choice := .ChoiceIDsActing}}
                   {{$cid1 := plus $cid 1}}
-                  <div class="option-{{$cid1}} option-progress" data-tooltip-text="{{$choice}}" data-tooltip-value="{{index $agenda.ChoicePercentagesActing $cid}}"></div>
+                  <div class="option-{{$cid1}} option-progress option-1-a_{{$agenda.Id}}-c{{$choice}}" data-tooltip-text="{{$choice}}" data-tooltip-value="{{index $agenda.ChoicePercentagesActing $cid}}"></div>
                   {{end}}
                 </div>
                 <div class="total-votes-cast" data-tooltip-text="Total Votes Cast" data-tooltip-value="0"></div>
               </div>
-              <div class="agenda progress-bar-threshold"></div>
-              <div class="heading progress-bar-agenda-voting-percent">0%</div>
+              <!-- <div class="agenda progress-bar-threshold"></div> -->
+              <div class="heading progress-bar-agenda-voting-percent">{{$agenda.QuorumVotedPercentage }}%</div>
             </div>
           </div>
           {{end}}
