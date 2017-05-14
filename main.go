@@ -186,9 +186,9 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	templateInformation.BlockVersionNext = minBlockVersion + 1
 	templateInformation.BlockVersionNextPercentage = toFixed(blockWinUpgradePct(blockVersionsCounts[minBlockVersion+1]), 2)
 
-	if popBlockVersionCount > int64(activeNetParams.BlockRejectNumRequired) {
-		templateInformation.BlockVersionSuccess = true
-	}
+	//if popBlockVersionCount > int64(activeNetParams.BlockRejectNumRequired) {
+	templateInformation.BlockVersionSuccess = true
+	//}
 
 	// Voting intervals ((height-4096) mod 2016)
 	blocksIntoStakeVersionInterval := (int64(height) - activeNetParams.StakeValidationHeight) %
