@@ -69,13 +69,13 @@
         <a class="header-link w-button" href="faucet.decred.org"> | &nbsp;Testnet Faucet</a>
         {{end}}
         {{if .IsUpgrading}}
-<!-- Phase 1 Upgrading
+<!-- Phase 1 Upgrading -->
         <a class="header-link w-button" href="#"> | &nbsp;Current phase: Upgrading 
           {{if .StakeVersionSuccess}}<div class="finished indicator transition">PoS</div>{{else}}<div class="in-progress indicator transition">PoS {{.StakeVersionMostPopularPercentage}}</div>{{end}}
           {{if .BlockVersionSuccess}}<div class="finished indicator transition">PoW</div>{{else}}<div class="in-progress indicator transition">PoW {{.BlockVersionNextPercentage}}%</div>{{end}}
-        </a>  -->
+        </a>  
         {{else}}
-<!-- Phase 2 Voting 
+<!-- Phase 2 Voting -->
           <a class="header-link w-button" href="#"> | &nbsp;Current phase: Voting
           {{range $i, $agenda := .Agendas}}        
               {{if $agenda.IsDefined}}
@@ -94,7 +94,7 @@
               <div class="finished indicator">{{$agenda.Id}} LockedIn</div>
               {{end}}
           {{end}}
-          </a> -->
+          </a> 
         {{end}}
         <a class="header-link w-button" href="{{.BlockExplorerLink}}">Block #{{.BlockHeight}}</a>
       </div>
