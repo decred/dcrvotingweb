@@ -314,7 +314,9 @@
               <div class="agenda-cfg w-clearfix">
                 <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#{{$agenda.Id}}</span>
                 </div>
+                {{if $agenda.IsStarted}}
                 <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{$.GetVoteInfoResult.StartHeight}} - {{$.GetVoteInfoResult.EndHeight}}</span>
+                {{end}}
                 </div>
               </div>
               <div class="agenda-paragraph">
