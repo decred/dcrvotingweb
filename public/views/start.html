@@ -99,29 +99,7 @@
         <a class="header-link w-button" href="{{.BlockExplorerLink}}">Block #{{.BlockHeight}}</a>
       </div>
     </div>
-    <div class="voting-overview">
-      <div class="w-clearfix width-1180">
-        <div class="voting-overview-graph width-590"></div>
-        <div class="voting-overview w-clearfix width-590">
-          <div class="heading voting-overview">Voting Overview</div>
-          <div class="text-block voting-overview">
-            <p>
-There is a two-phase process for voting to implement consensus changes that would create a hard fork.
-            </p>
-            <p>
-<span class="highlightoverview">The first Phase</span> is meeting the upgrade threshold on the network. A majority of PoS/PoW nodes on the network must upgrade before voting can begin. 
-This is measured in the following ways:
-            </p>
-            <p>
-- For PoW, at least {{.BlockVersionRejectThreshold}}% of the {{.BlockVersionWindowLength}} most recent blocks must have the latest block version.<br />
-- For PoS, {{.StakeVersionThreshold}}% of the votes cast within a static {{.StakeVersionWindowLength}} block interval must have the latest vote version.
-            </p>
-            <p>
-<span class="highlightoverview">The second phase</span> is the voting itself. Voting takes place within a static {{.RuleChangeActivationInterval}} block interval. If 75% of votes mined within that interval signal a ‘yes’ vote to the proposals, the changes are implemented. Implementation happens after one additional block interval to allow any remaining nodes to update prior to the fork.
-            </p>
-        </div>
-      </div>
-    </div>
+
     <div class="pow-pos-upgrade">
       <div class="overflow-hidden pow-pos-upgrade w-clearfix width-1180">
         <div class="pow-upgrade w-clearfix width-half">
@@ -431,6 +409,36 @@ This is measured in the following ways:
       {{end}}
 <!-- agenda loop end -->     
       </div>
+
+
+    <div class="voting-overview">
+      <div class="w-clearfix width-1180">
+        <div class="voting-overview-graph width-590"></div>
+        <div class="voting-overview w-clearfix width-590">
+          <div class="heading voting-overview">Voting Overview</div>
+          <div class="text-block voting-overview">
+            <p>
+There is a two-phase process for voting to implement consensus changes that would create a hard fork.
+            </p>
+            <p>
+<span class="highlightoverview">The first Phase</span> is meeting the upgrade threshold on the network. A majority of PoS/PoW nodes on the network must upgrade before voting can begin. 
+This is measured in the following ways:
+            </p>
+            <p>
+- For PoW, at least {{.BlockVersionRejectThreshold}}% of the {{.BlockVersionWindowLength}} most recent blocks must have the latest block version.<br />
+- For PoS, {{.StakeVersionThreshold}}% of the votes cast within a static {{.StakeVersionWindowLength}} block interval must have the latest vote version.
+            </p>
+            <p>
+<span class="highlightoverview">The second phase</span> is the voting itself. Voting takes place within a static {{.RuleChangeActivationInterval}} block interval. If 75% of votes mined within that interval signal a ‘yes’ vote to the proposals, the changes are implemented. Implementation happens after one additional block interval to allow any remaining nodes to update prior to the fork.
+            </p>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
     </div>
   </div>
 <script src="js/jquery-2.2.0.min.js" type="text/javascript"></script>
