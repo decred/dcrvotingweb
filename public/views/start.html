@@ -76,7 +76,7 @@
         </a>  
         {{else}}
 <!-- Phase 2 Voting -->
-          <a class="header-link w-button" href="#"> | &nbsp;Current phase: Voting
+          <span class="header-link"> | &nbsp;Current phase: Voting
           {{range $i, $agenda := .Agendas}}        
               {{if $agenda.IsDefined}}
               <div class="indicator upcoming">{{$agenda.Id}} Upcoming</div>
@@ -94,7 +94,7 @@
               <div class="finished indicator">{{$agenda.Id}} LockedIn</div>
               {{end}}
           {{end}}
-          </a> 
+          </span> 
         {{end}}
         <a class="header-link w-button" href="{{.BlockExplorerLink}}">Block #{{.BlockHeight}}</a>
       </div>
