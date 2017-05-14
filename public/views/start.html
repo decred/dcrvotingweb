@@ -69,13 +69,13 @@
         <a class="header-link w-button" href="faucet.decred.org"> | &nbsp;Testnet Faucet</a>
         {{end}}
         {{if .IsUpgrading}}
-<!-- Phase 1 Upgrading -->
+<!-- Phase 1 Upgrading
         <a class="header-link w-button" href="#"> | &nbsp;Current phase: Upgrading 
           {{if .StakeVersionSuccess}}<div class="finished indicator transition">PoS</div>{{else}}<div class="in-progress indicator transition">PoS {{.StakeVersionMostPopularPercentage}}</div>{{end}}
           {{if .BlockVersionSuccess}}<div class="finished indicator transition">PoW</div>{{else}}<div class="in-progress indicator transition">PoW {{.BlockVersionNextPercentage}}%</div>{{end}}
-        </a>
+        </a>  -->
         {{else}}
-<!-- Phase 2 Voting -->
+<!-- Phase 2 Voting 
           <a class="header-link w-button" href="#"> | &nbsp;Current phase: Voting
           {{range $i, $agenda := .Agendas}}        
               {{if $agenda.IsDefined}}
@@ -94,7 +94,7 @@
               <div class="finished indicator">{{$agenda.Id}} LockedIn</div>
               {{end}}
           {{end}}
-          </a>
+          </a> -->
         {{end}}
         <a class="header-link w-button" href="{{.BlockExplorerLink}}">Block #{{.BlockHeight}}</a>
       </div>
@@ -322,20 +322,25 @@
               <div class="agenda-paragraph">
                 <p>{{$agenda.DescriptionWithDCPURL}}</p>
                 {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
-                <p>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</p>
+                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</small></p>
                 {{end}}
+                <!-- this can be removed once BlockVersionSuccess is correct -->
+                {{if and $agenda.IsStarted}}
+                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</small></p>
+                {{end}}
+                <!-- end remove -->
                 {{if $agenda.IsStarted}}
                   {{if eq $agenda.QuorumProgress 1.0}}
-                    <p><strong>Success!</strong> We have reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.<br />
-                    There are <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks left in the vote.
+                    <p><small><strong>Success!</strong> We have reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.<br />
+                    There are <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks left in the vote.</small>
                     </p>
                   {{else}}
-                    <p>We have yet not reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.
+                    <p><small>We have yet not reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.</small>
                     </p>
                   {{end}}
                 {{end}}
                 {{if $agenda.IsActive}}
-                    <p>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://forum.decred.org/forums/development-dispatches/" target="_blank">Forum</a> to get the latest Development Dispatches.
+                    <p><small>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://forum.decred.org/forums/development-dispatches/" target="_blank">Forum</a> to get the latest Development Dispatches.</small>
                     </p>
                 {{end}}
               </div>
