@@ -355,6 +355,12 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 					toFixed(choice.Progress/actingPct*100, 2))
 			}
 		}
+		voteCount := uint32(0)
+		for _, choice := range agenda.Choices {
+			voteCount += choice.Count
+		}
+
+		voteCountPercentage := float64(voteCount) / (float64(activeNetParams.RuleChangeActivationInterval) * float64(activeNetParams.TicketsPerBlock))
 
 		templateInformation.Agendas = append(templateInformation.Agendas, Agenda{
 			Agenda:                    *agenda.ToDcrJSONAgenda(),
@@ -366,6 +372,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 			ChoiceIDsActing:           choiceIdsActing,
 			ChoicePercentagesActing:   choicePercentagesActing,
 			StartHeight:               getVoteInfo.StartHeight,
+			VoteCountPercentage:       voteCountPercentage,
 		})
 	}
 }
