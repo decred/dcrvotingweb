@@ -311,10 +311,10 @@
               {{end}}
 
               <!-- status icons -->
-              <div class="indicator-icon lockin {{if or $agenda.IsLockedIn $agenda.IsActive}}active{{end}}" data-tooltip-text="{{if $agenda.IsActive}}Locked-in, New Rules Activated{{end}}{{if $agenda.IsLockedIn}}Lock-in phase, new rules not yet activated{{else}}Voting phase, new rules not yet activated{{end}}"></div>
+              <div class="indicator-icon lockin {{if or $agenda.IsLockedIn $agenda.IsActive}}active{{end}}" data-tooltip-text="{{if $agenda.IsActive}}Locked-in, New Rules Activated{{end}}{{if $agenda.IsLockedIn}}Lock-in phase, new rules not yet activated{{else}}Voting phase, new rules not yet locked-in{{end}}"></div>
            
               
-               <div class="activated indicator-icon {{if $agenda.IsActive}}active{{end}}" data-tooltip-text="{{if $agenda.IsActive}}Voting Succeeded, New Rules Activated{{end}}{{if $agenda.IsLockedIn}}Lock-in phase, New Rules will activate soon. Upgrade your Software.{{end}}"></div>
+               <div class="activated indicator-icon {{if $agenda.IsActive}}active{{end}}" data-tooltip-text="{{if $agenda.IsActive}}Lock-in Phase passed, New Rules Activated{{end}}{{if $agenda.IsLockedIn}}Lock-in phase, New Rules will activate soon. Upgrade your Software.{{end}}{{if $agenda.IsStarted}}Voting phase, new rules not yet activated{{end}}"></div>
               
 
               <!-- quorum indicator -->
