@@ -25,6 +25,7 @@ type Agenda struct {
 	ChoiceIDsActing           []string
 	ChoicePercentagesActing   []float64
 	StartHeight               int64
+	VoteCountPercentage       float64
 }
 
 var dcpRE = regexp.MustCompile(`(?i)DCP\-?(\d{4})`)
