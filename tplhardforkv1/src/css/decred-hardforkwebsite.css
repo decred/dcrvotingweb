@@ -1699,6 +1699,12 @@ body {
   font-weight: 600;
 }
 
+.headingsubline {
+  clear:both;
+  font-size: 14px;
+  padding-top: 4px;
+}
+
 .heading.big {
   font-size: 16px;
 }
@@ -1900,6 +1906,10 @@ body {
   bottom: 0px;
   z-index: 1;
   float: left;
+}
+
+.upgrade-content-statistics-spacer {
+  height: 80px;
 }
 
 .upgrade-content.pow-upgrade.inactive {
@@ -2241,6 +2251,15 @@ body {
   font-size: 12px;
   font-weight: 600;
   text-transform: capitalize;
+}
+
+.agenda-voting-overview-disclaimer {
+  clear:both;
+  padding: 5px;
+  width: 66%; 
+  font-size: 12px;
+  background-color: #d1f2fc;
+  border-radius: 3px;
 }
 
 .text-block-4 {
@@ -3125,3 +3144,4 @@ html.w-mod-touch * {
   font-weight: 400;
   font-style: normal;
 }
+

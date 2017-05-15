@@ -28,9 +28,11 @@
   <script src="js/modernizr.js" type="text/javascript"></script>
   <style>
   .progress-percent.pow {
-  width: {{.BlockVersionNextPercentage}}%;
   {{if not .BlockVersionSuccess}}
   background-color:#fd714b;
+  width: {{.BlockVersionNextPercentage}}%;
+  {{else}}
+  width: 100%;
   {{end}}
   }
   .progress-percent.pos {
@@ -70,13 +72,16 @@
         {{end}}
         {{if .IsUpgrading}}
 <!-- Phase 1 Upgrading -->
-        <a class="header-link w-button" href="#"> | &nbsp;Current phase: Upgrading 
+        <span class="header-link"> | &nbsp;Current phase: Upgrading 
+          <!--
           {{if .StakeVersionSuccess}}<div class="finished indicator transition">PoS</div>{{else}}<div class="in-progress indicator transition">PoS {{.StakeVersionMostPopularPercentage}}</div>{{end}}
           {{if .BlockVersionSuccess}}<div class="finished indicator transition">PoW</div>{{else}}<div class="in-progress indicator transition">PoW {{.BlockVersionNextPercentage}}%</div>{{end}}
-        </a>  
+          -->
+        </spam>  
         {{else}}
 <!-- Phase 2 Voting -->
-          <a class="header-link w-button" href="#"> | &nbsp;Current phase: Voting
+          <span class="header-link"> | &nbsp;Current phase: Voting
+            <!--
           {{range $i, $agenda := .Agendas}}        
               {{if $agenda.IsDefined}}
               <div class="indicator upcoming">{{$agenda.Id}} Upcoming</div>
@@ -94,7 +99,8 @@
               <div class="finished indicator">{{$agenda.Id}} LockedIn</div>
               {{end}}
           {{end}}
-          </a> 
+          -->
+          </span> 
         {{end}}
         <a class="header-link w-button" href="{{.BlockExplorerLink}}">Block #{{.BlockHeight}}</a>
       </div>
@@ -106,13 +112,14 @@
           <div class="chart-toggle-side pow"></div>
           <div class="pow-upgrade transition upgrade-content">
             <div class="upgrade-content-statistics-header w-clearfix">
-              <div class="heading pow-pos">Miner (PoW) Upgrade Progress</div>
+              <div class="heading pow-pos">Miner Upgrade</div>
 <!--  POW STATUS LABEL SWITCH -->
               {{if .BlockVersionSuccess}}
-              <div class="finished indicator pow-pos transition">finished</div>
+              <div class="finished indicator pow-pos transition">Completed</div>
               {{else}}
               <div class="in-progress indicator pow-pos transition">in-progress</div>
               {{end}}
+              <div class="headingsubline">Proof-of-Work</div>
             </div>
             <div class="upgrade-content-statistics-main w-clearfix">
               <div class="upgrade-content-statistics-numbers w-clearfix">Current Version: 
@@ -127,7 +134,7 @@
                 {{else}}
                 <br> Next Version: <span class="highlight-text orange">v{{.BlockVersionNext}}</span>
                 {{end}}
-                <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span>
+                <!-- <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span> -->
                 <!--<br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
                 <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>-->
                 <br> Upgrade Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
@@ -139,13 +146,20 @@
               <div class="progress-indicator w-clearfix">
                 <div class="pow progress-percent"></div>
               </div>
+              {{if not .BlockVersionSuccess}}
               <div class="pow-pos-upgrade progress-bar-threshold" style="left: {{.BlockVersionRejectThreshold}}%"></div>
-              <div class="heading progress-bar-pow-pos-percent">{{.BlockVersionNextPercentage}}%</div>
+              {{end}}
+              <div class="heading progress-bar-pow-pos-percent">{{if not .BlockVersionSuccess}}
+                {{.BlockVersionNextPercentage}}%
+                {{else}}
+                Phase Complete
+                {{end}}</div>
             </div>
           </div>
           <div class="chart pow w-clearfix">
             <div class="chart-info w-clearfix">
-              <div class="heading pow-pos">Miner (PoW) Upgrade Progress</div>
+              <div class="heading pow-pos">Miner Upgrade</div>
+              <div class="headingsubline">Proof-of-Work</div>
               <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: 
 <!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
                 {{if .BlockVersionSuccess}}
@@ -158,7 +172,7 @@
                 {{else}}
                 <br> Next Version: <span class="highlight-text orange">v{{.BlockVersionNext}}</span>
                 {{end}}
-                <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span>
+                <!-- <br> Next: <span class="highlight-text">{{.BlockVersionNextPercentage}}%</span> -->
                 <!--<br> Most Popular Version: <span class="highlight-text green">v{{.BlockVersionMostPopular}}</span>
                 <br> Most Popular: <span class="highlight-text">{{.BlockVersionMostPopularPercentage}}%</span>-->
                 <br> Upgrade Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
@@ -185,13 +199,14 @@
           <div class="chart-toggle-side pos"></div>
           <div class="pos-upgrade transition upgrade-content">
             <div class="upgrade-content-statistics-header w-clearfix">
-              <div class="heading pow-pos">Voter (PoS) Upgrade Progress</div>
+              <div class="heading pow-pos">Voter Upgrade</div>
 <!--  POS STATUS LABEL SWITCH -->
               {{if .StakeVersionSuccess}}
-              <div class="finished indicator pow-pos transition">finished</div>
+              <div class="finished indicator pow-pos transition">Completed</div>
               {{else}}
               <div class="in-progress indicator pow-pos transition">in-progress</div>
               {{end}}
+              <div class="headingsubline">Proof-of-Stake</div>
             </div>
             <div class="upgrade-content-statistics-main w-clearfix">
               <div class="upgrade-content-statistics-numbers w-clearfix">Current Version: 
@@ -206,7 +221,7 @@
                 {{else}}
                 <br> Most Popular Version: <span class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
                 {{end}}
-                <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
+                <!-- <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span> -->
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
                 <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
               </div>
@@ -218,13 +233,20 @@
               <div class="progress-indicator w-clearfix">
                 <div class="pos progress-percent"></div>
               </div>
+              {{if not .StakeVersionSuccess}}
               <div class="pow-pos-upgrade progress-bar-threshold" style="left: {{.StakeVersionThreshold}}%"></div>
-              <div class="heading progress-bar-pow-pos-percent">{{.StakeVersionMostPopularPercentage}}%</div>
+              {{end}}
+              <div class="heading progress-bar-pow-pos-percent">{{if not .StakeVersionSuccess}}
+                {{.StakeVersionMostPopularPercentage}}%
+                {{else}}
+                Phase Complete
+                {{end}}</div>
             </div>
           </div>
           <div class="chart pos w-clearfix">
             <div class="chart-info w-clearfix">
-              <div class="heading pow-pos">Voter (PoS) Upgrade Progress</div>
+              <div class="heading pow-pos">Voter Upgrade</div>
+              <div class="headingsubline">Proof-of-Stake</div>
               <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: 
                 {{if .StakeVersionSuccess}}                
                 <span class="highlight-text green">v{{.StakeVersionCurrent}}</span>
@@ -236,7 +258,7 @@
                 {{else}}
                 <br> Most Popular Version: <span class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
                 {{end}}
-                <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span>
+                <!-- <br> Most Popular: <span class="highlight-text">{{.StakeVersionMostPopularCount}}/{{.StakeVersionWindowVoteTotal}} Votes</span> -->
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
                 <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
               </div>
@@ -289,12 +311,11 @@
               {{end}}
 
               <!-- status icons -->
-              {{if $agenda.IsLockedIn}}
-              <div class="indicator-icon lockin" data-tooltip-text="Lock-in phase, new rules not yet activated"></div>
-              {{end}}
-              {{if $agenda.IsActive}}
-               <div class="activated indicator-icon active" data-tooltip-text="Voting Succeeded, New Rules Activated"></div>
-              {{end}}
+              <div class="indicator-icon lockin {{if or $agenda.IsLockedIn $agenda.IsActive}}active{{end}}" data-tooltip-text="{{if $agenda.IsActive}}Locked-in, New Rules Activated{{end}}{{if $agenda.IsLockedIn}}Lock-in phase, new rules not yet activated{{else}}Voting phase, new rules not yet locked-in{{end}}"></div>
+           
+              
+               <div class="activated indicator-icon {{if $agenda.IsActive}}active{{end}}" data-tooltip-text="{{if $agenda.IsActive}}Lock-in Phase passed, New Rules Activated{{end}}{{if $agenda.IsLockedIn}}Lock-in phase, New Rules will activate soon. Upgrade your Software.{{end}}{{if $agenda.IsStarted}}Voting phase, new rules not yet activated{{end}}"></div>
+              
 
               <!-- quorum indicator -->
               {{if $agenda.IsStarted}}
@@ -310,38 +331,30 @@
 
             <!-- agenda details -->
             <div class="w-clearfix width-half">
-              <div class="agenda heading">{{$agenda.Id}}</div>
+              <div class="agenda heading">
+                {{if eq $agenda.Id "sdiffalgorithm"}}Change PoS Staking Algorithm{{end}}
+                {{if eq $agenda.Id "lnsupport"}}Start Lightning Network Support{{end}}
+              </div>
               <div class="agenda-cfg w-clearfix">
                 <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#{{$agenda.Id}}</span>
                 </div>
                 {{if $agenda.IsStarted}}
-                <div class="agenda-cfg-spec w-clearfix">Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{$.GetVoteInfoResult.StartHeight}} - {{$.GetVoteInfoResult.EndHeight}}</span>
-                {{end}}
+                <div class="agenda-cfg-spec w-clearfix">
+                  Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{$.GetVoteInfoResult.StartHeight}} - {{$.GetVoteInfoResult.EndHeight}}</span>
                 </div>
+                <div class="agenda-cfg-spec w-clearfix">
+                 Blocks left: &nbsp;<span class="highlight-text cyan transparent">{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</span>
+                </div>                
+                {{end}}
+                
               </div>
               <div class="agenda-paragraph">
-                <p>{{$agenda.DescriptionWithDCPURL}}</p>
-                {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
-                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</small></p>
+                <p style="font-weight: bold;">{{$agenda.DescriptionWithDCPURL}}</p>
+                {{if eq $agenda.Id "sdiffalgorithm"}}
+                <p>Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals.</p>
                 {{end}}
-                <!-- this can be removed once BlockVersionSuccess is correct -->
-                {{if and $agenda.IsStarted}}
-                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</small></p>
-                {{end}}
-                <!-- end remove -->
-                {{if $agenda.IsStarted}}
-                  {{if eq $agenda.QuorumProgress 1.0}}
-                    <p><small><strong>Success!</strong> We have reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.<br />
-                    There are <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks left in the vote.</small>
-                    </p>
-                  {{else}}
-                    <p><small>We have yet not reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.</small>
-                    </p>
-                  {{end}}
-                {{end}}
-                {{if $agenda.IsActive}}
-                    <p><small>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://forum.decred.org/forums/development-dispatches/" target="_blank">Forum</a> to get the latest Development Dispatches.</small>
-                    </p>
+                {{if eq $agenda.Id "lnsupport"}}
+                <p>The <a href="https://lightning.network/" target="_blank">Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration.</p>
                 {{end}}
               </div>
             </div>
@@ -368,6 +381,33 @@
                   {{end}}
                 </div>
               </div>
+                {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
+                <div class="agenda-voting-overview-disclaimer" style="width: 66%">
+                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</small></p>
+                </div>
+                {{end}}
+
+                {{if $agenda.IsStarted}}
+                  {{if eq $agenda.QuorumProgress 1.0}}
+                    <div class="agenda-voting-overview-disclaimer">
+                    <p><small><strong>Success!</strong> We have reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.<br />
+                    There are <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks left in the vote.</small>
+                    </p>
+                    </div>
+                  {{else}}
+                  <!--
+                    <div class="agenda-voting-overview-disclaimer">
+                    <p>We have yet not reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.
+                    </p>
+                    </div> -->
+                  {{end}}
+                {{end}}
+                {{if $agenda.IsActive}}
+                    <div class="agenda-voting-overview-disclaimer">
+                    <p><small>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://forum.decred.org/forums/development-dispatches/" target="_blank">Forum</a> to get the latest Development Dispatches.</small>
+                    </p>
+                    </div>
+                {{end}}
             </div>
           </div>
 
@@ -376,7 +416,7 @@
           <div class="agenda-section progress-bar w-clearfix">
             <div class="progress-bar-agenda w-clearfix">
               <div class="progress-bar-competing-options-and-total-votes w-clearfix">
-                <div class="progress-bar-competing-options w-clearfix" style="width:{{$agenda.QuorumVotedPercentage }}%">
+                <div class="progress-bar-competing-options w-clearfix" style="width:{{if gt $agenda.VoteCountPercentage 50.00}}{{$agenda.VoteCountPercentage}}{{else}}{{50}}{{end}}%">
                   {{range $cid, $choice := .ChoiceIDsActing}}
                   {{$cid1 := plus $cid 1}}
                   <div class="option-{{$cid1}} option-progress a_{{$agenda.Id}}-c{{$choice}}" data-tooltip-text="{{$choice}}" data-tooltip-value="{{index $agenda.ChoicePercentagesActing $cid}}"></div>
@@ -385,12 +425,13 @@
                 <!-- <div class="total-votes-cast" data-tooltip-text="Total Votes Cast" data-tooltip-value="0"></div> -->
               </div>
               <!-- <div class="agenda progress-bar-threshold"></div> -->
-              <div class="heading progress-bar-agenda-voting-percent">{{$agenda.QuorumVotedPercentage }}%</div>
+              <div class="heading progress-bar-agenda-voting-percent">{{$agenda.VoteCountPercentage }}%</div>
             </div>
           </div>
           {{end}}
 
           <!-- agenda toplabel -->
+          <!--
           {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
           <div class="agenda-voting-begins">Starts in {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}} blocks</div>
           {{end}}
@@ -412,6 +453,7 @@
             <div class="agenda-voting-begins">Voting failed
             </div>
           {{end}}
+          -->
         </div>
       {{end}}
 <!-- agenda loop end -->     
@@ -437,6 +479,9 @@ This is measured in the following ways:
             </p>
             <p>
 <span class="highlightoverview">The second phase</span> is the voting itself. Voting takes place within a static {{.RuleChangeActivationInterval}} block interval. If 75% of votes mined within that interval signal a ‘yes’ vote to the proposals, the changes are implemented. Implementation happens after one additional block interval to allow any remaining nodes to update prior to the fork.
+            </p>
+            <p>
+<span class="highlightoverview"><a href="https://docs.decred.org/getting-started/user-guides/agenda-voting" target="_blank">Visit our Documentation to learn more</a></span>
             </p>
         </div>
       </div>

@@ -372,7 +372,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 			ChoiceIDsActing:           choiceIdsActing,
 			ChoicePercentagesActing:   choicePercentagesActing,
 			StartHeight:               getVoteInfo.StartHeight,
-			VoteCountPercentage:       voteCountPercentage,
+			VoteCountPercentage:       toFixed(voteCountPercentage*100, 1),
 		})
 	}
 }
