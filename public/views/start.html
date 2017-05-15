@@ -416,7 +416,7 @@
           <div class="agenda-section progress-bar w-clearfix">
             <div class="progress-bar-agenda w-clearfix">
               <div class="progress-bar-competing-options-and-total-votes w-clearfix">
-                <div class="progress-bar-competing-options w-clearfix" style="width:{{if gt $agenda.QuorumVotedPercentage 50.00}}{{$agenda.QuorumVotedPercentage}}{{else}}{{50}}{{end}}%">
+                <div class="progress-bar-competing-options w-clearfix" style="width:{{if gt $agenda.VoteCountPercentage 50.00}}{{$agenda.VoteCountPercentage}}{{else}}{{50}}{{end}}%">
                   {{range $cid, $choice := .ChoiceIDsActing}}
                   {{$cid1 := plus $cid 1}}
                   <div class="option-{{$cid1}} option-progress a_{{$agenda.Id}}-c{{$choice}}" data-tooltip-text="{{$choice}}" data-tooltip-value="{{index $agenda.ChoicePercentagesActing $cid}}"></div>
@@ -425,7 +425,7 @@
                 <!-- <div class="total-votes-cast" data-tooltip-text="Total Votes Cast" data-tooltip-value="0"></div> -->
               </div>
               <!-- <div class="agenda progress-bar-threshold"></div> -->
-              <div class="heading progress-bar-agenda-voting-percent">{{$agenda.QuorumVotedPercentage }}%</div>
+              <div class="heading progress-bar-agenda-voting-percent">{{$agenda.VoteCountPercentage }}%</div>
             </div>
           </div>
           {{end}}
