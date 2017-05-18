@@ -389,11 +389,11 @@
 
                 {{if $agenda.IsStarted}}
                   {{if eq $agenda.QuorumProgress 1.0}}
-                    <div class="agenda-voting-overview-disclaimer">
-                    <p><small><strong>Success!</strong> We have reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.<br />
+                    <!-- <div class="agenda-voting-overview-disclaimer">
+                    <p><small><strong>Success!</strong><br />We have reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.<br />
                     There are <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks left in the vote.</small>
                     </p>
-                    </div>
+                    </div> -->
                   {{else}}
                   <!--
                     <div class="agenda-voting-overview-disclaimer">
@@ -402,9 +402,15 @@
                     </div> -->
                   {{end}}
                 {{end}}
+                {{if $agenda.IsLockedIn}}
+                    <div class="agenda-voting-overview-disclaimer">
+                    <p><small>The vote has passed! The new rules will be activated in <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads" target="_blank">Downloads Page</a> to get the latest Software.</small>
+                    </p>
+                    </div>
+                {{end}}
                 {{if $agenda.IsActive}}
                     <div class="agenda-voting-overview-disclaimer">
-                    <p><small>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://forum.decred.org/forums/development-dispatches/" target="_blank">Forum</a> to get the latest Development Dispatches.</small>
+                    <p><small>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads" target="_blank">Downloads Page</a> to get the latest Software.</small>
                     </p>
                     </div>
                 {{end}}
