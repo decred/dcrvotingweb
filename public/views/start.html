@@ -105,7 +105,7 @@
         <a class="header-link w-button" href="{{.BlockExplorerLink}}">Block #{{.BlockHeight}}</a>
       </div>
     </div>
-
+    {{if (not .BlockVersionSuccess) or (not .StakeVersionSuccess)}}
     <div class="pow-pos-upgrade">
       <div class="overflow-hidden pow-pos-upgrade w-clearfix width-1180">
         <div class="pow-upgrade w-clearfix width-half">
@@ -280,6 +280,7 @@
         </div>
       </div>
     </div>
+    {{end}}
     <div class="agendas w-clearfix">
       <div id="agendalisting" class="agendas w-clearfix width-1180">
   
