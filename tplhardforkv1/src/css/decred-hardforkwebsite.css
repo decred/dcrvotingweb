@@ -1476,6 +1476,7 @@ body {
 }
 
 .agenda.drop-shadow-first-element {
+  margin-top: 20px;
   box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .2);
 }
 
@@ -2653,9 +2654,6 @@ body {
     padding-right: 50px;
     padding-bottom: 30px;
     padding-left: 50px;
-  }
-  .agenda.drop-shadow-first-element {
-    margin-top: 20px;
   }
   .chart-toggle-side {
     display: none;
