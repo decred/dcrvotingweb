@@ -204,7 +204,7 @@ func TemplateExecToString(t *template.Template, name string, data interface{}) (
 func (td *WebUI) demoPage(w http.ResponseWriter, r *http.Request) {
 	err := td.templ.Execute(w, td.TemplateData)
 	if err != nil {
-		fmt.Printf("Failed to Execute: %v", err)
+		fmt.Printf("Failed to Execute: %v\n", err)
 		return
 	}
 	// TODO: Use TemplateExecToString only when the template data is updated
