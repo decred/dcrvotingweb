@@ -411,7 +411,7 @@ func mainCore() int {
 				fmt.Printf("Failed to deserialize block header: %v\n", errLocal)
 				return
 			}
-			fmt.Printf("received new block %v (height %d)", blockHeader.BlockHash(),
+			fmt.Printf("received new block %v (height %d)\n", blockHeader.BlockHash(),
 				blockHeader.Height)
 			connectChan <- blockHeader
 		},
@@ -499,7 +499,11 @@ func mainCore() int {
 
 	// Create new web UI to deal with HTML templates and provide the
 	// http.HandleFunc for the web server
-	webUI := NewWebUI()
+	webUI, err := NewWebUI()
+	if err != nil {
+		fmt.Printf("NewWebUI failed: %v\n", err)
+		os.Exit(1)
+	}
 	webUI.TemplateData = templateInformation
 	// Register OS signal (USR1 on non-Windows platforms) to reload templates
 	webUI.UseSIGToReloadTemplates()

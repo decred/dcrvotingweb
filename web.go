@@ -204,7 +204,8 @@ func TemplateExecToString(t *template.Template, name string, data interface{}) (
 func (td *WebUI) demoPage(w http.ResponseWriter, r *http.Request) {
 	err := td.templ.Execute(w, td.TemplateData)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Failed to Execute: %v", err)
+		return
 	}
 	// TODO: Use TemplateExecToString only when the template data is updated
 	// (i.e. block notification).
@@ -221,11 +222,11 @@ type WebUI struct {
 
 // NewWebUI is the constructor for WebUI.  It creates a html/template.Template,
 // loads the function map, and parses the template files.
-func NewWebUI() *WebUI {
+func NewWebUI() (*WebUI, error) {
 	fp := filepath.Join("public", "views", "start.html")
 	tmpl, err := template.New("home").Funcs(funcMap).ParseFiles(fp)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// may have multiple template files eventually
@@ -234,7 +235,7 @@ func NewWebUI() *WebUI {
 	return &WebUI{
 		templ:      tmpl,
 		templFiles: templFiles,
-	}
+	}, nil
 }
 
 // ParseTemplates parses the html templates into a new html/template.Temlate.
@@ -251,7 +252,7 @@ func (td *WebUI) reloadTemplatesSig(sig os.Signal) {
 	go func() {
 		for {
 			sigr := <-sigChan
-			fmt.Printf("Received %s", sig)
+			fmt.Printf("Received %s\n", sig)
 			if sigr == sig {
 				if err := td.ParseTemplates(); err != nil {
 					fmt.Println(err)
