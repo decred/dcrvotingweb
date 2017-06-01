@@ -6,8 +6,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/binary"
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -24,9 +22,6 @@ import (
 	"github.com/decred/dcrrpcclient"
 	"github.com/decred/hardforkdemo/agendadb"
 )
-
-// Set some high value to check version number
-var maxVersion = 10000
 
 // Settings for daemon
 var network = flag.String("network", "mainnet", "current network being used")
@@ -538,16 +533,4 @@ func round(num float64) int {
 func toFixed(num float64, precision int) float64 {
 	output := math.Pow(10, float64(precision))
 	return float64(round(num*output)) / output
-}
-
-func getBlockVersionFromWork(dcrdClient *dcrrpcclient.Client) (uint32, error) {
-	getWorkResult, err := dcrdClient.GetWork()
-	if err != nil {
-		return 0, err
-	}
-	blockVerBytes, err := hex.DecodeString(getWorkResult.Data[0:8])
-	if err != nil {
-		return 0, err
-	}
-	return binary.LittleEndian.Uint32(blockVerBytes), nil
 }

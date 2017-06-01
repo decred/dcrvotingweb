@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -190,14 +189,6 @@ func minus64(a, b int64) int64 {
 }
 func modiszero(a, b int) bool {
 	return (a % b) == 0
-}
-
-// TemplateExecToString executes the specified template with given data, writing
-// the output into a string.
-func TemplateExecToString(t *template.Template, name string, data interface{}) (string, error) {
-	var page bytes.Buffer
-	err := t.ExecuteTemplate(&page, name, data)
-	return page.String(), err
 }
 
 // renders the 'home' template that is current located at "design_sketch.html".
