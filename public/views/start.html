@@ -362,6 +362,7 @@
 
             <!-- agenda choices list -->
             <div class="left-padding-50 w-clearfix width-half">
+              {{if not $agenda.IsLockedIn}}
               <div class="agenda-voting-overview-options-title w-clearfix">
                 <div class="agenda-voting-overview">voting overview:</div>
               </div>
@@ -382,8 +383,9 @@
                   {{end}}
                 </div>
               </div>
+              {{end}}
                 {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
-                <div class="agenda-voting-overview-disclaimer" style="width: 66%">
+                <div class="agenda-voting-overview-disclaimer">
                 <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</small></p>
                 </div>
                 {{end}}
@@ -404,7 +406,7 @@
                   {{end}}
                 {{end}}
                 {{if $agenda.IsLockedIn}}
-                    <div class="agenda-voting-overview-disclaimer">
+                    <div class="agenda-voting-overview-disclaimer-lockedin">
                     <p><small>The vote has passed! The new rules will be activated in <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads" target="_blank">Downloads Page</a> to get the latest Software.</small>
                     </p>
                     </div>
@@ -419,7 +421,7 @@
           </div>
 
           <!-- agenda voting results barchart -->
-          {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed}}
+          {{if or $agenda.IsStarted }}
           <div class="agenda-section progress-bar w-clearfix">
             <div class="progress-bar-agenda w-clearfix">
               <div class="progress-bar-competing-options-and-total-votes w-clearfix">
