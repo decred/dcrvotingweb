@@ -193,6 +193,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 		int32(blocksIntoStakeVersionInterval))
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 	// Tally missed votes so far in this interval
 	missedVotesStakeInterval := 0
