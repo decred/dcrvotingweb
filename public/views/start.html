@@ -80,7 +80,11 @@
         </spam>  
         {{else}}
 <!-- Phase 2 Voting -->
+          {{if .PendingActivation}}
+          <span class="header-link"> | &nbsp;Current phase: Pending Activation
+          {{else}}
           <span class="header-link"> | &nbsp;Current phase: Voting
+          {{end}}
             <!--
           {{range $i, $agenda := .Agendas}}        
               {{if $agenda.IsDefined}}

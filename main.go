@@ -301,6 +301,9 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 		templateInformation.IsUpgrading = true
 	}
 
+	// Assume all agendas have been voted and are pending activation
+	templateInformation.PendingActivation = true
+
 	// There may be no agendas for this vote version
 	if len(getVoteInfo.Agendas) == 0 {
 		fmt.Printf("No agendas for vote version %d\n", mostPopularVersion)
@@ -329,6 +332,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 			fmt.Printf("Failed to store agenda %s: %v\n", agenda.ID, err)
 		}
 
+		agenda.Status
 		// Acting (non-abstaining) fraction of votes
 		actingPct := 1.0
 		choiceIds := make([]string, len(agenda.Choices))
