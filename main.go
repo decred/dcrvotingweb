@@ -293,13 +293,16 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 		return
 	}
 	templateInformation.GetVoteInfoResult = getVoteInfo
-
+	templateInformation.TimeLeftString = blocksToTimeEstimate(int(getVoteInfo.EndHeight - getVoteInfo.CurrentHeight))
 	// Check if Phase Upgrading or Voting
 	if templateInformation.StakeVersionSuccess && templateInformation.BlockVersionSuccess {
 		templateInformation.IsUpgrading = false
 	} else {
 		templateInformation.IsUpgrading = true
 	}
+
+	// Assume all agendas have been voted and are pending activation
+	templateInformation.PendingActivation = true
 
 	// There may be no agendas for this vote version
 	if len(getVoteInfo.Agendas) == 0 {
@@ -327,6 +330,11 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 		agenda := agendadb.FromDcrJSONAgenda(&getVoteInfo.Agendas[i])
 		if err = db.StoreAgenda(agenda); err != nil {
 			fmt.Printf("Failed to store agenda %s: %v\n", agenda.ID, err)
+		}
+
+		// Check to see if all agendas are pending activation
+		if agenda.Status != "lockedin" {
+			templateInformation.PendingActivation = false
 		}
 
 		// Acting (non-abstaining) fraction of votes

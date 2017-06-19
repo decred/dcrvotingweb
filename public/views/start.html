@@ -80,7 +80,11 @@
         </spam>  
         {{else}}
 <!-- Phase 2 Voting -->
+          {{if .PendingActivation}}
+          <span class="header-link"> | &nbsp;Current phase: Pending Activation
+          {{else}}
           <span class="header-link"> | &nbsp;Current phase: Voting
+          {{end}}
             <!--
           {{range $i, $agenda := .Agendas}}        
               {{if $agenda.IsDefined}}
@@ -407,7 +411,7 @@
                 {{end}}
                 {{if $agenda.IsLockedIn}}
                     <div class="agenda-voting-overview-disclaimer-lockedin">
-                    <p><small>The vote has passed! The new rules will be activated in <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads" target="_blank">Downloads Page</a> to get the latest Software.</small>
+                    <p><small>The vote has passed! The new rules will be activated in approximately <strong>{{$.TimeLeftString}}</strong> ({{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads" target="_blank">Downloads Page</a> to get the latest Software.</small>
                     </p>
                     </div>
                 {{end}}

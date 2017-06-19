@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"math"
 	"net/http"
 	"os"
 	"os/signal"
@@ -166,9 +167,12 @@ type templateFields struct {
 	Agendas []Agenda
 	// Phase Upgrading or Voting
 	IsUpgrading bool
-
+	// Pending Activation to show that voting has ceased and activation will begin shortly
+	PendingActivation bool
 	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
 	GetVoteInfoResult *dcrjson.GetVoteInfoResult
+	// TimeLeftString shows the approximate time left until activation
+	TimeLeftString string
 }
 
 var funcMap = template.FuncMap{
@@ -253,4 +257,45 @@ func (td *WebUI) reloadTemplatesSig(sig os.Signal) {
 			}
 		}
 	}()
+}
+
+const (
+	secondsPerMinute = 60
+	secondsPerHour   = 60 * secondsPerMinute
+	secondsPerDay    = 24 * secondsPerHour
+	hourCutoffSecs   = 72 * secondsPerHour
+	minuteCutoffSecs = 2 * secondsPerHour
+)
+
+// pickNoun returns the singular or plural form of a noun depending
+// on the count n.
+func pickNoun(n int, singular, plural string) string {
+	if n == 1 {
+		return singular
+	}
+	return plural
+}
+
+// ceilDiv returns the ceiling of the result of dividing the given value.
+func ceilDiv(numerator, denominator int) int {
+	return int(math.Ceil(float64(numerator) / float64(denominator)))
+}
+
+// blocksToTimeEstimate returns a human-readable estimate for the amount of time
+// a given number of blocks would take.
+func blocksToTimeEstimate(blocksRemaining int) string {
+	remainingSecs := blocksRemaining * int(activeNetParams.TargetTimePerBlock.Seconds())
+	if remainingSecs > hourCutoffSecs {
+		value := ceilDiv(remainingSecs, secondsPerDay)
+		noun := pickNoun(value, "day", "days")
+		return fmt.Sprintf("%d %s", value, noun)
+	} else if remainingSecs > minuteCutoffSecs {
+		value := ceilDiv(remainingSecs, secondsPerHour)
+		noun := pickNoun(value, "hour", "hours")
+		return fmt.Sprintf("%d %s", value, noun)
+	}
+
+	value := ceilDiv(remainingSecs, secondsPerMinute)
+	noun := pickNoun(value, "minute", "minutes")
+	return fmt.Sprintf("%d %s", value, noun)
 }
