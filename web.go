@@ -166,7 +166,8 @@ type templateFields struct {
 	Agendas []Agenda
 	// Phase Upgrading or Voting
 	IsUpgrading bool
-
+	// Pending Activation to show that voting has ceased and activation will begin shortly
+	PendingActivation bool
 	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
 	GetVoteInfoResult *dcrjson.GetVoteInfoResult
 }
