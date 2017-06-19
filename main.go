@@ -332,6 +332,11 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 			fmt.Printf("Failed to store agenda %s: %v\n", agenda.ID, err)
 		}
 
+		// Check to see if all agendas are pending activation
+		if agenda.Status != "lockedin" {
+			templateInformation.PendingActivation = false
+		}
+
 		// Acting (non-abstaining) fraction of votes
 		actingPct := 1.0
 		choiceIds := make([]string, len(agenda.Choices))
