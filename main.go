@@ -512,7 +512,6 @@ func mainCore() int {
 		// Close the channel so multiple goroutines can get the message
 		fmt.Println("CTRL+C hit.  Closing.")
 		close(quit)
-		return
 	}()
 
 	// Run an initial templateInforation update based on current change
