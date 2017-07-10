@@ -82,8 +82,12 @@
 <!-- Phase 2 Voting -->
           {{if .PendingActivation}}
           <span class="header-link"> | &nbsp;Current phase: Pending Activation
-          {{else}}
-          <span class="header-link"> | &nbsp;Current phase: Voting
+            {{else}}
+            {{if .RulesActivated}}
+            <span class="header-link"> | &nbsp;Current phase: Rules Activated
+            {{else}}
+            <span class="header-link"> | &nbsp;Current phase: Voting
+            {{end}}
           {{end}}
             <!--
           {{range $i, $agenda := .Agendas}}        
@@ -368,7 +372,8 @@
             <div class="left-padding-50 w-clearfix width-half">
               {{if not $agenda.IsLockedIn}}
               <div class="agenda-voting-overview-options-title w-clearfix">
-                <div class="agenda-voting-overview">voting overview:</div>
+                <div class="agenda-voting-overview">
+                {{if $agenda.IsActive}}voting results:{{else}}voting overview:{{end}}</div>
               </div>
               <div class="agenda-voting-overview-options w-clearfix">
                 <div class="width-third">
@@ -386,6 +391,24 @@
                   {{end}}
                   {{end}}
                 </div>
+                {{if $agenda.IsActive}}
+                <div class="width-half">
+                  <div class="agenda-voting-overview-option-active w-clearfix">
+                    <div class="agenda-voting-overview-option-block">Locked In:</div>
+                    <div class="agenda-voting-overview-option-block value">{{$agenda.BlockLockedIn}}</div>
+                  </div>
+                  <div class="agenda-voting-overview-option-active w-clearfix">
+                    <div class="agenda-voting-overview-option-block">Activated:</div>
+                    <div class="agenda-voting-overview-option-block value">{{$agenda.BlockActivated}}</div>
+                  </div>
+                  {{if ne $agenda.BlockForked 0}}
+                  <div class="agenda-voting-overview-option-active w-clearfix">
+                    <div class="agenda-voting-overview-option-block">Hard Forked:</div>
+                    <div class="agenda-voting-overview-option-block value">{{$agenda.BlockForked}}</div>
+                  </div>
+                  {{end}}
+                </div>
+                {{end}}
               </div>
               {{end}}
                 {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
@@ -416,7 +439,7 @@
                     </div>
                 {{end}}
                 {{if $agenda.IsActive}}
-                    <div class="agenda-voting-overview-disclaimer">
+                    <div class="agenda-voting-overview-disclaimer-activated">
                     <p><small>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads" target="_blank">Downloads Page</a> to get the latest Software.</small>
                     </p>
                     </div>

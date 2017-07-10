@@ -2270,6 +2270,13 @@ body {
   background-color: #d1f2fc;
   border-radius: 3px;
 }
+.agenda-voting-overview-disclaimer-activated {
+  clear:both;
+  padding: 10px;
+  font-size: 17px;
+  background-color: #d1f2fc;
+  border-radius: 3px;
+}
 .text-block-4 {
   float: right;
   color: #0c1e3e;
@@ -2291,6 +2298,14 @@ body {
   clear: left;
 }
 
+.agenda-voting-overview-option-active {
+  position: relative;
+  min-width: 130px;
+  width: 100%;
+  margin-bottom: 20px;
+  float: left;
+  clear: left;
+}
 .agenda-voting-overview-option-dot {
   position: absolute;
   top: 2px;
@@ -2342,6 +2357,20 @@ body {
   font-weight: 600;
 }
 
+.agenda-voting-overview-option-block {
+  padding-left: 25px;
+  width: 50%;
+  float: left;
+  color: #0c1e3e;
+  font-size: 15px;
+}
+
+.agenda-voting-overview-option-block.value {
+  padding-right: 5px;
+  float: right;
+  width: 50%;
+  font-weight: 600;
+}
 .tooltip {
   position: absolute;
   z-index: 999;
@@ -2886,6 +2915,9 @@ body {
   }
   .footerrowscolumn1.footerblockicon {
     text-align: left;
+  }
+  .block-results {
+    text-align: right;
   }
   .width-half {
     width: 100%;

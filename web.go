@@ -26,6 +26,9 @@ type Agenda struct {
 	ChoicePercentagesActing   []float64
 	StartHeight               int64
 	VoteCountPercentage       float64
+	BlockLockedIn             int64
+	BlockActivated            int64
+	BlockForked               int64
 }
 
 var dcpRE = regexp.MustCompile(`(?i)DCP\-?(\d{4})`)
@@ -169,6 +172,8 @@ type templateFields struct {
 	IsUpgrading bool
 	// Pending Activation to show that voting has ceased and activation will begin shortly
 	PendingActivation bool
+	// Rules Activated to show that all rules have activated
+	RulesActivated bool
 	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
 	GetVoteInfoResult *dcrjson.GetVoteInfoResult
 	// TimeLeftString shows the approximate time left until activation
