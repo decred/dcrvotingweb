@@ -1,8 +1,12 @@
-hash: d6bf7b055f26b5f4a77e2f709e733d477ff3b4f1a56c11e957ca04914d9c3a9f
-updated: 2017-05-03T16:06:09.6198376-07:00
+hash: 4dae735f99ad535dbcaf145fb5b77faf842f87ef4e783ab2ace2adf811f46ca5
+updated: 2017-09-19T14:31:08.026273792-04:00
 imports:
+- name: github.com/agl/ed25519
+  version: 5312a61534124124185d41f09206b9fef1d88403
+  subpackages:
+  - edwards25519
 - name: github.com/asdine/storm
-  version: e8518cc1200f320e508639491f9390b9c7c37970
+  version: 2da548c16156b3197728372bff5614033084aff5
   subpackages:
   - codec
   - codec/json
@@ -10,21 +14,19 @@ imports:
   - internal
   - q
 - name: github.com/boltdb/bolt
-  version: e9cf4fae01b5a8ff89d0ec6b32f0d9c9f79aefdd
+  version: fa5367d20c994db73282594be0146ab221657943
 - name: github.com/btcsuite/btclog
-  version: 73889fb79bd687870312b6e40effcecffbd57d30
+  version: 84c8d2346e9fc8c7b947e243b9c24e6df9fd206a
 - name: github.com/btcsuite/go-socks
   version: 4720035b7bfd2a9bb130b1c184f8bbe41b6f0d0f
   subpackages:
   - socks
-- name: github.com/btcsuite/seelog
-  version: 313961b101eb55f65ae0f03ddd4e322731763b6c
 - name: github.com/btcsuite/websocket
   version: 31079b6807923eb23992c421b114992b95131b55
-- name: github.com/decred/blake256
-  version: a840e32d7c31fe2e0218607334cb120a683951a4
+- name: github.com/dchest/blake256
+  version: dee3fe6eb0e98dc774a94fc231f85baf7c29d360
 - name: github.com/decred/dcrd
-  version: f656ceb652c8a31d3534e15dfa97dcc1956fa3bd
+  version: 3f366fbc17354cf701e325a15d4094f5dbed6158
   subpackages:
   - blockchain/stake
   - blockchain/stake/internal/dbnamespace
@@ -41,28 +43,19 @@ imports:
   - txscript
   - wire
 - name: github.com/decred/dcrrpcclient
-  version: d6edcb0f8f2d01fbf9169f240f73756b41423189
+  version: bd992834efae9f8a81842221a634f4af22b77a0f
 - name: github.com/decred/dcrutil
-  version: ebd2e98736e819ac043d54439969b30144b92ced
+  version: ddbde93f65ab0692e54ed8a5ad325fa2e8af4daa
   subpackages:
   - base58
-- name: github.com/decred/ed25519
-  version: b0909d3f798b97a03c9e77023f97a5301a2a7900
-  subpackages:
-  - edwards25519
-- name: github.com/emirpasic/gods
-  version: f6c17b524822278a87e3b3bd809fec33b51f5b46
-  subpackages:
-  - containers
-  - trees
-  - trees/redblacktree
-  - utils
+- name: github.com/jessevdk/go-flags
+  version: 96dc06278ce32a0e9d957d590bb987c81ee66407
 - name: golang.org/x/crypto
-  version: 04eae0b62feaaf659a0ce2c4e8dc70b6ae2fff67
+  version: 7d9177d70076375b9a59c8fde23d52d9c4a7ecd5
   subpackages:
   - ripemd160
 - name: golang.org/x/sys
-  version: 9ccfe848b9db8435a24c424abbc07a921adf1df5
+  version: b6e1ae21643682ce023deb8d152024597b0e9bb4
   subpackages:
   - unix
 testImports: []

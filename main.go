@@ -6,7 +6,6 @@ package main
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -17,23 +16,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/decred/dcrd/chaincfg"
 	"github.com/decred/dcrd/wire"
 	"github.com/decred/dcrrpcclient"
 	"github.com/decred/hardforkdemo/agendadb"
 )
-
-// Settings for daemon
-var network = flag.String("network", "mainnet", "current network being used")
-var host = flag.String("host", "127.0.0.1:9109", "node RPC host:port")
-var user = flag.String("user", "USER", "node RPC username")
-var pass = flag.String("pass", "PASSWORD", "node RPC password")
-var cert = flag.String("cert", "/home/user/.dcrd/rpc.cert", "node RPC TLS certificate (when notls=false)")
-var notls = flag.Bool("notls", false, "Disable use of TLS for node connection")
-var listenPort = flag.String("listen", ":8000", "web app listening port")
-
-// Daemon Params to use
-var activeNetParams = &chaincfg.MainNetParams
 
 // Latest BlockHeader
 var latestBlockHeader *wire.BlockHeader
@@ -52,7 +38,7 @@ type intervalVersionCounts struct {
 
 // Set all activeNetParams fields since they don't change at runtime
 var templateInformation = &templateFields{
-	Network: *network,
+	Network: activeNetParams.Name,
 	// BlockVersion params
 	BlockVersionEnforceThreshold: int(float64(activeNetParams.BlockEnforceNumRequired) /
 		float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
@@ -95,7 +81,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	// Set Current block height
 	templateInformation.BlockHeight = height
 	templateInformation.BlockExplorerLink = fmt.Sprintf("https://%s.decred.org/block/%v",
-		*network, hash)
+		activeNetParams.Name, hash)
 
 	// Request GetStakeVersions to receive information about past block versions.
 	//
@@ -424,7 +410,10 @@ func main() {
 }
 
 func mainCore() int {
-	flag.Parse()
+	cfg, err := loadConfig()
+	if err != nil {
+		return 1
+	}
 
 	// Chans for rpccclient notification handlers
 	connectChan := make(chan wire.BlockHeader, 100)
@@ -432,12 +421,11 @@ func mainCore() int {
 
 	// Read in current dcrd cert
 	var dcrdCerts []byte
-	var err error
-	if !*notls {
-		dcrdCerts, err = ioutil.ReadFile(*cert)
+	if !cfg.DisableTLS {
+		dcrdCerts, err = ioutil.ReadFile(cfg.RPCCert)
 		if err != nil {
-			fmt.Printf("Failed to read dcrd cert file at %s: %s\n", *cert,
-				err.Error())
+			fmt.Printf("Failed to read dcrd cert file at %v: %v\n",
+				cfg.RPCCert, err)
 			return 1
 		}
 	}
@@ -459,16 +447,16 @@ func mainCore() int {
 
 	// dcrrpclient configuration
 	connCfgDaemon := &dcrrpcclient.ConnConfig{
-		Host:         *host,
+		Host:         cfg.RPCHost,
 		Endpoint:     "ws",
-		User:         *user,
-		Pass:         *pass,
+		User:         cfg.RPCUser,
+		Pass:         cfg.RPCPass,
 		Certificates: dcrdCerts,
-		DisableTLS:   *notls,
+		DisableTLS:   cfg.DisableTLS,
 	}
 
 	fmt.Printf("Attempting to connect to dcrd RPC %s as user %s "+
-		"using certificate located in %s\n", *host, *user, *cert)
+		"using certificate %s\n", cfg.RPCHost, cfg.RPCUser, cfg.RPCCert)
 	// Attempt to connect rpcclient and daemon
 	dcrdClient, err := dcrrpcclient.New(connCfgDaemon, &ntfnHandlersDaemon)
 	if err != nil {
@@ -556,7 +544,7 @@ func mainCore() int {
 
 	// Start http server listening and serving, but no way to signal to quit
 	go func() {
-		err = http.ListenAndServe(*listenPort, nil)
+		err = http.ListenAndServe(cfg.Listen, nil)
 		if err != nil {
 			fmt.Printf("Failed to bind http server: %v\n", err)
 			close(quit)
