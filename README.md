@@ -8,9 +8,10 @@ information about the tesnet hardfork voting.
 ## Developing
 
 ``` bash
-git clone https://github.com/decred/hardforkdemo.git
-cd hardforkdemo
-glide install
+go get -v github.com/golang/dep/cmd/dep
+go get -v github.com/decred/hardforkdemo
+cd $GOPATH/github.com/decred/hardforkdemo
+dep ensure
 go install
 ```
 
