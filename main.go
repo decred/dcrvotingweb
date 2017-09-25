@@ -167,9 +167,9 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	templateInformation.BlockVersionNext = minBlockVersion + 1
 	templateInformation.BlockVersionNextPercentage = toFixed(blockWinUpgradePct(blockVersionsCounts[minBlockVersion+1]), 2)
 
-	//if popBlockVersionCount > int64(activeNetParams.BlockRejectNumRequired) {
-	templateInformation.BlockVersionSuccess = true
-	//}
+	if popBlockVersionCount > int64(activeNetParams.BlockRejectNumRequired) {
+		templateInformation.BlockVersionSuccess = true
+	}
 
 	// Voting intervals ((height-4096) mod 2016)
 	blocksIntoStakeVersionInterval := (int64(height) - activeNetParams.StakeValidationHeight) %
@@ -259,20 +259,20 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 	}
 
 	templateInformation.StakeVersionMostPopularCount = mostPopularVersionCount
-	templateInformation.StakeVersionMostPopularPercentage = toFixed(float64(100), 2) //float64(mostPopularVersionCount)/float64(maxPossibleVotes)*100, 2)
-	templateInformation.StakeVersionMostPopular = 4                                  //mostPopularVersion
+	templateInformation.StakeVersionMostPopularPercentage = toFixed(float64(mostPopularVersionCount)/float64(maxPossibleVotes)*100, 2)
+	templateInformation.StakeVersionMostPopular = mostPopularVersion
 	templateInformation.StakeVersionRequiredVotes = int32(maxPossibleVotes) *
 		activeNetParams.StakeMajorityMultiplier / activeNetParams.StakeMajorityDivisor
-	//if int32(mostPopularVersionCount) > templateInformation.StakeVersionRequiredVotes {
-	templateInformation.StakeVersionSuccess = true
-	//}
+	if int32(mostPopularVersionCount) > templateInformation.StakeVersionRequiredVotes {
+		templateInformation.StakeVersionSuccess = true
+	}
 
 	blocksIntoInterval := currentInterval.EndHeight - currentInterval.StartHeight
 	templateInformation.StakeVersionVotesRemaining =
 		(activeNetParams.StakeVersionInterval - blocksIntoInterval) * int64(activeNetParams.TicketsPerBlock)
 
 	// Quorum/vote information
-	getVoteInfo, err := dcrdClient.GetVoteInfo(latestBlockHeader.StakeVersion)
+	getVoteInfo, err := dcrdClient.GetVoteInfo(5)
 	if err != nil {
 		fmt.Println("Get vote info err", err)
 		templateInformation.Quorum = false
@@ -336,9 +336,11 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 			choiceIds[i] = choice.Id
 			choicePercentages[i] = toFixed(choice.Progress*100, 2)
 			// non-abstain pct = 1 - abstain pct
+
 			if choice.IsAbstain && choice.Progress < 1 {
 				actingPct = 1 - choice.Progress
 			}
+
 		}
 		// hardcode in values until we can properly revamp the agenda db to save this information on an
 		// ongoing basis.
@@ -348,34 +350,36 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 
 		choiceIdsActing := make([]string, 0, len(agenda.Choices)-1)
 		choicePercentagesActing := make([]float64, 0, len(agenda.Choices)-1)
+
 		for _, choice := range agenda.Choices {
 			if !choice.IsAbstain {
 				choiceIdsActing = append(choiceIdsActing, choice.Id)
-				if agenda.ID == "lnsupport" {
-					if choice.Id == "yes" {
-						choicePercentagesActing = append(choicePercentagesActing,
-							98.61)
-					} else if choice.Id == "no" {
-						choicePercentagesActing = append(choicePercentagesActing,
-							1.38)
-					}
-					blockLockedIn = 141184
-					blockActivated = 149248
-				} else if agenda.ID == "sdiffalgorithm" {
-					if choice.Id == "yes" {
-						choicePercentagesActing = append(choicePercentagesActing,
-							97.92)
-					} else if choice.Id == "no" {
-						choicePercentagesActing = append(choicePercentagesActing,
-							2.07)
-					}
-					blockLockedIn = 141184
-					blockActivated = 149248
-					blockForked = 149328
-				} else {
-					choicePercentagesActing = append(choicePercentagesActing,
-						toFixed(choice.Progress/actingPct*100, 2))
-				}
+				/*
+					if agenda.ID == "lnsupport" {
+						if choice.Id == "yes" {
+							choicePercentagesActing = append(choicePercentagesActing,
+								98.61)
+						} else if choice.Id == "no" {
+							choicePercentagesActing = append(choicePercentagesActing,
+								1.38)
+						}
+						blockLockedIn = 141184
+						blockActivated = 149248
+					} else if agenda.ID == "sdiffalgorithm" {
+						if choice.Id == "yes" {
+							choicePercentagesActing = append(choicePercentagesActing,
+								97.92)
+						} else if choice.Id == "no" {
+							choicePercentagesActing = append(choicePercentagesActing,
+								2.07)
+						}
+						blockLockedIn = 141184
+						blockActivated = 149248
+						blockForked = 149328
+					} else {
+				*/
+				choicePercentagesActing = append(choicePercentagesActing,
+					toFixed(choice.Progress/actingPct*100, 2))
 			}
 		}
 		voteCount := uint32(0)
