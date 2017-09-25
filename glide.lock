@@ -1,5 +1,5 @@
 hash: 4dae735f99ad535dbcaf145fb5b77faf842f87ef4e783ab2ace2adf811f46ca5
-updated: 2017-09-19T14:31:08.026273792-04:00
+updated: 2017-09-25T15:27:03.407011195-04:00
 imports:
 - name: github.com/agl/ed25519
   version: 5312a61534124124185d41f09206b9fef1d88403
@@ -26,7 +26,7 @@ imports:
 - name: github.com/dchest/blake256
   version: dee3fe6eb0e98dc774a94fc231f85baf7c29d360
 - name: github.com/decred/dcrd
-  version: 3f366fbc17354cf701e325a15d4094f5dbed6158
+  version: f11fac8134626768ef7b1f278fd4331f004bfb49
   subpackages:
   - blockchain/stake
   - blockchain/stake/internal/dbnamespace
@@ -51,11 +51,11 @@ imports:
 - name: github.com/jessevdk/go-flags
   version: 96dc06278ce32a0e9d957d590bb987c81ee66407
 - name: golang.org/x/crypto
-  version: 7d9177d70076375b9a59c8fde23d52d9c4a7ecd5
+  version: 847319b7fc94cab682988f93da778204da164588
   subpackages:
   - ripemd160
 - name: golang.org/x/sys
-  version: b6e1ae21643682ce023deb8d152024597b0e9bb4
+  version: 429f518978ab01db8bb6f44b66785088e7fba58b
   subpackages:
   - unix
 testImports: []
