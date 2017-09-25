@@ -5,8 +5,9 @@
 # 3. go vet        (http://golang.org/cmd/vet)
 # 4. gosimple      (https://github.com/dominikh/go-simple)
 # 5. unconvert     (https://github.com/mdempsky/unconvert)
-# 6. race detector (http://blog.golang.org/race-detector)
-# 7. test coverage (http://blog.golang.org/cover)
+# 6. ineffassign   (https://github.com/gordonklaus/ineffassign)
+# 7. race detector (http://blog.golang.org/race-detector)
+# 8. test coverage (http://blog.golang.org/cover)
 
 # gometaling (github.com/alecthomas/gometalinter) is used to run each each
 # static checker.
@@ -30,12 +31,13 @@ fi
 linter_targets=$(glide novendor)
 
 # Automatic checks
-test -z "$(gometalinter --disable-all \
+test -z "$(gometalinter --vendor --disable-all \
 --enable=gofmt \
 --enable=golint \
 --enable=vet \
 --enable=gosimple \
 --enable=unconvert \
---deadline=4m $linter_targets 2>&1 | tee /dev/stderr)"
+--enable=ineffassign \
+--deadline=4m ./... 2>&1 | tee /dev/stderr)"
 
 env GORACE="halt_on_error=1" go test -race $linter_targets
