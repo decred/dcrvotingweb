@@ -1068,7 +1068,6 @@ body {
 }
 
 .width-half.pow-upgrade.active {
-  position: absolute;
   z-index: 1;
   width: 100%;
 }
@@ -1088,9 +1087,9 @@ body {
 }
 
 .width-half.pos-upgrade.active {
-  position: absolute;
   z-index: 1;
   width: 100%;
+  top: -320px;
 }
 
 .width-640 {

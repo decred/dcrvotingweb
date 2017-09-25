@@ -86,6 +86,7 @@
             {{else}}
             <span class="header-link"> | &nbsp;Current phase: Voting
             {{end}}
+          </span> 
           {{end}}
             <!--
           {{range $i, $agenda := .Agendas}}        
@@ -106,7 +107,6 @@
               {{end}}
           {{end}}
           -->
-          </span> 
         {{end}}
         <a class="header-link w-button" href="{{.BlockExplorerLink}}">Block #{{.BlockHeight}}</a>
       </div>
