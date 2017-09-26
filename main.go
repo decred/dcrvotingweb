@@ -21,9 +21,6 @@ import (
 	"github.com/decred/hardforkdemo/agendadb"
 )
 
-// Latest BlockHeader
-var latestBlockHeader *wire.BlockHeader
-
 // Contains a certain block version's count of blocks in the
 // rolling window (which has a length of activeNetParams.BlockUpgradeNumToCheck)
 type blockVersions struct {
@@ -35,6 +32,24 @@ type intervalVersionCounts struct {
 	Count          []uint32
 	StaticInterval string
 }
+
+const (
+	// stakeVersionMain is the version of the block being generated for
+	// the main network.
+	stakeVersionMain = 5
+
+	// stakeVersionTest is the version of the block being generated
+	// for networks other than the main network.
+	stakeVersionTest = 6
+)
+
+var (
+	// stakeVersion is the stake version we call getvoteinfo with.
+	stakeVersion uint32 = stakeVersionMain
+
+	// latestBlockHeader is the latest block header.
+	latestBlockHeader *wire.BlockHeader
+)
 
 // Set all activeNetParams fields since they don't change at runtime
 var templateInformation = &templateFields{
@@ -272,7 +287,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 		(activeNetParams.StakeVersionInterval - blocksIntoInterval) * int64(activeNetParams.TicketsPerBlock)
 
 	// Quorum/vote information
-	getVoteInfo, err := dcrdClient.GetVoteInfo(5)
+	getVoteInfo, err := dcrdClient.GetVoteInfo(stakeVersion)
 	if err != nil {
 		fmt.Println("Get vote info err", err)
 		templateInformation.Quorum = false

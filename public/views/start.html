@@ -75,7 +75,7 @@
         <span class="header-link"> | &nbsp;Current phase: Upgrading 
           {{if .StakeVersionSuccess}}<div class="finished indicator transition">PoS</div>{{else}}<div class="in-progress indicator transition">PoS {{.StakeVersionMostPopularPercentage}}</div>{{end}}
           {{if .BlockVersionSuccess}}<div class="finished indicator transition">PoW</div>{{else}}<div class="in-progress indicator transition">PoW {{.BlockVersionNextPercentage}}%</div>{{end}}
-        </span>  
+        </span>
         {{else}}
 <!-- Phase 2 Voting -->
           {{if .PendingActivation}}
