@@ -34,6 +34,10 @@ type intervalVersionCounts struct {
 }
 
 const (
+	// numberOfIntervals is the number of intervals to use when calling
+	// getstakeversioninfo
+	numberOfIntervals = 4
+
 	// stakeVersionMain is the version of the block being generated for
 	// the main network.
 	stakeVersionMain = 5
@@ -49,27 +53,11 @@ var (
 
 	// latestBlockHeader is the latest block header.
 	latestBlockHeader *wire.BlockHeader
-)
 
-// Set all activeNetParams fields since they don't change at runtime
-var templateInformation = &templateFields{
-	Network: activeNetParams.Name,
-	// BlockVersion params
-	BlockVersionEnforceThreshold: int(float64(activeNetParams.BlockEnforceNumRequired) /
-		float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
-	BlockVersionRejectThreshold: int(float64(activeNetParams.BlockRejectNumRequired) /
-		float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
-	BlockVersionWindowLength: activeNetParams.BlockUpgradeNumToCheck,
-	// StakeVersion params
-	StakeVersionWindowLength: activeNetParams.StakeVersionInterval,
-	StakeVersionThreshold: toFixed(float64(activeNetParams.StakeMajorityMultiplier)/
-		float64(activeNetParams.StakeMajorityDivisor)*100, 0),
-	// RuleChange params
-	RuleChangeActivationQuorum: activeNetParams.RuleChangeActivationQuorum,
-	QuorumThreshold: float64(activeNetParams.RuleChangeActivationQuorum) /
-		float64(activeNetParams.RuleChangeActivationInterval*uint32(activeNetParams.TicketsPerBlock)) * 100,
-	RuleChangeActivationInterval: int64(activeNetParams.RuleChangeActivationInterval),
-}
+	// templateInformation is the template holding the active network
+	// parameters.
+	templateInformation *templateFields
+)
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
 func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.AgendaDB) {
@@ -174,7 +162,7 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 		return 100 * float64(count) / float64(activeNetParams.BlockUpgradeNumToCheck)
 	}
 
-	templateInformation.BlockVersionCurrent = 4
+	templateInformation.BlockVersionCurrent = int32(stakeVersion) - 1
 
 	templateInformation.BlockVersionMostPopular = popBlockVersion
 	templateInformation.BlockVersionMostPopularPercentage = toFixed(blockWinUpgradePct(popBlockVersionCount), 2)
@@ -202,9 +190,8 @@ func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.Age
 		missedVotesStakeInterval += int(activeNetParams.TicketsPerBlock) - len(stakeVersionResult.Votes)
 	}
 
-	// Vote tallies for previous intervals (getstakeversioninfo 4)
-	numberOfIntervalsToCheck := 4
-	stakeVersionInfo, err := dcrdClient.GetStakeVersionInfo(int32(numberOfIntervalsToCheck))
+	// Vote tallies for previous intervals
+	stakeVersionInfo, err := dcrdClient.GetStakeVersionInfo(numberOfIntervals)
 	if err != nil {
 		fmt.Println(err)
 		return

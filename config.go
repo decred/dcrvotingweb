@@ -151,5 +151,26 @@ func loadConfig() (*config, error) {
 		os.Exit(1)
 	}
 
+	// Set all activeNetParams fields now that we know what network we are on.
+	templateInformation = &templateFields{
+		Network: activeNetParams.Name,
+		// BlockVersion params
+		BlockVersionEnforceThreshold: int(float64(activeNetParams.BlockEnforceNumRequired) /
+			float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
+		BlockVersionRejectThreshold: int(float64(activeNetParams.BlockRejectNumRequired) /
+			float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
+		BlockVersionWindowLength: activeNetParams.BlockUpgradeNumToCheck,
+		// StakeVersion params
+		StakeVersionWindowLength: activeNetParams.StakeVersionInterval,
+		StakeVersionThreshold: toFixed(float64(activeNetParams.StakeMajorityMultiplier)/
+			float64(activeNetParams.StakeMajorityDivisor)*100, 0),
+		// RuleChange params
+		RuleChangeActivationQuorum: activeNetParams.RuleChangeActivationQuorum,
+		QuorumThreshold: float64(activeNetParams.RuleChangeActivationQuorum) /
+			float64(activeNetParams.RuleChangeActivationInterval*
+				uint32(activeNetParams.TicketsPerBlock)) * 100,
+		RuleChangeActivationInterval: int64(activeNetParams.RuleChangeActivationInterval),
+	}
+
 	return &cfg, nil
 }
