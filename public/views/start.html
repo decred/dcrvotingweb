@@ -73,7 +73,7 @@
         {{if .IsUpgrading}}
 <!-- Phase 1 Upgrading -->
         <span class="header-link"> | &nbsp;Current phase: Upgrading 
-          {{if .StakeVersionSuccess}}<div class="finished indicator transition">PoS</div>{{else}}<div class="in-progress indicator transition">PoS {{.StakeVersionMostPopularPercentage}}</div>{{end}}
+          {{if .StakeVersionSuccess}}<div class="finished indicator transition">PoS</div>{{else}}<div class="in-progress indicator transition">PoS {{.StakeVersionMostPopularPercentage}}%</div>{{end}}
           {{if .BlockVersionSuccess}}<div class="finished indicator transition">PoW</div>{{else}}<div class="in-progress indicator transition">PoW {{.BlockVersionNextPercentage}}%</div>{{end}}
         </span>  
         {{else}}
