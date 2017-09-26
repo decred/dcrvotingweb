@@ -133,6 +133,7 @@ func loadConfig() (*config, error) {
 
 	if cfg.TestNet {
 		activeNetParams = &chaincfg.TestNet2Params
+		stakeVersion = stakeVersionTest
 		defaultRPCPort = "19109"
 	}
 
