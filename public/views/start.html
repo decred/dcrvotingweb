@@ -72,7 +72,7 @@
         {{end}}
         {{if .IsUpgrading}}
 <!-- Phase 1 Upgrading -->
-        <span class="header-link"> | &nbsp;Current phase: Upgrading 
+        <span class="header-link"> | &nbsp;Current phase: Upgrading
           {{if .StakeVersionSuccess}}<div class="finished indicator transition">PoS</div>{{else}}<div class="in-progress indicator transition">PoS {{.StakeVersionMostPopularPercentage}}%</div>{{end}}
           {{if .BlockVersionSuccess}}<div class="finished indicator transition">PoW</div>{{else}}<div class="in-progress indicator transition">PoW {{.BlockVersionNextPercentage}}%</div>{{end}}
         </span>
@@ -86,10 +86,10 @@
             {{else}}
             <span class="header-link"> | &nbsp;Current phase: Voting
             {{end}}
-          </span> 
+          </span>
           {{end}}
             <!--
-          {{range $i, $agenda := .Agendas}}        
+          {{range $i, $agenda := .Agendas}}
               {{if $agenda.IsDefined}}
               <div class="indicator upcoming">{{$agenda.Id}} Upcoming</div>
               {{end}}
@@ -128,7 +128,7 @@
               <div class="headingsubline">Proof-of-Work</div>
             </div>
             <div class="upgrade-content-statistics-main w-clearfix">
-              <div class="upgrade-content-statistics-numbers w-clearfix">Current Version: 
+              <div class="upgrade-content-statistics-numbers w-clearfix">Current Version:
 <!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
                 {{if .BlockVersionSuccess}}
                 <span class="highlight-text green">v{{.BlockVersionCurrent}}</span>
@@ -166,7 +166,7 @@
             <div class="chart-info w-clearfix">
               <div class="heading pow-pos">Miner Upgrade</div>
               <div class="headingsubline">Proof-of-Work</div>
-              <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: 
+              <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version:
 <!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
                 {{if .BlockVersionSuccess}}
                 <span class="highlight-text green">v{{.BlockVersionCurrent}}</span>
@@ -215,9 +215,9 @@
               <div class="headingsubline">Proof-of-Stake</div>
             </div>
             <div class="upgrade-content-statistics-main w-clearfix">
-              <div class="upgrade-content-statistics-numbers w-clearfix">Current Version: 
+              <div class="upgrade-content-statistics-numbers w-clearfix">Current Version:
 <!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
-                {{if .StakeVersionSuccess}}                
+                {{if .StakeVersionSuccess}}
                 <span class="highlight-text green">v{{.StakeVersionCurrent}}</span>
                 {{else}}
                 <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
@@ -253,12 +253,12 @@
             <div class="chart-info w-clearfix">
               <div class="heading pow-pos">Voter Upgrade</div>
               <div class="headingsubline">Proof-of-Stake</div>
-              <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version: 
-                {{if .StakeVersionSuccess}}                
+              <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version:
+                {{if .StakeVersionSuccess}}
                 <span class="highlight-text green">v{{.StakeVersionCurrent}}</span>
                 {{else}}
                 <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
-                {{end}}                
+                {{end}}
                 {{if .StakeVersionSuccess}}
                 <br> Most Popular Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
                 {{else}}
@@ -289,7 +289,7 @@
     {{end}}
     <div class="agendas w-clearfix">
       <div id="agendalisting" class="agendas w-clearfix width-1180">
-  
+
 <!-- agenda loop start -->
     {{range $i, $agenda := .Agendas}}
         {{if or $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
@@ -319,10 +319,10 @@
 
               <!-- status icons -->
               <div class="indicator-icon lockin {{if or $agenda.IsLockedIn $agenda.IsActive}}active{{end}}" data-tooltip-text="{{if $agenda.IsActive}}Locked-in, New Rules Activated{{else}}{{if $agenda.IsLockedIn}}Lock-in phase, new rules not yet activated{{else}}Voting phase, new rules not yet locked-in{{end}}{{end}}"></div>
-           
-              
+
+
                <div class="activated indicator-icon {{if $agenda.IsActive}}active{{end}}" data-tooltip-text="{{if $agenda.IsActive}}Lock-in Phase passed, New Rules Activated{{end}}{{if $agenda.IsLockedIn}}Lock-in phase, New Rules will activate soon. Upgrade your Software.{{end}}{{if $agenda.IsStarted}}Voting phase, new rules not yet activated{{end}}"></div>
-              
+
 
               <!-- quorum indicator -->
               {{if $agenda.IsStarted}}
@@ -351,9 +351,9 @@
                 </div>
                 <div class="agenda-cfg-spec w-clearfix">
                  Blocks left: &nbsp;<span class="highlight-text cyan transparent">{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</span>
-                </div>                
+                </div>
                 {{end}}
-                
+
               </div>
               <div class="agenda-paragraph">
                 <p style="font-weight: bold;">{{$agenda.DescriptionWithDCPURL}}</p>
@@ -435,13 +435,13 @@
                 {{end}}
                 {{if $agenda.IsLockedIn}}
                     <div class="agenda-voting-overview-disclaimer-lockedin">
-                    <p><small>The vote has passed! The new rules will be activated in approximately <strong>{{$.TimeLeftString}}</strong> ({{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads" target="_blank">Downloads Page</a> to get the latest Software.</small>
+                    <p><small>The vote has passed! The new rules will be activated in approximately <strong>{{$.TimeLeftString}}</strong> ({{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.</small>
                     </p>
                     </div>
                 {{end}}
                 {{if $agenda.IsActive}}
                     <div class="agenda-voting-overview-disclaimer-activated">
-                    <p><small>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads" target="_blank">Downloads Page</a> to get the latest Software.</small>
+                    <p><small>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.</small>
                     </p>
                     </div>
                 {{end}}
@@ -479,7 +479,7 @@
             {{else}}
               <div class="agenda-voting-begins">Quorum Progress: {{$agenda.QuorumVotedPercentage }}%
               </div>
-            {{end}} 
+            {{end}}
           {{end}}
           {{if $agenda.IsLockedIn}}
             <div class="agenda-voting-begins">
@@ -493,7 +493,7 @@
           -->
         </div>
       {{end}}
-<!-- agenda loop end -->     
+<!-- agenda loop end -->
       </div>
 
 
@@ -507,7 +507,7 @@
 There is a two-phase process for voting to implement consensus changes that would create a hard fork.
             </p>
             <p>
-<span class="highlightoverview">The first Phase</span> is meeting the upgrade threshold on the network. A majority of PoS/PoW nodes on the network must upgrade before voting can begin. 
+<span class="highlightoverview">The first Phase</span> is meeting the upgrade threshold on the network. A majority of PoS/PoW nodes on the network must upgrade before voting can begin.
 This is measured in the following ways:
             </p>
             <p>
@@ -647,7 +647,7 @@ This is measured in the following ways:
           label: 'Block v{{$i}}',
           backgroundColor: "rgba("+blockVersionGraphColors[{{$i}}-1]+",1)",
           data: [{{index $element.RollingWindowLookBacks $length}}],
-          }, 
+          },
         {{end}}
         ]
     };
@@ -679,7 +679,7 @@ This is measured in the following ways:
           label: 'Vote v{{$element.Version}}',
           backgroundColor: "rgba("+voteVersionGraphColors[{{.Version}}]+",1)",
           data: [{{$element.Count}}],
-          }, 
+          },
           {{end}}
         {{end}}
     ]
