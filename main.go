@@ -16,8 +16,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/decred/dcrd/rpcclient"
 	"github.com/decred/dcrd/wire"
-	"github.com/decred/dcrrpcclient"
 	"github.com/decred/hardforkdemo/agendadb"
 )
 
@@ -60,7 +60,7 @@ var (
 )
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
-func updatetemplateInformation(dcrdClient *dcrrpcclient.Client, db *agendadb.AgendaDB) {
+func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.AgendaDB) {
 	fmt.Println("updating hard fork information")
 
 	if latestBlockHeader == nil {
@@ -437,7 +437,7 @@ func mainCore() int {
 	}
 
 	// Set up notification handler that will release ntfns when new blocks connect
-	ntfnHandlersDaemon := dcrrpcclient.NotificationHandlers{
+	ntfnHandlersDaemon := rpcclient.NotificationHandlers{
 		OnBlockConnected: func(serializedBlockHeader []byte, transactions [][]byte) {
 			var blockHeader wire.BlockHeader
 			errLocal := blockHeader.Deserialize(bytes.NewReader(serializedBlockHeader))
@@ -451,8 +451,8 @@ func mainCore() int {
 		},
 	}
 
-	// dcrrpclient configuration
-	connCfgDaemon := &dcrrpcclient.ConnConfig{
+	// rpclient configuration
+	connCfgDaemon := &rpcclient.ConnConfig{
 		Host:         cfg.RPCHost,
 		Endpoint:     "ws",
 		User:         cfg.RPCUser,
@@ -464,7 +464,7 @@ func mainCore() int {
 	fmt.Printf("Attempting to connect to dcrd RPC %s as user %s "+
 		"using certificate %s\n", cfg.RPCHost, cfg.RPCUser, cfg.RPCCert)
 	// Attempt to connect rpcclient and daemon
-	dcrdClient, err := dcrrpcclient.New(connCfgDaemon, &ntfnHandlersDaemon)
+	dcrdClient, err := rpcclient.New(connCfgDaemon, &ntfnHandlersDaemon)
 	if err != nil {
 		fmt.Printf("Failed to start dcrd rpcclient: %v\n", err)
 		return 1
