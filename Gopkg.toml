@@ -4,16 +4,8 @@
   version = "0.8.0"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/decred/dcrd"
-  version = "v1.1.0"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/decred/dcrrpcclient"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/decred/dcrutil"
 
 [[constraint]]
   name = "github.com/jessevdk/go-flags"
