@@ -78,16 +78,15 @@
         </span>
         {{else}}
 <!-- Phase 2 Voting -->
-          {{if .PendingActivation}}
-          <span class="header-link"> | &nbsp;Current phase: Pending Activation
-            {{else}}
-            {{if .RulesActivated}}
-            <span class="header-link"> | &nbsp;Current phase: Rules Activated
-            {{else}}
-            <span class="header-link"> | &nbsp;Current phase: Voting
-            {{end}}
-          </span>
-          {{end}}
+        {{if .PendingActivation}}
+        <span class="header-link"> | &nbsp;Current phase: Pending Activation</span>
+        {{else}}
+        {{if .RulesActivated}}
+        <span class="header-link"> | &nbsp;Current phase: Rules Activated</span>
+        {{else}}
+        <span class="header-link"> | &nbsp;Current phase: Voting</span>
+        {{end}}
+        {{end}}
             <!--
           {{range $i, $agenda := .Agendas}}
               {{if $agenda.IsDefined}}
