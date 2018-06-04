@@ -27,6 +27,24 @@ Start hardforkdemo
 hardforkdemo
 ```
 
+## Docker
+
+Build the docker container:
+
+```bash
+./build_docker.sh
+```
+
+Run the container:
+
+```bash
+docker run -it -v ~/.dcrd:/root/.dcrd -v ~/.hardforkdemo:/root/.hardforkdemo -p <local port>:8000 hardforkdemo
+```
+
+This example assumes you have configured `.dcrd` and `.hardforkdemo` directories in `~` on the host machine.
+
+Your `hardforkdemo.conf` file will need to specificy `listen=0.0.0.0` in order for the external port mapping to work correctly.
+
 ## Contact
 
 If you have any further questions you can find us at:
@@ -45,4 +63,3 @@ is used for this project.
 ## License
 
 hardforkdemo is licensed under the [copyfree](http://copyfree.org) ISC License.
-
