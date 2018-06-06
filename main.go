@@ -485,8 +485,8 @@ func mainCore() int {
 	}
 
 	// Open DB for past agendas
-	dbPath, dbName := "history", "agendas.db"
-	err = os.Mkdir(dbPath, os.FileMode(750))
+	dbPath, dbName := filepath.Join(defaultHomeDir, "history"), "agendas.db"
+	err = os.Mkdir(dbPath, os.FileMode(0750))
 	if err != nil && !os.IsExist(err) {
 		log.Printf("Unable to create database folder: %v\n", err)
 	}
