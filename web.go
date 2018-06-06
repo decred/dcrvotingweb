@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"math"
 	"net/http"
 	"os"
@@ -204,7 +205,7 @@ func modiszero(a, b int) bool {
 func (td *WebUI) demoPage(w http.ResponseWriter, r *http.Request) {
 	err := td.templ.Execute(w, td.TemplateData)
 	if err != nil {
-		fmt.Printf("Failed to Execute: %v\n", err)
+		log.Printf("Failed to Execute: %v\n", err)
 		return
 	}
 	// TODO: Use TemplateExecToString only when the template data is updated
@@ -252,13 +253,13 @@ func (td *WebUI) reloadTemplatesSig(sig os.Signal) {
 	go func() {
 		for {
 			sigr := <-sigChan
-			fmt.Printf("Received %s\n", sig)
+			log.Printf("Received %s\n", sig)
 			if sigr == sig {
 				if err := td.ParseTemplates(); err != nil {
-					fmt.Println(err)
+					log.Println(err)
 					continue
 				}
-				fmt.Println("Web UI html templates reparsed.")
+				log.Println("Web UI html templates reparsed.")
 			}
 		}
 	}()
