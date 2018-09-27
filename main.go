@@ -44,7 +44,7 @@ const (
 	stakeVersionMain = 5
 
 	// stakeVersionTest is the version of the block being generated
-	// for networks other than the main network.
+	// for the testnet network.
 	stakeVersionTest = 6
 )
 
@@ -338,7 +338,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 		choiceIds := make([]string, len(agenda.Choices))
 		choicePercentages := make([]float64, len(agenda.Choices))
 		for i, choice := range agenda.Choices {
-			choiceIds[i] = choice.Id
+			choiceIds[i] = choice.ID
 			choicePercentages[i] = toFixed(choice.Progress*100, 2)
 			// non-abstain pct = 1 - abstain pct
 
@@ -358,7 +358,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 
 		for _, choice := range agenda.Choices {
 			if !choice.IsAbstain {
-				choiceIdsActing = append(choiceIdsActing, choice.Id)
+				choiceIdsActing = append(choiceIdsActing, choice.ID)
 				/*
 					if agenda.ID == "lnsupport" {
 						if choice.Id == "yes" {
