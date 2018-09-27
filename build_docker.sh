@@ -4,12 +4,11 @@
 rm -rf docker_context
 mkdir docker_context
 
-docker run --rm -it -v $(pwd):/src decred/decred-golang-builder-1.10 /bin/bash -c "\
+docker run --rm -it -v $(pwd):/src decred/decred-golang-builder-1.11 /bin/bash -c "\
   rsync -ra --filter=':- .gitignore'  \
   /src/ /go/src/github.com/decred/hardforkdemo/ && \
   cd github.com/decred/hardforkdemo/ && \
-  dep ensure && \
-  go install && \
+  env GO111MODULE=on go install && \
   cp /go/bin/hardforkdemo /src/docker_context/hardforkdemo
 "
 

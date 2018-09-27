@@ -94,7 +94,7 @@ func TestSaveLoadChoice(t *testing.T) {
 		AgendaChoice: pk0,
 		AgendaID:     pk0[0],
 		Choice: dcrjson.Choice{
-			Id:          pk0[1],
+			ID:          pk0[1],
 			Description: "abstain voting on stuff",
 			Bits:        0,
 			IsAbstain:   true,
@@ -129,9 +129,9 @@ func TestSaveLoadChoice(t *testing.T) {
 			C0.Description, C0loaded.Description)
 	}
 
-	if C0loaded.Id != C0.Id {
-		t.Errorf(`Loaded Id incorrect: expected "%s", got "%s"`,
-			C0.Id, C0loaded.Id)
+	if C0loaded.ID != C0.ID {
+		t.Errorf(`Loaded ID incorrect: expected "%s", got "%s"`,
+			C0.ID, C0loaded.ID)
 	}
 
 	t.Log(C0loaded)
@@ -142,7 +142,7 @@ func TestSaveLoadChoice(t *testing.T) {
 		AgendaChoice: pk1,
 		AgendaID:     pk1[0],
 		Choice: dcrjson.Choice{
-			Id:          pk1[1],
+			ID:          pk1[1],
 			Description: "yay for stuff",
 			Bits:        4,
 			IsAbstain:   false,
@@ -167,9 +167,9 @@ func TestSaveLoadChoice(t *testing.T) {
 			C0.Description, C0loaded.Description)
 	}
 
-	if C1loaded.Id != C1.Id {
-		t.Errorf(`Loaded Id incorrect: expected "%s", got "%s"`,
-			C1.Id, C1loaded.Id)
+	if C1loaded.ID != C1.ID {
+		t.Errorf(`Loaded ID incorrect: expected "%s", got "%s"`,
+			C1.ID, C1loaded.ID)
 	}
 
 	t.Log(C1loaded)
@@ -203,7 +203,7 @@ func TestSaveLoadChoice(t *testing.T) {
 		AgendaChoice: pk2,
 		AgendaID:     pk2[0],
 		Choice: dcrjson.Choice{
-			Id:          pk2[1],
+			ID:          pk2[1],
 			Description: "yay for things",
 			Bits:        4,
 			IsAbstain:   false,

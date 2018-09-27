@@ -116,7 +116,7 @@ type ChoiceLabeled struct {
 // only necessary because the ID field is not named the same as Id in dcrjson.
 func FromDcrJSONAgenda(a *dcrjson.Agenda) *AgendaTagged {
 	return &AgendaTagged{
-		ID:             a.Id,
+		ID:             a.ID,
 		Description:    a.Description,
 		Mask:           a.Mask,
 		StartTime:      a.StartTime,
@@ -131,7 +131,7 @@ func FromDcrJSONAgenda(a *dcrjson.Agenda) *AgendaTagged {
 // necessary because the ID field is not named the same as Id in dcrjson.
 func (a *AgendaTagged) ToDcrJSONAgenda() *dcrjson.Agenda {
 	return &dcrjson.Agenda{
-		Id:             a.ID,
+		ID:             a.ID,
 		Description:    a.Description,
 		Mask:           a.Mask,
 		StartTime:      a.StartTime,
