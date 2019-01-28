@@ -1,5 +1,6 @@
 {{define "home"}}
 <!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Decred Voting Dashboard</title>
@@ -25,7 +26,7 @@
   <meta name="msapplication-TileImage" content="images/favicon/mstile-144x144.png">
   <meta name="msapplication-config" content="images/favicon/browserconfig.xml">
   <link rel="icon" href="favicon.ico">
-  <script src="js/modernizr.js" type="text/javascript"></script>
+  <script src="js/modernizr.js"></script>
   <style>
   .progress-percent.pow {
   {{if not .BlockVersionSuccess}}
@@ -529,8 +530,8 @@ This is measured in the following ways:
 
     </div>
   </div>
-<script src="js/jquery-2.2.0.min.js" type="text/javascript"></script>
-<script src="js/decred-hardforkwebsite.js" type="text/javascript"></script>
+<script src="js/jquery-2.2.0.min.js"></script>
+<script src="js/decred-hardforkwebsite.js"></script>
 <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
 <script src="js/chart.min.js"></script>
 <script src="js/chart.extentions.js"></script>
@@ -845,6 +846,7 @@ This is measured in the following ways:
 	});
 
 </script>
+</div>
 </body>
 </html>
 {{end}}
