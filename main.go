@@ -5,7 +5,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -41,11 +40,11 @@ const (
 
 	// stakeVersionMain is the version of the block being generated for
 	// the main network.
-	stakeVersionMain = 5
+	stakeVersionMain = 6
 
 	// stakeVersionTest is the version of the block being generated
 	// for the testnet network.
-	stakeVersionTest = 6
+	stakeVersionTest = 7
 )
 
 var (
@@ -63,21 +62,6 @@ var (
 // updatetemplateInformation is called on startup and upon every block connected notification received.
 func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.AgendaDB) {
 	log.Println("updating hard fork information")
-
-	if latestBlockHeader == nil {
-		// Get the current best block (height and hash)
-		hash, err := dcrdClient.GetBestBlockHash()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		// Request the current block header
-		latestBlockHeader, err = dcrdClient.GetBlockHeader(hash)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	}
 
 	hash := latestBlockHeader.BlockHash()
 	height := latestBlockHeader.Height
@@ -140,7 +124,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 	stakeVersionsWindow := stakeVersionResults.StakeVersions[:activeNetParams.BlockUpgradeNumToCheck]
 	blockVersionsCounts := make(map[int32]int64)
 	for _, sv := range stakeVersionsWindow {
-		blockVersionsCounts[sv.BlockVersion] = blockVersionsCounts[sv.BlockVersion] + 1
+		blockVersionsCounts[sv.BlockVersion]++
 	}
 	var minBlockVersion, maxBlockVersion, popBlockVersion int32 = math.MaxInt32, -1, 0
 	for v := range blockVersionsCounts {
@@ -298,7 +282,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 	templateInformation.RulesActivated = true
 	// There may be no agendas for this vote version
 	if len(getVoteInfo.Agendas) == 0 {
-		log.Printf("No agendas for vote version %d\n", mostPopularVersion)
+		log.Printf("No agendas for vote version %d", mostPopularVersion)
 		templateInformation.Agendas = []Agenda{}
 		return
 	}
@@ -317,11 +301,10 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 	templateInformation.Agendas = make([]Agenda, 0, len(getVoteInfo.Agendas))
 
 	for i := range getVoteInfo.Agendas {
-		// Direct conversion works with go1.8, but angers Travis b/c "Id"!="ID"
-		//agenda := agendadb.AgendaTagged(getVoteInfo.Agendas[i])
+		log.Printf("getvoteinfo id: %#v", getVoteInfo.Agendas[i])
 		agenda := agendadb.FromDcrJSONAgenda(&getVoteInfo.Agendas[i])
 		if err = db.StoreAgenda(agenda); err != nil {
-			log.Printf("Failed to store agenda %s: %v\n", agenda.ID, err)
+			log.Printf("Failed to store agenda %s: %v", agenda.ID, err)
 		}
 
 		// Check to see if all agendas are pending activation
@@ -433,7 +416,7 @@ func mainCore() int {
 	if !cfg.DisableTLS {
 		dcrdCerts, err = ioutil.ReadFile(cfg.RPCCert)
 		if err != nil {
-			log.Printf("Failed to read dcrd cert file at %v: %v\n",
+			log.Printf("Failed to read dcrd cert file at %v: %v",
 				cfg.RPCCert, err)
 			return 1
 		}
@@ -441,14 +424,14 @@ func mainCore() int {
 
 	// Set up notification handler that will release ntfns when new blocks connect
 	ntfnHandlersDaemon := rpcclient.NotificationHandlers{
-		OnBlockConnected: func(serializedBlockHeader []byte, transactions [][]byte) {
+		OnBlockConnected: func(serializedBlockHeader []byte, _ [][]byte) {
 			var blockHeader wire.BlockHeader
-			errLocal := blockHeader.Deserialize(bytes.NewReader(serializedBlockHeader))
+			errLocal := blockHeader.FromBytes(serializedBlockHeader)
 			if errLocal != nil {
-				log.Printf("Failed to deserialize block header: %v\n", errLocal)
+				log.Printf("Failed to deserialize block header: %v", errLocal)
 				return
 			}
-			log.Printf("received new block %v (height %d)\n", blockHeader.BlockHash(),
+			log.Printf("received new block %v (height %d)", blockHeader.BlockHash(),
 				blockHeader.Height)
 			connectChan <- blockHeader
 		},
@@ -465,15 +448,15 @@ func mainCore() int {
 	}
 
 	log.Printf("Attempting to connect to dcrd RPC %s as user %s "+
-		"using certificate %s\n", cfg.RPCHost, cfg.RPCUser, cfg.RPCCert)
+		"using certificate %s", cfg.RPCHost, cfg.RPCUser, cfg.RPCCert)
 	// Attempt to connect rpcclient and daemon
 	dcrdClient, err := rpcclient.New(connCfgDaemon, &ntfnHandlersDaemon)
 	if err != nil {
-		log.Printf("Failed to start dcrd rpcclient: %v\n", err)
+		log.Printf("Failed to start dcrd rpcclient: %v", err)
 		return 1
 	}
 	defer func() {
-		log.Printf("Disconnecting from dcrd.\n")
+		log.Printf("Disconnecting from dcrd.")
 		dcrdClient.Disconnect()
 	}()
 
@@ -488,15 +471,18 @@ func mainCore() int {
 	dbPath, dbName := filepath.Join(defaultHomeDir, "history"), "agendas.db"
 	err = os.Mkdir(dbPath, os.FileMode(0750))
 	if err != nil && !os.IsExist(err) {
-		log.Printf("Unable to create database folder: %v\n", err)
+		log.Printf("Unable to create database folder: %v", err)
 	}
 	db, err := agendadb.Open(filepath.Join(dbPath, dbName))
 	if err != nil {
-		log.Printf("Unable to open agendas DB: %v\n", err)
+		log.Printf("Unable to open agendas DB: %v", err)
 		return 1
 	}
 	defer db.Close()
-	db.ListAgendas()
+	err = db.ListAgendas()
+	if err != nil {
+		log.Printf("Unable to list agendas: %v", err)
+	}
 
 	// Only accept a single CTRL+C
 	c := make(chan os.Signal, 1)
@@ -511,6 +497,19 @@ func mainCore() int {
 		close(quit)
 	}()
 
+	// Get the current best block (height and hash)
+	hash, err := dcrdClient.GetBestBlockHash()
+	if err != nil {
+		log.Println(err)
+		return 1
+	}
+	// Request the current block header
+	latestBlockHeader, err = dcrdClient.GetBlockHeader(hash)
+	if err != nil {
+		log.Println(err)
+		return 1
+	}
+
 	// Run an initial templateInforation update based on current change
 	updatetemplateInformation(dcrdClient, db)
 
@@ -522,7 +521,7 @@ func mainCore() int {
 			select {
 			case blkHdr := <-connectChan:
 				latestBlockHeader = &blkHdr
-				log.Printf("Block %v (height %v) connected\n",
+				log.Printf("Block %v (height %v) connected",
 					blkHdr.BlockHash(), blkHdr.Height)
 				updatetemplateInformation(dcrdClient, db)
 			case <-quit:
@@ -537,7 +536,7 @@ func mainCore() int {
 	// http.HandleFunc for the web server
 	webUI, err := NewWebUI()
 	if err != nil {
-		log.Printf("NewWebUI failed: %v\n", err)
+		log.Printf("NewWebUI failed: %v", err)
 		os.Exit(1)
 	}
 	webUI.TemplateData = templateInformation
@@ -555,7 +554,7 @@ func mainCore() int {
 	go func() {
 		err = http.ListenAndServe(cfg.Listen, nil)
 		if err != nil {
-			log.Printf("Failed to bind http server: %v\n", err)
+			log.Printf("Failed to bind http server: %v", err)
 			close(quit)
 		}
 	}()
