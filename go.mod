@@ -5,16 +5,17 @@ require (
 	github.com/Sereal/Sereal v0.0.0-20180905114147-563b78806e28 // indirect
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/boltdb/bolt v1.3.1 // indirect
-	github.com/decred/dcrd/chaincfg v1.1.1
-	github.com/decred/dcrd/dcrjson v1.0.0
-	github.com/decred/dcrd/dcrutil v1.1.1
-	github.com/decred/dcrd/rpcclient v1.0.2
-	github.com/decred/dcrd/wire v1.1.0
+	github.com/decred/dcrd/chaincfg v1.3.0
+	github.com/decred/dcrd/dcrjson v1.1.0
+	github.com/decred/dcrd/dcrutil v1.2.0
+	github.com/decred/dcrd/rpcclient v1.1.0
+	github.com/decred/dcrd/wire v1.2.0
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/hpcloud/tail v1.0.0 // indirect
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/kr/pretty v0.1.0 // indirect
+	github.com/onsi/ginkgo v1.7.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/vmihailenco/msgpack v4.0.0+incompatible // indirect

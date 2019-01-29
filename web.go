@@ -117,7 +117,7 @@ type templateFields struct {
 	BlockVersionMostPopular int32
 	// BlockVersionMostPopularPercentage is the percentage of the most popular block version
 	BlockVersionMostPopularPercentage float64
-	// BlockVersionNext is teh next block version.
+	// BlockVersionNext is the next block version.
 	BlockVersionNext int32
 	// BlockVersionNextPercentage is the share of the next block version in the current rolling window.
 	BlockVersionNextPercentage float64
@@ -205,7 +205,7 @@ func modiszero(a, b int) bool {
 func (td *WebUI) demoPage(w http.ResponseWriter, r *http.Request) {
 	err := td.templ.Execute(w, td.TemplateData)
 	if err != nil {
-		log.Printf("Failed to Execute: %v\n", err)
+		log.Printf("Failed to Execute: %v", err)
 		return
 	}
 	// TODO: Use TemplateExecToString only when the template data is updated
@@ -253,7 +253,7 @@ func (td *WebUI) reloadTemplatesSig(sig os.Signal) {
 	go func() {
 		for {
 			sigr := <-sigChan
-			log.Printf("Received %s\n", sig)
+			log.Printf("Received %s", sig)
 			if sigr == sig {
 				if err := td.ParseTemplates(); err != nil {
 					log.Println(err)

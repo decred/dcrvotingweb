@@ -193,8 +193,10 @@ func TestSaveLoadChoice(t *testing.T) {
 	}
 
 	// must reindex after updating a field
-	db.ReIndex(&ChoiceLabeled{})
-
+	err = db.ReIndex(&ChoiceLabeled{})
+	if err != nil {
+		t.Errorf("Reindex failed: %v", err)
+	}
 	t.Log(C1loaded)
 
 	// Another choice on a different agenda from the two above
