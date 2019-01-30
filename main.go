@@ -550,6 +550,7 @@ func mainCore() int {
 
 	// Start http server listening and serving, but no way to signal to quit
 	go func() {
+		log.Printf("Starting webserver on %v", cfg.Listen)
 		err = http.ListenAndServe(cfg.Listen, nil)
 		if err != nil {
 			log.Printf("Failed to bind http server: %v", err)

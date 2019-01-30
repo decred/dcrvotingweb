@@ -32,7 +32,7 @@ hardforkdemo
 Build the docker container:
 
 ```bash
-./build_docker.sh
+docker build -t decred/hardforkdemo .
 ```
 
 Run the container:
