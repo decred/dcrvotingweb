@@ -225,7 +225,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 	}
 	blocksRemainingStakeInterval := stakeVersionIntervalEndHeight - int64(height)
 	timeLeftDuration := activeNetParams.TargetTimePerBlock * time.Duration(blocksRemainingStakeInterval)
-	templateInformation.StakeVersionTimeRemaining = fmt.Sprintf("%s remaining", timeLeftDuration.String())
+	templateInformation.StakeVersionTimeRemaining = fmt.Sprintf("%s remaining", fmtDuration(timeLeftDuration))
 	stakeVersionLabels[numIntervals-1] = "Current Interval"
 	currentInterval := stakeVersionInfo.Intervals[0]
 
@@ -573,4 +573,15 @@ func round(num float64) int {
 func toFixed(num float64, precision int) float64 {
 	output := math.Pow(10, float64(precision))
 	return float64(round(num*output)) / output
+}
+
+// fmtDuration will convert a Duration into a human readable string formatted "0d 0h 0m".
+func fmtDuration(dur time.Duration) string {
+    dur = dur.Round(time.Minute)
+    days := dur / (time.Hour * 24)
+    dur -= days * (time.Hour * 24)
+    hours := dur / time.Hour
+    dur -= hours * time.Hour
+    mins := dur / time.Minute
+    return fmt.Sprintf("%dd %dh %dm", days, hours, mins)
 }
