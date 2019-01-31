@@ -577,11 +577,11 @@ func toFixed(num float64, precision int) float64 {
 
 // fmtDuration will convert a Duration into a human readable string formatted "0d 0h 0m".
 func fmtDuration(dur time.Duration) string {
-    dur = dur.Round(time.Minute)
-    days := dur / (time.Hour * 24)
-    dur -= days * (time.Hour * 24)
-    hours := dur / time.Hour
-    dur -= hours * time.Hour
-    mins := dur / time.Minute
-    return fmt.Sprintf("%dd %dh %dm", days, hours, mins)
+	dur = dur.Round(time.Minute)
+	days := dur / (time.Hour * 24)
+	dur -= days * (time.Hour * 24)
+	hours := dur / time.Hour
+	dur -= hours * time.Hour
+	mins := dur / time.Minute
+	return fmt.Sprintf("%dd %dh %dm", days, hours, mins)
 }
