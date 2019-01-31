@@ -203,6 +203,10 @@ func modiszero(a, b int) bool {
 
 // renders the 'home' template that is current located at "design_sketch.html".
 func (td *WebUI) demoPage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("X-Frame-Options", "DENY")
+	w.Header().Set("X-XSS-Protection", "1; mode=block")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("Referrer-Policy", "no-referrer")
 	err := td.templ.Execute(w, td.TemplateData)
 	if err != nil {
 		log.Printf("Failed to Execute: %v", err)
