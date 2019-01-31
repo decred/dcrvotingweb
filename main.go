@@ -68,7 +68,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 
 	// Set Current block height
 	templateInformation.BlockHeight = height
-	templateInformation.BlockExplorerLink = fmt.Sprintf("https://%s.decred.org/block/%v",
+	templateInformation.BlockExplorerLink = fmt.Sprintf("https://%s.dcrdata.org/block/%v",
 		activeNetParams.Name, hash)
 
 	// Request GetStakeVersions to receive information about past block versions.
