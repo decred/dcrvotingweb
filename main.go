@@ -268,13 +268,11 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 	templateInformation.GetVoteInfoResult = getVoteInfo
 	templateInformation.TimeLeftString = blocksToTimeEstimate(int(getVoteInfo.EndHeight - getVoteInfo.CurrentHeight))
 	// Check if Phase Upgrading or Voting
-	/*
-		if templateInformation.StakeVersionSuccess && templateInformation.BlockVersionSuccess {
-			templateInformation.IsUpgrading = false
-		} else {
-			templateInformation.IsUpgrading = true
-		}*/
-	templateInformation.IsUpgrading = false
+	if templateInformation.StakeVersionSuccess && templateInformation.BlockVersionSuccess {
+		templateInformation.IsUpgrading = false
+	} else {
+		templateInformation.IsUpgrading = true
+	}
 
 	// Assume all agendas have been voted and are pending activation
 	templateInformation.PendingActivation = true
