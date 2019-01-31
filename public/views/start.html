@@ -129,18 +129,8 @@
             </div>
             <div class="upgrade-content-statistics-main w-clearfix">
               <div class="upgrade-content-statistics-numbers w-clearfix">Current Version:
-<!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
-                {{if .BlockVersionSuccess}}
-                <span class="highlight-text green">v{{.BlockVersionCurrent}}</span>
-                {{else}}
-                <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
-                {{end}}
-                {{if .BlockVersionSuccess}}
-                <br> Next Version: <span class="highlight-text green">v{{.BlockVersionNext}}</span>
-                {{else}}
-                <br> Next Version: <span class="highlight-text orange">v{{.BlockVersionNext}}</span>
-                {{end}}
-
+                <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionCurrent}}</span>
+                <br> Next Version: <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionNext}}</span>
                 <br> Upgrade Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
                 <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
               </div>
@@ -165,18 +155,8 @@
               <div class="heading pow-pos">Miner Upgrade</div>
               <div class="headingsubline">Proof-of-Work</div>
               <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version:
-<!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
-                {{if .BlockVersionSuccess}}
-                <span class="highlight-text green">v{{.BlockVersionCurrent}}</span>
-                {{else}}
-                <span class="highlight-text orange">v{{.BlockVersionCurrent}}</span>
-                {{end}}
-                {{if .BlockVersionSuccess}}
-                <br> Next Version: <span class="highlight-text green">v{{.BlockVersionNext}}</span>
-                {{else}}
-                <br> Next Version: <span class="highlight-text orange">v{{.BlockVersionNext}}</span>
-                {{end}}
-
+                <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionCurrent}}</span>
+                <br> Next Version: <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionNext}}</span>
                 <br> Upgrade Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
                 <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
               </div>
@@ -212,18 +192,8 @@
             </div>
             <div class="upgrade-content-statistics-main w-clearfix">
               <div class="upgrade-content-statistics-numbers w-clearfix">Current Version:
-<!-- POW CURRENT VERSION LATEST OR NEEDS UPGRADE COLOR SWITCH -->
-                {{if .StakeVersionSuccess}}
-                <span class="highlight-text green">v{{.StakeVersionCurrent}}</span>
-                {{else}}
-                <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
-                {{end}}
-                {{if .StakeVersionSuccess}}
-                <br> Next Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
-                {{else}}
-                <br> Next Version: <span class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
-                {{end}}
-
+                <span class="highlight-text {{if .StakeVersionSuccess}}green{{else}}orange{{end}}">v{{.StakeVersionCurrent}}</span>
+                <br> Next Version: <span class="highlight-text {{if .StakeVersionSuccess}}green{{else}}orange{{end}}">v{{.StakeVersionMostPopular}}</span>
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
                 <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
               </div>
@@ -250,17 +220,8 @@
               <div class="heading pow-pos">Voter Upgrade</div>
               <div class="headingsubline">Proof-of-Stake</div>
               <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version:
-                {{if .StakeVersionSuccess}}
-                <span class="highlight-text green">v{{.StakeVersionCurrent}}</span>
-                {{else}}
-                <span class="highlight-text orange">v{{.StakeVersionCurrent}}</span>
-                {{end}}
-                {{if .StakeVersionSuccess}}
-                <br> Next Version: <span class="highlight-text green">v{{.StakeVersionMostPopular}}</span>
-                {{else}}
-                <br> Next Version: <span class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
-                {{end}}
-
+                <span class="highlight-text {{if .StakeVersionSuccess}}green{{else}}orange{{end}}">v{{.StakeVersionCurrent}}</span>
+                <br> Next Version: <span class="highlight-text {{if .StakeVersionSuccess}}green{{else}}orange{{end}}">v{{.StakeVersionMostPopular}}</span>
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
                 <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
               </div>
