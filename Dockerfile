@@ -1,13 +1,15 @@
-FROM ubuntu:trusty
+# builder image
+FROM golang:1.11
 
 LABEL description="hardforkdemo"
 LABEL version="1.0"
 LABEL maintainer "holdstockjamie@gmail.com"
 
 USER root
-WORKDIR /root
+RUN mkdir /app
+COPY . /app
+WORKDIR /app
+RUN go build
 
-COPY docker_context/public            /root/public
-COPY docker_context/hardforkdemo      /root/hardforkdemo
-
-CMD ./hardforkdemo
+EXPOSE 8000
+CMD ["/app/hardforkdemo"]
