@@ -36,7 +36,7 @@ func Open(dbPath string) (*AgendaDB, error) {
 		if err != nil {
 			fmt.Printf("Unable to count choices in existing DB: %v\n", err)
 		}
-		fmt.Printf("Opened existing datatbase with %d agendas.\n", numAgendas)
+		fmt.Printf("Opened existing database with %d agendas.\n", numAgendas)
 	}
 
 	agendaDB := &AgendaDB{
