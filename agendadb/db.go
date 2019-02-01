@@ -10,9 +10,7 @@ import (
 
 // AgendaDB manages a database of agendas and their choices
 type AgendaDB struct {
-	sdb        *storm.DB
-	NumAgendas int
-	NumChoices int
+	sdb *storm.DB
 }
 
 // Open will either open and existing database or create a new one using with
@@ -26,13 +24,13 @@ func Open(dbPath string) (*AgendaDB, error) {
 		return nil, err
 	}
 
-	var numAgendas, numChoices int
+	var numAgendas int
 	if !isNewDB {
 		numAgendas, err = db.Count(&AgendaTagged{})
 		if err != nil {
 			fmt.Printf("Unable to count agendas in existing DB: %v\n", err)
 		}
-		numChoices, err = db.Count(&ChoiceLabeled{})
+		_, err = db.Count(&ChoiceLabeled{})
 		if err != nil {
 			fmt.Printf("Unable to count choices in existing DB: %v\n", err)
 		}
@@ -40,10 +38,7 @@ func Open(dbPath string) (*AgendaDB, error) {
 	}
 
 	agendaDB := &AgendaDB{
-		sdb:        db,
-		NumAgendas: numAgendas,
-		NumChoices: numChoices,
-	}
+		sdb: db}
 	return agendaDB, err
 }
 
