@@ -107,16 +107,10 @@ type templateFields struct {
 	// BlockVersionWindowLength is the activeNetParams of BlockUpgradeNumToCheck
 	// rolling window length.
 	BlockVersionWindowLength uint64
-	// BlockVersionEnforceThreshold is the activeNetParams of BlockEnforceNumRequired.
-	BlockVersionEnforceThreshold int
 	// BlockVersionRejectThreshold is the activeNetParams of BlockRejectNumRequired.
 	BlockVersionRejectThreshold int
 	// BlockVersionCurrent is the currently calculated block version based on the rolling window.
 	BlockVersionCurrent int32
-	// BlockVersionMostPopular is the calculated most popular block version that is NOT current version.
-	BlockVersionMostPopular int32
-	// BlockVersionMostPopularPercentage is the percentage of the most popular block version
-	BlockVersionMostPopularPercentage float64
 	// BlockVersionNext is the next block version.
 	BlockVersionNext int32
 	// BlockVersionNextPercentage is the share of the next block version in the current rolling window.
@@ -130,13 +124,8 @@ type templateFields struct {
 	StakeVersionWindowLength int64
 	// StakeVersionIntervalBlocks shows the actual blocks for the current window
 	StakeVersionIntervalBlocks string
-	// StakeVersionWindowVoteTotal is the number of total possible votes in the windows.
-	// It is reduced by number of observed missed votes thus far in the window.
-	StakeVersionWindowVoteTotal int64
 	// StakeVersionIntervalLabels are labels for the bar graph for each of the past 4 fixed stake version intervals.
 	StakeVersionIntervalLabels []string
-	// StakeVersionVotesRemaining is the calculated number of votes possibly remaining in the current stake version interval.
-	StakeVersionVotesRemaining int64
 	// StakeVersionsIntervals  is the data received from GetStakeVersionInfo json-rpc call to dcrd.
 	StakeVersionsIntervals []dcrjson.VersionInterval
 	// StakeVersionIntervalResults is the data after being analyzed for graph displaying.
@@ -147,24 +136,16 @@ type templateFields struct {
 	StakeVersionCurrent uint32
 	// StakeVersionMostPopular is the most popular stake version that is NOT the current stake version.
 	StakeVersionMostPopular uint32
-	// StakeVersionMostPopularCount is the count of most popular stake versions.
-	StakeVersionMostPopularCount uint32
 	// StakeVersionMostPopularPercentage is the percentage of most popular stake versions out of possible votes.
 	StakeVersionMostPopularPercentage float64
-	// StakeVersionRequiredVotes is the number of stake version votes required for the stake version to change.
-	StakeVersionRequiredVotes int32
 	// StakeVersionTimeRemaining is a string to show how much estimated time is remaining in the stake version interval.
 	StakeVersionTimeRemaining string
 	// Quorum and Rule Change Information
-	// RuleChangeActivationQuorum is the activeNetParams of RuleChangeActivationQuorum
-	RuleChangeActivationQuorum uint32
 	// Quorum is a bool that is true if needed number of yes/nos were
 	// received (>10%).
 	Quorum bool
 	// QuorumThreshold is the percentage required for the RuleChange to become active.
 	QuorumThreshold float64
-	// LockedinPercentage is the percent of the voing window remaining
-	LockedinPercentage float64
 	// Length of the static rule change interval
 	RuleChangeActivationInterval int64
 	// Agendas contains all the agendas and their statuses
@@ -201,8 +182,8 @@ func modiszero(a, b int) bool {
 	return (a % b) == 0
 }
 
-// renders the 'home' template that is current located at "design_sketch.html".
-func (td *WebUI) demoPage(w http.ResponseWriter, r *http.Request) {
+// renders the 'home' template which is currently located at "start.html".
+func (td *WebUI) homePage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Frame-Options", "DENY")
 	w.Header().Set("X-XSS-Protection", "1; mode=block")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
