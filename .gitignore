@@ -1,6 +1,4 @@
 *~
-history/
 vendor/
 hardforkdemo
-testdb.db
 *.orig

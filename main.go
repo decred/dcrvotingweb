@@ -12,13 +12,11 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"sync"
 	"time"
 
 	"github.com/decred/dcrd/rpcclient"
 	"github.com/decred/dcrd/wire"
-	"github.com/decred/hardforkdemo/agendadb"
 )
 
 // Contains a certain block version's count of blocks in the
@@ -60,7 +58,7 @@ var (
 )
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
-func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.AgendaDB) {
+func updatetemplateInformation(dcrdClient *rpcclient.Client) {
 	log.Println("updating hard fork information")
 
 	hash := latestBlockHeader.BlockHash()
@@ -282,12 +280,8 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 
 	templateInformation.Agendas = make([]Agenda, 0, len(getVoteInfo.Agendas))
 
-	for i := range getVoteInfo.Agendas {
-		log.Printf("getvoteinfo id: %#v", getVoteInfo.Agendas[i])
-		agenda := agendadb.FromDcrJSONAgenda(&getVoteInfo.Agendas[i])
-		if err = db.StoreAgenda(agenda); err != nil {
-			log.Printf("Failed to store agenda %s: %v", agenda.ID, err)
-		}
+	for _, agenda := range getVoteInfo.Agendas {
+		log.Printf("getvoteinfo id: %#v", agenda)
 
 		// Check to see if all agendas are pending activation
 		if agenda.Status != "lockedin" {
@@ -360,7 +354,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 		voteCountPercentage := float64(voteCount) / (float64(activeNetParams.RuleChangeActivationInterval) * float64(activeNetParams.TicketsPerBlock))
 
 		templateInformation.Agendas = append(templateInformation.Agendas, Agenda{
-			Agenda:                    *agenda.ToDcrJSONAgenda(),
+			Agenda:                    agenda,
 			QuorumExpirationDate:      time.Unix(int64(agenda.ExpireTime), int64(0)).Format(time.RFC850),
 			QuorumVotedPercentage:     toFixed(agenda.QuorumProgress*100, 2),
 			QuorumAbstainedPercentage: toFixed(agenda.Choices[0].Progress*100, 2),
@@ -449,30 +443,6 @@ func mainCore() int {
 		return 1
 	}
 
-	// Check history directory exists
-	historyPath := filepath.Join(defaultHomeDir, "history")
-	err = os.Mkdir(historyPath, os.FileMode(0750))
-	if err != nil && !os.IsExist(err) {
-		log.Printf("Unable to create history folder: %v", err)
-		return 1
-	}
-
-	// Open DB for past agendas
-	dbName := "agendas.db"
-	db, err := agendadb.Open(filepath.Join(historyPath, dbName))
-	if err != nil {
-		log.Printf("Unable to open agendas DB: %v", err)
-		return 1
-	}
-	defer db.Close()
-
-	// Validate DB can be used
-	err = db.ListAgendas()
-	if err != nil {
-		log.Printf("Unable to list agendas: %v", err)
-		return 1
-	}
-
 	// Only accept a single CTRL+C
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -500,7 +470,7 @@ func mainCore() int {
 	}
 
 	// Run an initial templateInforation update based on current change
-	updatetemplateInformation(dcrdClient, db)
+	updatetemplateInformation(dcrdClient)
 
 	// Run goroutine for notifications
 	var wg sync.WaitGroup
@@ -512,7 +482,7 @@ func mainCore() int {
 				latestBlockHeader = &blkHdr
 				log.Printf("Block %v (height %v) connected",
 					blkHdr.BlockHash(), blkHdr.Height)
-				updatetemplateInformation(dcrdClient, db)
+				updatetemplateInformation(dcrdClient)
 			case <-quit:
 				log.Println("Closing hardfork demo.")
 				wg.Done()
