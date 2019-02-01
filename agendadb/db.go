@@ -30,10 +30,6 @@ func Open(dbPath string) (*AgendaDB, error) {
 		if err != nil {
 			fmt.Printf("Unable to count agendas in existing DB: %v\n", err)
 		}
-		_, err = db.Count(&ChoiceLabeled{})
-		if err != nil {
-			fmt.Printf("Unable to count choices in existing DB: %v\n", err)
-		}
 		fmt.Printf("Opened existing database with %d agendas.\n", numAgendas)
 	}
 
@@ -96,15 +92,6 @@ type AgendaTagged struct {
 	Status         string           `json:"status" storm:"index"`
 	QuorumProgress float64          `json:"quorumprogress" storm:"index"`
 	Choices        []dcrjson.Choice `json:"choices"`
-}
-
-// ChoiceLabeled embeds dcrjson.Choice along with the AgendaID for the choice,
-// and a string array suitable for use as a primary key. The AgendaID is tagged
-// as an index for quick lookups based on the agenda.
-type ChoiceLabeled struct {
-	AgendaChoice   [2]string `storm:"id"`
-	AgendaID       string    `json:"agendaid" storm:"index"`
-	dcrjson.Choice `storm:"inline"`
 }
 
 // FromDcrJSONAgenda creates an AgendaTagged from a dcrjson.Agenda. This is
