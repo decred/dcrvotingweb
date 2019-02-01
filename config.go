@@ -155,8 +155,6 @@ func loadConfig() (*config, error) {
 	templateInformation = &templateFields{
 		Network: activeNetParams.Name,
 		// BlockVersion params
-		BlockVersionEnforceThreshold: int(float64(activeNetParams.BlockEnforceNumRequired) /
-			float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
 		BlockVersionRejectThreshold: int(float64(activeNetParams.BlockRejectNumRequired) /
 			float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
 		BlockVersionWindowLength: activeNetParams.BlockUpgradeNumToCheck,
@@ -165,7 +163,6 @@ func loadConfig() (*config, error) {
 		StakeVersionThreshold: toFixed(float64(activeNetParams.StakeMajorityMultiplier)/
 			float64(activeNetParams.StakeMajorityDivisor)*100, 0),
 		// RuleChange params
-		RuleChangeActivationQuorum: activeNetParams.RuleChangeActivationQuorum,
 		QuorumThreshold: float64(activeNetParams.RuleChangeActivationQuorum) /
 			float64(activeNetParams.RuleChangeActivationInterval*
 				uint32(activeNetParams.TicketsPerBlock)) * 100,

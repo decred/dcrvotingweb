@@ -126,7 +126,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 	for _, sv := range stakeVersionsWindow {
 		blockVersionsCounts[sv.BlockVersion]++
 	}
-	var minBlockVersion, maxBlockVersion, popBlockVersion int32 = math.MaxInt32, -1, 0
+	var minBlockVersion, maxBlockVersion int32 = math.MaxInt32, -1
 	for v := range blockVersionsCounts {
 		if v < minBlockVersion {
 			minBlockVersion = v
@@ -139,7 +139,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 	for v, c := range blockVersionsCounts {
 		if c > popBlockVersionCount && v != minBlockVersion {
 			popBlockVersionCount = c
-			popBlockVersion = v
 		}
 	}
 
@@ -148,9 +147,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 	}
 
 	templateInformation.BlockVersionCurrent = int32(stakeVersion) - 1
-
-	templateInformation.BlockVersionMostPopular = popBlockVersion
-	templateInformation.BlockVersionMostPopularPercentage = toFixed(blockWinUpgradePct(popBlockVersionCount), 2)
 
 	templateInformation.BlockVersionNext = minBlockVersion + 1
 	templateInformation.BlockVersionNextPercentage = toFixed(blockWinUpgradePct(blockVersionsCounts[minBlockVersion+1]), 2)
@@ -232,7 +228,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 	maxPossibleVotes := activeNetParams.StakeVersionInterval*int64(activeNetParams.TicketsPerBlock) -
 		int64(missedVotesStakeInterval)
 	templateInformation.StakeVersionIntervalResults = stakeVersionIntervalResults
-	templateInformation.StakeVersionWindowVoteTotal = maxPossibleVotes
 	templateInformation.StakeVersionIntervalLabels = stakeVersionLabels
 	templateInformation.StakeVersionCurrent = latestBlockHeader.StakeVersion
 
@@ -245,18 +240,13 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 		}
 	}
 
-	templateInformation.StakeVersionMostPopularCount = mostPopularVersionCount
 	templateInformation.StakeVersionMostPopularPercentage = toFixed(float64(mostPopularVersionCount)/float64(maxPossibleVotes)*100, 2)
 	templateInformation.StakeVersionMostPopular = mostPopularVersion
-	templateInformation.StakeVersionRequiredVotes = int32(maxPossibleVotes) *
+	var stakeVersionRequiredVotes = int32(maxPossibleVotes) *
 		activeNetParams.StakeMajorityMultiplier / activeNetParams.StakeMajorityDivisor
-	if int32(mostPopularVersionCount) > templateInformation.StakeVersionRequiredVotes {
+	if int32(mostPopularVersionCount) > stakeVersionRequiredVotes {
 		templateInformation.StakeVersionSuccess = true
 	}
-
-	blocksIntoInterval := currentInterval.EndHeight - currentInterval.StartHeight
-	templateInformation.StakeVersionVotesRemaining =
-		(activeNetParams.StakeVersionInterval - blocksIntoInterval) * int64(activeNetParams.TicketsPerBlock)
 
 	// Quorum/vote information
 	getVoteInfo, err := dcrdClient.GetVoteInfo(stakeVersion)
@@ -290,12 +280,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, db *agendadb.Agenda
 		templateInformation.Quorum = true
 	}
 
-	// Status LockedIn Circle3 Ring Indicates BlocksLeft until old versions gets denied
-	lockedinBlocksleft := float64(getVoteInfo.EndHeight) - float64(getVoteInfo.CurrentHeight)
-	lockedinWindowsize := float64(getVoteInfo.EndHeight) - float64(getVoteInfo.StartHeight)
-	lockedinPercentage := lockedinWindowsize / 100
-
-	templateInformation.LockedinPercentage = toFixed(lockedinBlocksleft/lockedinPercentage, 2)
 	templateInformation.Agendas = make([]Agenda, 0, len(getVoteInfo.Agendas))
 
 	for i := range getVoteInfo.Agendas {
@@ -542,7 +526,7 @@ func mainCore() int {
 	webUI.UseSIGToReloadTemplates()
 
 	// URL handlers for js/css/fonts/images
-	http.HandleFunc("/", webUI.demoPage)
+	http.HandleFunc("/", webUI.homePage)
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("public/js/"))))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("public/css/"))))
 	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir("public/fonts/"))))
