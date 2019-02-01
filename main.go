@@ -465,21 +465,28 @@ func mainCore() int {
 		return 1
 	}
 
-	// Open DB for past agendas
-	dbPath, dbName := filepath.Join(defaultHomeDir, "history"), "agendas.db"
-	err = os.Mkdir(dbPath, os.FileMode(0750))
+	// Check history directory exists
+	historyPath := filepath.Join(defaultHomeDir, "history")
+	err = os.Mkdir(historyPath, os.FileMode(0750))
 	if err != nil && !os.IsExist(err) {
-		log.Printf("Unable to create database folder: %v", err)
+		log.Printf("Unable to create history folder: %v", err)
+		return 1
 	}
-	db, err := agendadb.Open(filepath.Join(dbPath, dbName))
+
+	// Open DB for past agendas
+	dbName := "agendas.db"
+	db, err := agendadb.Open(filepath.Join(historyPath, dbName))
 	if err != nil {
 		log.Printf("Unable to open agendas DB: %v", err)
 		return 1
 	}
 	defer db.Close()
+
+	// Validate DB can be used
 	err = db.ListAgendas()
 	if err != nil {
 		log.Printf("Unable to list agendas: %v", err)
+		return 1
 	}
 
 	// Only accept a single CTRL+C
