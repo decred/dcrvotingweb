@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Decred developers
+// Copyright (c) 2017-2019 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -52,6 +52,9 @@ var (
 	// parameters.
 	templateInformation *templateFields
 
+	voteVersionsMain = []uint32{4, 5, 6}
+	voteVersionsTest = []uint32{7}
+
 	friendlyAgendaLabels = map[string]string{
 		"sdiffalgorithm": "Change PoS Staking Algorithm",
 		"lnsupport":      "Start Lightning Network Support",
@@ -72,6 +75,8 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	hash := latestBlockHeader.BlockHash()
 	height := latestBlockHeader.Height
 
+	log.Printf("Current best block height: %d", height)
+
 	// Set Current block height
 	templateInformation.BlockHeight = height
 
@@ -84,7 +89,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	stakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
 		int32(activeNetParams.BlockUpgradeNumToCheck*2))
 	if err != nil {
-		log.Println(err)
+		log.Printf("GetStakeVersions error: %v", err)
 		return
 	}
 	blockVersionsFound := make(map[int32]*blockVersions)
@@ -169,7 +174,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	intervalStakeVersions, err := dcrdClient.GetStakeVersions(hash.String(),
 		int32(blocksIntoStakeVersionInterval))
 	if err != nil {
-		log.Println(err)
+		log.Printf("GetStakeVersions error: %v", err)
 		return
 	}
 	// Tally missed votes so far in this interval
@@ -270,59 +275,16 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		templateInformation.IsUpgrading = true
 	}
 
-	// There may be no agendas for this vote version
-	if len(getVoteInfo.Agendas) == 0 {
-		log.Printf("No agendas for vote version %d", mostPopularVersion)
-		templateInformation.Agendas = []Agenda{}
+	svis, err := AllStakeVersionIntervals(dcrdClient, int64(height))
+	if err != nil {
+		log.Printf("Error stake version intervals: %v", err)
 		return
 	}
 
-	templateInformation.Agendas = make([]Agenda, 0, len(getVoteInfo.Agendas))
-
-	for _, agenda := range getVoteInfo.Agendas {
-		// Acting (non-abstaining) fraction of votes
-		actingPct := 1.0
-		choiceIds := make([]string, len(agenda.Choices))
-		choicePercentages := make([]float64, len(agenda.Choices))
-		for i, choice := range agenda.Choices {
-			choiceIds[i] = choice.ID
-			choicePercentages[i] = toFixed(choice.Progress*100, 2)
-			// non-abstain pct = 1 - abstain pct
-
-			if choice.IsAbstain && choice.Progress < 1 {
-				actingPct = 1 - choice.Progress
-			}
-
-		}
-
-		choiceIdsActing := make([]string, 0, len(agenda.Choices)-1)
-		choicePercentagesActing := make([]float64, 0, len(agenda.Choices)-1)
-
-		for _, choice := range agenda.Choices {
-			if !choice.IsAbstain {
-				choiceIdsActing = append(choiceIdsActing, choice.ID)
-				choicePercentagesActing = append(choicePercentagesActing,
-					toFixed(choice.Progress/actingPct*100, 2))
-			}
-		}
-		voteCount := uint32(0)
-		for _, choice := range agenda.Choices {
-			voteCount += choice.Count
-		}
-
-		voteCountPercentage := float64(voteCount) / (float64(activeNetParams.RuleChangeActivationInterval) * float64(activeNetParams.TicketsPerBlock))
-
-		templateInformation.Agendas = append(templateInformation.Agendas, Agenda{
-			ID:                      agenda.ID,
-			Status:                  agenda.Status,
-			Description:             agenda.Description,
-			QuorumVotedPercentage:   toFixed(agenda.QuorumProgress*100, 2),
-			ChoiceIDsActing:         choiceIdsActing,
-			ChoicePercentagesActing: choicePercentagesActing,
-			StartHeight:             getVoteInfo.StartHeight,
-			EndHeight:               getVoteInfo.EndHeight,
-			VoteCountPercentage:     toFixed(voteCountPercentage*100, 1),
-		})
+	templateInformation.Agendas, err = agendasForVersions(dcrdClient, voteVersions, int64(height), svis)
+	if err != nil {
+		log.Printf("Error getting agendas: %v", err)
+		return
 	}
 
 	// Assume all agendas have been voted and are pending activation

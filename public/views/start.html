@@ -46,10 +46,9 @@
 
   {{range $i, $agenda := .Agendas}}
     {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
-      {{range $cid, $choice := .ChoiceIDsActing}}
-      {{$cid1 := plus $cid 1}}
-  .option-progress.a_{{$agenda.ID}}-c{{$choice}} {
-  width: {{index $agenda.ChoicePercentagesActing $cid}}%;
+      {{range $cid, $choice := $agenda.VoteChoices}}	
+  .option-progress.a_{{$agenda.ID}}-c{{$choice.ID}} {
+  width: {{$agenda.VotePercent $choice.ID}}%;	
   }
       {{end}}
     {{end}}
@@ -249,12 +248,7 @@
 
 <!-- agenda loop start -->
     {{range $i, $agenda := .Agendas}}
-        {{if or $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
-        <div class="agenda drop-shadow-n-element w-clearfix">
-        {{end}}
-        {{if or $agenda.IsDefined $agenda.IsStarted}}
-        <div class="agenda drop-shadow-first-element w-clearfix">
-        {{end}}
+        <div class="agenda drop-shadow w-clearfix" style="order: -{{$agenda.VoteVersion}};">
           <div class="agenda-section w-clearfix">
             <div class="agenda-indicator w-clearfix">
               <!-- labels -->
@@ -348,19 +342,16 @@
               </div>
               <div class="agenda-voting-overview-options w-clearfix">
                 <div class="width-third">
-                  {{range $cid, $choice := .ChoiceIDsActing}}
-                  {{$cid1 := plus $cid 1}}
+                  {{range $cid, $choice := $agenda.VoteChoices}}
                   <div class="agenda-voting-overview-option w-clearfix">
-                    <div class="_{{$cid1}} agenda-voting-overview-option-dot"></div>
-                    <div class="agenda-voting-overview-option-percent" data-tooltip-text="">{{$choice}}</div>
-                    {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }} <div class="agenda-voting-overview-option-percent value">{{index $agenda.ChoicePercentagesActing $cid}}%</div>{{end}}
+                    <div class="_{{$choice.ID}} agenda-voting-overview-option-dot"></div>
+                    <div class="agenda-voting-overview-option-percent" data-tooltip-text="">{{$choice.ID}}</div>
+                    {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }} <div class="agenda-voting-overview-option-percent value">{{$agenda.VotePercent $choice.ID}}%</div>{{end}}
                   </div>
-                  {{if modiszero $cid1 3}}
-                </div>
-                <div class="width-third">
                   {{end}}
-                  {{end}}
-                </div>
+                  </div>
+                  <div class="width-third">
+                  </div>
                 {{if $agenda.IsActive}}
                 <div class="width-half">
                   <div class="agenda-voting-overview-option-active w-clearfix">
@@ -417,9 +408,8 @@
             <div class="progress-bar-agenda w-clearfix">
               <div class="progress-bar-competing-options-and-total-votes w-clearfix">
                 <div class="progress-bar-competing-options w-clearfix" style="width:{{if gt $agenda.VoteCountPercentage 50.00}}{{$agenda.VoteCountPercentage}}{{else}}{{50}}{{end}}%">
-                  {{range $cid, $choice := .ChoiceIDsActing}}
-                  {{$cid1 := plus $cid 1}}
-                  <div class="option-{{$cid1}} option-progress a_{{$agenda.ID}}-c{{$choice}}" data-tooltip-text="{{$choice}}" data-tooltip-value="{{index $agenda.ChoicePercentagesActing $cid}}"></div>
+                  {{range $cid, $choice := $agenda.VoteChoices}}
+                  <div class="option-{{$choice.ID}} option-progress a_{{$agenda.ID}}-c{{$choice.ID}}" data-tooltip-text="{{$choice.ID}}" data-tooltip-value="{{$agenda.VotePercent $choice.ID}}"></div>
                   {{end}}
                 </div>
                 <!-- <div class="total-votes-cast" data-tooltip-text="Total Votes Cast" data-tooltip-value="0"></div> -->
