@@ -354,19 +354,15 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client) {
 		voteCountPercentage := float64(voteCount) / (float64(activeNetParams.RuleChangeActivationInterval) * float64(activeNetParams.TicketsPerBlock))
 
 		templateInformation.Agendas = append(templateInformation.Agendas, Agenda{
-			Agenda:                    agenda,
-			QuorumExpirationDate:      time.Unix(int64(agenda.ExpireTime), int64(0)).Format(time.RFC850),
-			QuorumVotedPercentage:     toFixed(agenda.QuorumProgress*100, 2),
-			QuorumAbstainedPercentage: toFixed(agenda.Choices[0].Progress*100, 2),
-			ChoiceIDs:                 choiceIds,
-			ChoicePercentages:         choicePercentages,
-			ChoiceIDsActing:           choiceIdsActing,
-			ChoicePercentagesActing:   choicePercentagesActing,
-			StartHeight:               getVoteInfo.StartHeight,
-			VoteCountPercentage:       toFixed(voteCountPercentage*100, 1),
-			BlockLockedIn:             blockLockedIn,
-			BlockForked:               blockForked,
-			BlockActivated:            blockActivated,
+			Agenda:                  agenda,
+			QuorumVotedPercentage:   toFixed(agenda.QuorumProgress*100, 2),
+			ChoiceIDsActing:         choiceIdsActing,
+			ChoicePercentagesActing: choicePercentagesActing,
+			StartHeight:             getVoteInfo.StartHeight,
+			VoteCountPercentage:     toFixed(voteCountPercentage*100, 1),
+			BlockLockedIn:           blockLockedIn,
+			BlockForked:             blockForked,
+			BlockActivated:          blockActivated,
 		})
 	}
 }

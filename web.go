@@ -17,19 +17,15 @@ import (
 // Agenda embeds the Agenda returned by getvoteinfo with several fields to
 // facilitate the html template programming.
 type Agenda struct {
-	dcrjson.Agenda            `storm:"inline"`
-	QuorumExpirationDate      string
-	QuorumVotedPercentage     float64
-	QuorumAbstainedPercentage float64
-	ChoiceIDs                 []string
-	ChoicePercentages         []float64
-	ChoiceIDsActing           []string
-	ChoicePercentagesActing   []float64
-	StartHeight               int64
-	VoteCountPercentage       float64
-	BlockLockedIn             int64
-	BlockActivated            int64
-	BlockForked               int64
+	dcrjson.Agenda
+	QuorumVotedPercentage   float64
+	ChoiceIDsActing         []string
+	ChoicePercentagesActing []float64
+	StartHeight             int64
+	VoteCountPercentage     float64
+	BlockLockedIn           int64
+	BlockActivated          int64
+	BlockForked             int64
 }
 
 var dcpRE = regexp.MustCompile(`(?i)DCP\-?(\d{4})`)
@@ -59,22 +55,6 @@ func (a *Agenda) IsLockedIn() bool {
 // IsFailed indicates if the agenda is failed
 func (a *Agenda) IsFailed() bool {
 	return a.Status == "failed"
-}
-
-// IsDCP indicates if agenda has a DCP paper
-func (a *Agenda) IsDCP() bool {
-	return dcpRE.MatchString(a.Description)
-}
-
-// DCPNumber gets the DCP number as a string with any leading zeros
-func (a *Agenda) DCPNumber() string {
-	if a.IsDCP() {
-		matches := dcpRE.FindStringSubmatch(a.Description)
-		if len(matches) > 1 {
-			return matches[1]
-		}
-	}
-	return ""
 }
 
 // DescriptionWithDCPURL writes a new description with an link to any DCP that
