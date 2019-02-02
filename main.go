@@ -253,7 +253,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client) {
 		templateInformation.Quorum = false
 		return
 	}
-	templateInformation.GetVoteInfoResult = getVoteInfo
+
 	templateInformation.TimeLeftString = blocksToTimeEstimate(int(getVoteInfo.EndHeight - getVoteInfo.CurrentHeight))
 	// Check if Phase Upgrading or Voting
 	if templateInformation.StakeVersionSuccess && templateInformation.BlockVersionSuccess {
@@ -359,6 +359,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client) {
 			ChoiceIDsActing:         choiceIdsActing,
 			ChoicePercentagesActing: choicePercentagesActing,
 			StartHeight:             getVoteInfo.StartHeight,
+			EndHeight:               getVoteInfo.EndHeight,
 			VoteCountPercentage:     toFixed(voteCountPercentage*100, 1),
 			BlockLockedIn:           blockLockedIn,
 			BlockForked:             blockForked,

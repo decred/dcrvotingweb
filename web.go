@@ -22,6 +22,7 @@ type Agenda struct {
 	ChoiceIDsActing         []string
 	ChoicePercentagesActing []float64
 	StartHeight             int64
+	EndHeight               int64
 	VoteCountPercentage     float64
 	BlockLockedIn           int64
 	BlockActivated          int64
@@ -136,8 +137,6 @@ type templateFields struct {
 	PendingActivation bool
 	// Rules Activated to show that all rules have activated
 	RulesActivated bool
-	// GetVoteInfoResult has all the raw data returned from getvoteinfo json-rpc command.
-	GetVoteInfoResult *dcrjson.GetVoteInfoResult
 	// TimeLeftString shows the approximate time left until activation
 	TimeLeftString string
 }
