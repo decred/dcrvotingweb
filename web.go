@@ -17,7 +17,9 @@ import (
 // Agenda embeds the Agenda returned by getvoteinfo with several fields to
 // facilitate the html template programming.
 type Agenda struct {
-	dcrjson.Agenda
+	ID                      string
+	Status                  string
+	Description             string
 	QuorumVotedPercentage   float64
 	ChoiceIDsActing         []string
 	ChoicePercentagesActing []float64

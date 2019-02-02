@@ -48,7 +48,6 @@
     {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
       {{range $cid, $choice := .ChoiceIDsActing}}
       {{$cid1 := plus $cid 1}}
-      {{$ch := index $agenda.Choices $cid}}
   .option-progress.a_{{$agenda.ID}}-c{{$choice}} {
   width: {{index $agenda.ChoicePercentagesActing $cid}}%;
   }
@@ -363,7 +362,6 @@
                 <div class="width-third">
                   {{range $cid, $choice := .ChoiceIDsActing}}
                   {{$cid1 := plus $cid 1}}
-                  {{$ch := index $agenda.Choices $cid}}
                   <div class="agenda-voting-overview-option w-clearfix">
                     <div class="_{{$cid1}} agenda-voting-overview-option-dot"></div>
                     <div class="agenda-voting-overview-option-percent" data-tooltip-text="">{{$choice}}</div>

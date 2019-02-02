@@ -354,7 +354,9 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client) {
 		voteCountPercentage := float64(voteCount) / (float64(activeNetParams.RuleChangeActivationInterval) * float64(activeNetParams.TicketsPerBlock))
 
 		templateInformation.Agendas = append(templateInformation.Agendas, Agenda{
-			Agenda:                  agenda,
+			ID:                      agenda.ID,
+			Status:                  agenda.Status,
+			Description:             agenda.Description,
 			QuorumVotedPercentage:   toFixed(agenda.QuorumProgress*100, 2),
 			ChoiceIDsActing:         choiceIdsActing,
 			ChoicePercentagesActing: choicePercentagesActing,
