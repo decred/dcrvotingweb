@@ -14,8 +14,8 @@ import (
 	"github.com/decred/dcrd/dcrjson"
 )
 
-// Agenda embeds the Agenda returned by getvoteinfo with several fields to
-// facilitate the html template programming.
+// Agenda contains all of the data representing an agenda for the html
+// template programming.
 type Agenda struct {
 	ID                      string
 	Status                  string
