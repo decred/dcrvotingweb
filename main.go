@@ -263,7 +263,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	getVoteInfo, err := dcrdClient.GetVoteInfo(stakeVersion)
 	if err != nil {
 		log.Printf("Get vote info error: %v", err)
-		templateInformation.Quorum = false
 		return
 	}
 
@@ -284,11 +283,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		log.Printf("No agendas for vote version %d", mostPopularVersion)
 		templateInformation.Agendas = []Agenda{}
 		return
-	}
-
-	// Set Quorum to true since we got a valid response back from GetVoteInfoResult (?)
-	if getVoteInfo.TotalVotes >= getVoteInfo.Quorum {
-		templateInformation.Quorum = true
 	}
 
 	templateInformation.Agendas = make([]Agenda, 0, len(getVoteInfo.Agendas))
