@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"math"
@@ -55,6 +56,18 @@ var (
 	// templateInformation is the template holding the active network
 	// parameters.
 	templateInformation *templateFields
+
+	friendlyAgendaLabels = map[string]string{
+		"sdiffalgorithm": "Change PoS Staking Algorithm",
+		"lnsupport":      "Start Lightning Network Support",
+		"lnfeatures":     "Enable Lightning Network Features",
+		"fixlnseqlocks":  "Update Sequence Lock Rules"}
+
+	longAgendaDescriptions = map[string]template.HTML{
+		"sdiffalgorithm": template.HTML("Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals."),
+		"lnsupport":      template.HTML("The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration."),
+		"lnfeatures":     template.HTML("The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration."),
+		"fixlnseqlocks":  template.HTML("In order to fully support the <a href='https://lightning.network/' target='_blank' rel='Noopener noreferrer'>Lightning Network</a>, the current sequence lock consensus rules need to be modified.")}
 )
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
@@ -68,6 +81,9 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client) {
 	templateInformation.BlockHeight = height
 	templateInformation.BlockExplorerLink = fmt.Sprintf("https://%s.dcrdata.org/block/%v",
 		activeNetParams.Name, hash)
+
+	templateInformation.FriendlyAgendaLabels = friendlyAgendaLabels
+	templateInformation.LongAgendaDescriptions = longAgendaDescriptions
 
 	// Request GetStakeVersions to receive information about past block versions.
 	//

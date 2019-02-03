@@ -319,8 +319,7 @@
             <!-- agenda details -->
             <div class="w-clearfix width-half">
               <div class="agenda heading">
-                {{if eq $agenda.ID "sdiffalgorithm"}}Change PoS Staking Algorithm{{end}}
-                {{if eq $agenda.ID "lnsupport"}}Start Lightning Network Support{{end}}
+                {{index $.FriendlyAgendaLabels $agenda.ID}}
               </div>
               <div class="agenda-cfg w-clearfix">
                 <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#{{$agenda.ID}}</span>
@@ -337,18 +336,7 @@
               </div>
               <div class="agenda-paragraph">
                 <p style="font-weight: bold;">{{$agenda.DescriptionWithDCPURL}}</p>
-                {{if eq $agenda.ID "sdiffalgorithm"}}
-                <p>Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals.</p>
-                {{end}}
-                {{if eq $agenda.ID "lnsupport"}}
-                <p>The <a href="https://lightning.network/" target="_blank" rel="noopener noreferrer">Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration.</p>
-                {{end}}
-                {{if eq $agenda.ID "lnfeatures"}}
-                <p>The <a href="https://lightning.network/" target="_blank" rel="noopener noreferrer">Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration.</p>
-                {{end}}
-                {{if eq $agenda.ID "fixlnseqlocks"}}
-                <p>In order to fully support the <a href="https://lightning.network/" target="_blank" rel="noopener noreferrer">Lightning Network</a>, the current sequence lock consensus rules need to be modified.</p>
-                 {{end}}
+                <p>{{index $.LongAgendaDescriptions $agenda.ID}}</p>
               </div>
             </div>
 
