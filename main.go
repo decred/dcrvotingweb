@@ -49,16 +49,13 @@ var (
 	// stakeVersion is the stake version we call getvoteinfo with.
 	stakeVersion uint32 = stakeVersionMain
 
-	// latestBlockHeader is the latest block header.
-	latestBlockHeader *wire.BlockHeader
-
 	// templateInformation is the template holding the active network
 	// parameters.
 	templateInformation *templateFields
 )
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
-func updatetemplateInformation(dcrdClient *rpcclient.Client) {
+func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *wire.BlockHeader) {
 	log.Println("updating hard fork information")
 
 	hash := latestBlockHeader.BlockHash()
@@ -253,7 +250,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client) {
 		templateInformation.Quorum = false
 		return
 	}
-	templateInformation.GetVoteInfoResult = getVoteInfo
+
 	templateInformation.TimeLeftString = blocksToTimeEstimate(int(getVoteInfo.EndHeight - getVoteInfo.CurrentHeight))
 	// Check if Phase Upgrading or Voting
 	if templateInformation.StakeVersionSuccess && templateInformation.BlockVersionSuccess {
@@ -354,19 +351,18 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client) {
 		voteCountPercentage := float64(voteCount) / (float64(activeNetParams.RuleChangeActivationInterval) * float64(activeNetParams.TicketsPerBlock))
 
 		templateInformation.Agendas = append(templateInformation.Agendas, Agenda{
-			Agenda:                    agenda,
-			QuorumExpirationDate:      time.Unix(int64(agenda.ExpireTime), int64(0)).Format(time.RFC850),
-			QuorumVotedPercentage:     toFixed(agenda.QuorumProgress*100, 2),
-			QuorumAbstainedPercentage: toFixed(agenda.Choices[0].Progress*100, 2),
-			ChoiceIDs:                 choiceIds,
-			ChoicePercentages:         choicePercentages,
-			ChoiceIDsActing:           choiceIdsActing,
-			ChoicePercentagesActing:   choicePercentagesActing,
-			StartHeight:               getVoteInfo.StartHeight,
-			VoteCountPercentage:       toFixed(voteCountPercentage*100, 1),
-			BlockLockedIn:             blockLockedIn,
-			BlockForked:               blockForked,
-			BlockActivated:            blockActivated,
+			ID:                      agenda.ID,
+			Status:                  agenda.Status,
+			Description:             agenda.Description,
+			QuorumVotedPercentage:   toFixed(agenda.QuorumProgress*100, 2),
+			ChoiceIDsActing:         choiceIdsActing,
+			ChoicePercentagesActing: choicePercentagesActing,
+			StartHeight:             getVoteInfo.StartHeight,
+			EndHeight:               getVoteInfo.EndHeight,
+			VoteCountPercentage:     toFixed(voteCountPercentage*100, 1),
+			BlockLockedIn:           blockLockedIn,
+			BlockForked:             blockForked,
+			BlockActivated:          blockActivated,
 		})
 	}
 }
@@ -463,14 +459,14 @@ func mainCore() int {
 		return 1
 	}
 	// Request the current block header
-	latestBlockHeader, err = dcrdClient.GetBlockHeader(hash)
+	latestBlockHeader, err := dcrdClient.GetBlockHeader(hash)
 	if err != nil {
 		log.Println(err)
 		return 1
 	}
 
 	// Run an initial templateInforation update based on current change
-	updatetemplateInformation(dcrdClient)
+	updatetemplateInformation(dcrdClient, latestBlockHeader)
 
 	// Run goroutine for notifications
 	var wg sync.WaitGroup
@@ -479,10 +475,9 @@ func mainCore() int {
 		for {
 			select {
 			case blkHdr := <-connectChan:
-				latestBlockHeader = &blkHdr
 				log.Printf("Block %v (height %v) connected",
 					blkHdr.BlockHash(), blkHdr.Height)
-				updatetemplateInformation(dcrdClient)
+				updatetemplateInformation(dcrdClient, &blkHdr)
 			case <-quit:
 				log.Println("Closing hardfork demo.")
 				wg.Done()

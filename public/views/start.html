@@ -48,7 +48,6 @@
     {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
       {{range $cid, $choice := .ChoiceIDsActing}}
       {{$cid1 := plus $cid 1}}
-      {{$ch := index $agenda.Choices $cid}}
   .option-progress.a_{{$agenda.ID}}-c{{$choice}} {
   width: {{index $agenda.ChoicePercentagesActing $cid}}%;
   }
@@ -327,10 +326,10 @@
                 </div>
                 {{if $agenda.IsStarted}}
                 <div class="agenda-cfg-spec w-clearfix">
-                  Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{$.GetVoteInfoResult.StartHeight}} - {{$.GetVoteInfoResult.EndHeight}}</span>
+                  Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{$agenda.StartHeight}} - {{$agenda.EndHeight}}</span>
                 </div>
                 <div class="agenda-cfg-spec w-clearfix">
-                 Blocks left: &nbsp;<span class="highlight-text cyan transparent">{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</span>
+                 Blocks left: &nbsp;<span class="highlight-text cyan transparent">{{minus64 $agenda.EndHeight $.BlockHeight}}</span>
                 </div>
                 {{end}}
 
@@ -363,7 +362,6 @@
                 <div class="width-third">
                   {{range $cid, $choice := .ChoiceIDsActing}}
                   {{$cid1 := plus $cid 1}}
-                  {{$ch := index $agenda.Choices $cid}}
                   <div class="agenda-voting-overview-option w-clearfix">
                     <div class="_{{$cid1}} agenda-voting-overview-option-dot"></div>
                     <div class="agenda-voting-overview-option-percent" data-tooltip-text="">{{$choice}}</div>
@@ -397,7 +395,7 @@
               {{end}}
                 {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
                 <div class="agenda-voting-overview-disclaimer">
-                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</small></p>
+                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $agenda.EndHeight $.BlockHeight}}</small></p>
                 </div>
                 {{end}}
 
@@ -405,7 +403,7 @@
                   {{if eq $agenda.QuorumProgress 1.0}}
                     <!-- <div class="agenda-voting-overview-disclaimer">
                     <p><small><strong>Success!</strong><br />We have reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.<br />
-                    There are <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks left in the vote.</small>
+                    There are <strong>{{minus64 $agenda.EndHeight $.BlockHeight}}</strong> blocks left in the vote.</small>
                     </p>
                     </div> -->
                   {{else}}
@@ -418,7 +416,7 @@
                 {{end}}
                 {{if $agenda.IsLockedIn}}
                     <div class="agenda-voting-overview-disclaimer-lockedin">
-                    <p><small>The vote has passed! The new rules will be activated in approximately <strong>{{$.TimeLeftString}}</strong> ({{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.</small>
+                    <p><small>The vote has passed! The new rules will be activated in approximately <strong>{{$.TimeLeftString}}</strong> ({{minus64 $agenda.EndHeight $.BlockHeight}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.</small>
                     </p>
                     </div>
                 {{end}}
@@ -453,7 +451,7 @@
           <!-- agenda toplabel -->
           <!--
           {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
-          <div class="agenda-voting-begins">Starts in {{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}} blocks</div>
+          <div class="agenda-voting-begins">Starts in {{minus64 $agenda.EndHeight $.BlockHeight}} blocks</div>
           {{end}}
           {{if $agenda.IsStarted}}
             {{if eq $agenda.QuorumProgress 1.0}}
@@ -466,7 +464,7 @@
           {{end}}
           {{if $agenda.IsLockedIn}}
             <div class="agenda-voting-begins">
-              Success - Please Upgrade your Software - <strong>{{minus64 $.GetVoteInfoResult.EndHeight $.GetVoteInfoResult.CurrentHeight}}</strong> blocks left
+              Success - Please Upgrade your Software - <strong>{{minus64 $agenda.EndHeight $.BlockHeight}}</strong> blocks left
             </div>
           {{end}}
           {{if $agenda.IsFailed}}
