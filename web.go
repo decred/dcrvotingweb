@@ -141,6 +141,10 @@ type templateFields struct {
 	RulesActivated bool
 	// TimeLeftString shows the approximate time left until activation
 	TimeLeftString string
+	// Human friendly readable labels for each agenda
+	FriendlyAgendaLabels map[string]string
+	// Human friendly readable descriptions for each agenda
+	LongAgendaDescriptions map[string]template.HTML
 }
 
 var funcMap = template.FuncMap{
