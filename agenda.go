@@ -23,7 +23,6 @@ type Agenda struct {
 	VoteCountPercentage     float64
 	BlockLockedIn           int64
 	BlockActivated          int64
-	BlockForked             int64
 }
 
 var dcpRE = regexp.MustCompile(`(?i)DCP\-?(\d{4})`)

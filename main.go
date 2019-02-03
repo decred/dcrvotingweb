@@ -288,14 +288,12 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	templateInformation.Agendas = make([]Agenda, 0, len(getVoteInfo.Agendas))
 
 	for _, agenda := range getVoteInfo.Agendas {
-		log.Printf("getvoteinfo id: %#v", agenda)
 
 		// Check to see if all agendas are pending activation
 		if agenda.Status != "lockedin" {
 			templateInformation.PendingActivation = false
 		}
 		if agenda.Status != "active" {
-			log.Println(agenda.Status)
 			templateInformation.RulesActivated = false
 		}
 
@@ -317,7 +315,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		// ongoing basis.
 		var blockLockedIn int64
 		var blockActivated int64
-		var blockForked int64
 
 		choiceIdsActing := make([]string, 0, len(agenda.Choices)-1)
 		choicePercentagesActing := make([]float64, 0, len(agenda.Choices)-1)
@@ -325,30 +322,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		for _, choice := range agenda.Choices {
 			if !choice.IsAbstain {
 				choiceIdsActing = append(choiceIdsActing, choice.ID)
-				/*
-					if agenda.ID == "lnsupport" {
-						if choice.Id == "yes" {
-							choicePercentagesActing = append(choicePercentagesActing,
-								98.61)
-						} else if choice.Id == "no" {
-							choicePercentagesActing = append(choicePercentagesActing,
-								1.38)
-						}
-						blockLockedIn = 141184
-						blockActivated = 149248
-					} else if agenda.ID == "sdiffalgorithm" {
-						if choice.Id == "yes" {
-							choicePercentagesActing = append(choicePercentagesActing,
-								97.92)
-						} else if choice.Id == "no" {
-							choicePercentagesActing = append(choicePercentagesActing,
-								2.07)
-						}
-						blockLockedIn = 141184
-						blockActivated = 149248
-						blockForked = 149328
-					} else {
-				*/
 				choicePercentagesActing = append(choicePercentagesActing,
 					toFixed(choice.Progress/actingPct*100, 2))
 			}
@@ -371,7 +344,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 			EndHeight:               getVoteInfo.EndHeight,
 			VoteCountPercentage:     toFixed(voteCountPercentage*100, 1),
 			BlockLockedIn:           blockLockedIn,
-			BlockForked:             blockForked,
 			BlockActivated:          blockActivated,
 		})
 	}
