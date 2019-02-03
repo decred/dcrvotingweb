@@ -1,3 +1,7 @@
+// Copyright (c) 2017-2019 The Decred developers
+// Use of this source code is governed by an ISC
+// license that can be found in the LICENSE file.
+
 package main
 
 import (
@@ -61,6 +65,7 @@ type templateFields struct {
 	StakeVersionMostPopularPercentage float64
 	// StakeVersionTimeRemaining is a string to show how much estimated time is remaining in the stake version interval.
 	StakeVersionTimeRemaining string
+
 	// Quorum and Rule Change Information
 	// Quorum is a bool that is true if needed number of yes/nos were
 	// received (>10%).
