@@ -274,10 +274,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		templateInformation.IsUpgrading = true
 	}
 
-	// Assume all agendas have been voted and are pending activation
-	templateInformation.PendingActivation = true
-
-	templateInformation.RulesActivated = true
 	// There may be no agendas for this vote version
 	if len(getVoteInfo.Agendas) == 0 {
 		log.Printf("No agendas for vote version %d", mostPopularVersion)
@@ -288,15 +284,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	templateInformation.Agendas = make([]Agenda, 0, len(getVoteInfo.Agendas))
 
 	for _, agenda := range getVoteInfo.Agendas {
-
-		// Check to see if all agendas are pending activation
-		if agenda.Status != "lockedin" {
-			templateInformation.PendingActivation = false
-		}
-		if agenda.Status != "active" {
-			templateInformation.RulesActivated = false
-		}
-
 		// Acting (non-abstaining) fraction of votes
 		actingPct := 1.0
 		choiceIds := make([]string, len(agenda.Choices))
@@ -346,6 +333,22 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 			BlockLockedIn:           blockLockedIn,
 			BlockActivated:          blockActivated,
 		})
+	}
+
+	// Assume all agendas have been voted and are pending activation
+	templateInformation.PendingActivation = true
+
+	templateInformation.RulesActivated = true
+
+	for _, agenda := range templateInformation.Agendas {
+
+		// Check to see if all agendas are pending activation
+		if !agenda.IsLockedIn() {
+			templateInformation.PendingActivation = false
+		}
+		if !agenda.IsActive() {
+			templateInformation.RulesActivated = false
+		}
 	}
 }
 
