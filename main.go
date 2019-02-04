@@ -298,10 +298,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 			}
 
 		}
-		// hardcode in values until we can properly revamp the agenda db to save this information on an
-		// ongoing basis.
-		var blockLockedIn int64
-		var blockActivated int64
 
 		choiceIdsActing := make([]string, 0, len(agenda.Choices)-1)
 		choicePercentagesActing := make([]float64, 0, len(agenda.Choices)-1)
@@ -330,8 +326,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 			StartHeight:             getVoteInfo.StartHeight,
 			EndHeight:               getVoteInfo.EndHeight,
 			VoteCountPercentage:     toFixed(voteCountPercentage*100, 1),
-			BlockLockedIn:           blockLockedIn,
-			BlockActivated:          blockActivated,
 		})
 	}
 

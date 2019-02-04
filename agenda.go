@@ -21,8 +21,6 @@ type Agenda struct {
 	StartHeight             int64
 	EndHeight               int64
 	VoteCountPercentage     float64
-	BlockLockedIn           int64
-	BlockActivated          int64
 }
 
 var dcpRE = regexp.MustCompile(`(?i)DCP\-?(\d{4})`)
@@ -52,6 +50,22 @@ func (a *Agenda) IsLockedIn() bool {
 // IsFailed indicates if the agenda is failed
 func (a *Agenda) IsFailed() bool {
 	return a.Status == "failed"
+}
+
+// BlockLockedIn returns the height of the first block of this agenda's lock-in period. -1 if this agenda has not been locked-in.
+func (a *Agenda) BlockLockedIn() int64 {
+	if a.IsLockedIn() || a.IsActive() {
+		return a.EndHeight + 1
+	}
+	return -1
+}
+
+// BlockActivated returns the height of the first block with this agenda active. -1 if this agenda has not been activated.
+func (a *Agenda) BlockActivated() int64 {
+	if a.IsActive() {
+		return a.BlockLockedIn() + int64(activeNetParams.RuleChangeActivationInterval)
+	}
+	return -1
 }
 
 // DescriptionWithDCPURL writes a new description with an link to any DCP that
