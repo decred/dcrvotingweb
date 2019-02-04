@@ -20,15 +20,16 @@ const (
 	defaultConfigFilename = "hardforkdemo.conf"
 )
 
-// Default network parameters
-var activeNetParams = &chaincfg.MainNetParams
-
 var (
+	// Default network parameters
+	activeNetParams *chaincfg.Params
+	// stakeVersion is the stake version we call getvoteinfo with.
+	stakeVersion uint32
+
 	// Default configuration options
 	defaultConfigFile  = filepath.Join(defaultHomeDir, defaultConfigFilename)
 	defaultHomeDir     = dcrutil.AppDataDir("hardforkdemo", false)
 	defaultRPCCertFile = filepath.Join(defaultHomeDir, "rpc.cert")
-	defaultRPCPort     = "9109"
 	defaultListenPort  = "8000"
 )
 
@@ -131,10 +132,19 @@ func loadConfig() (*config, error) {
 		return nil, err
 	}
 
+	var blockExplorerURL string
+	var defaultRPCPort string
+
 	if cfg.TestNet {
 		activeNetParams = &chaincfg.TestNet3Params
 		stakeVersion = stakeVersionTest
+		blockExplorerURL = "https://testnet.dcrdata.org"
 		defaultRPCPort = "19109"
+	} else {
+		activeNetParams = &chaincfg.MainNetParams
+		stakeVersion = stakeVersionMain
+		blockExplorerURL = "https://mainnet.dcrdata.org"
+		defaultRPCPort = "9109"
 	}
 
 	cfg.Listen = normalizeAddress(cfg.Listen, defaultListenPort)
@@ -153,7 +163,9 @@ func loadConfig() (*config, error) {
 
 	// Set all activeNetParams fields now that we know what network we are on.
 	templateInformation = &templateFields{
-		Network: activeNetParams.Name,
+		Network:          activeNetParams.Name,
+		BlockExplorerURL: blockExplorerURL,
+
 		// BlockVersion params
 		BlockVersionRejectThreshold: int(float64(activeNetParams.BlockRejectNumRequired) /
 			float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
