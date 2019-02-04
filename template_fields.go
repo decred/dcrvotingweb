@@ -18,8 +18,8 @@ type templateFields struct {
 
 	// Basic information
 	BlockHeight uint32
-	// Link to current block on explorer
-	BlockExplorerLink string
+	// Base URL for the block explorer
+	BlockExplorerURL string
 	// BlockVersion Information
 	//
 	// BlockVersions is the data after it has been prepared for graphing.

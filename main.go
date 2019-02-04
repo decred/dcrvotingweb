@@ -47,8 +47,6 @@ const (
 )
 
 var (
-	// stakeVersion is the stake version we call getvoteinfo with.
-	stakeVersion uint32 = stakeVersionMain
 
 	// templateInformation is the template holding the active network
 	// parameters.
@@ -76,8 +74,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 
 	// Set Current block height
 	templateInformation.BlockHeight = height
-	templateInformation.BlockExplorerLink = fmt.Sprintf("https://%s.dcrdata.org/block/%v",
-		activeNetParams.Name, hash)
 
 	templateInformation.FriendlyAgendaLabels = friendlyAgendaLabels
 	templateInformation.LongAgendaDescriptions = longAgendaDescriptions
