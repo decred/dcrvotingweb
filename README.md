@@ -1,5 +1,8 @@
 # hardforkdemo
 
+[![Build Status](https://travis-ci.org/decred/hardforkdemo.png?branch=master)](https://travis-ci.org/decred/hardforkdemo)
+[![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
+
 hardforkdemo is a simple web app that connects to dcrd and displays
 information about the tesnet hardfork voting.
 
