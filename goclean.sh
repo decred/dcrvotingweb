@@ -22,6 +22,7 @@ golangci-lint run --disable-all --deadline=10m \
   --enable=gofmt \
   --enable=golint \
   --enable=vet \
+  --enable=gosec \
   --enable=gosimple \
   --enable=unconvert \
   --enable=ineffassign
