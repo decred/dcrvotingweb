@@ -2354,7 +2354,7 @@ body {
   width: 50%;
   font-weight: 600;
 }
-.tooltip {
+#tooltip {
   position: absolute;
   z-index: 999;
   display: none;
@@ -2369,13 +2369,14 @@ body {
   font-size: 11px;
 }
 
-.tooltip.progress-bar {
+#tooltip.progress-bar {
   padding-right: 10px;
   padding-left: 15px;
   float: left;
 }
 
-.tooltip-dot {
+#tooltip-dot {
+  display: none;
   position: absolute;
   left: 5px;
   top: 8px;
@@ -2385,7 +2386,7 @@ body {
   background-color: #2971ff;
 }
 
-.tooltip-option-name {
+#tooltip-option-name {
   position: static;
   height: 100%;
   min-width: 30px;
@@ -2393,11 +2394,11 @@ body {
   float: left;
 }
 
-.tooltip-option-name.margin-right-5 {
+#tooltip-option-name.margin-right-5 {
   margin-right: 5px;
 }
 
-.tooltip-option-value {
+#tooltip-option-value {
   position: relative;
   height: 100%;
   min-width: 10px;
@@ -2418,25 +2419,6 @@ body {
   clear: right;
   color: #0c1e3e;
   font-size: 12px;
-}
-
-.total-votes-cast {
-  width: 50%;
-  height: 100%;
-  float: left;
-}
-
-.tooltip-square {
-  position: absolute;
-  left: 5px;
-  top: 8px;
-  bottom: 0px;
-  width: 6px;
-  height: 6px;
-  background-color: #596d81;
-  -webkit-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  transform: rotate(45deg);
 }
 
 .agenda-voting-begins {

@@ -57,11 +57,10 @@
 
 </head>
 <body class="body">
-  <div class="tooltip w-clearfix">
-    <div class="tooltip-dot"></div>
-    <div class="margin-right-5 tooltip-option-name"></div>
-    <div class="tooltip-option-value"></div>
-    <div class="tooltip-square"></div>
+  <div id="tooltip" class="w-clearfix">
+    <div id="tooltip-dot"></div>
+    <div id="tooltip-option-name"></div>
+    <div id="tooltip-option-value"></div>
   </div>
   <div class="main">
     <div class="header">
@@ -412,7 +411,6 @@
                   <div class="option-{{$choice.ID}} option-progress a_{{$agenda.ID}}-c{{$choice.ID}}" data-tooltip-text="{{$choice.ID}}" data-tooltip-value="{{$agenda.VotePercent $choice.ID}}"></div>
                   {{end}}
                 </div>
-                <!-- <div class="total-votes-cast" data-tooltip-text="Total Votes Cast" data-tooltip-value="0"></div> -->
               </div>
               <!-- <div class="agenda progress-bar-threshold"></div> -->
               <div class="heading progress-bar-agenda-voting-percent">{{$agenda.VoteCountPercentage }}%</div>
@@ -483,34 +481,13 @@ This is measured in the following ways:
 
     </div>
   </div>
-<script src="js/jquery-2.2.0.min.js"></script>
+
 <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
 <script src="js/chart.min.js"></script>
 <script src="js/chart.extentions.js"></script>
 <script src="js/hfsite.js"></script>
 
 <script>
-  	var active = 'active',
-	    inactive = 'inactive',
-
-	    // agenda progressbar percent bar
-	    optionProgress = $('.option-progress'),
-	    totalVotesCast = $('.total-votes-cast'),
-
-	    // tooltip
-	    tooltip = $('.tooltip'),
-	    	tooltipDot = $('.tooltip-dot').hide(),
-	    	tooltipSquare = $('.tooltip-square').hide(),
-	    	tooltipOptionName = $('.tooltip-option-name'),
-	    	tooltipOptionValue = $('.tooltip-option-value'),
-
-	    // indicator icon
-	    indicatorIcon = $('.indicator-icon'),
-
-	    // charts desktop toggle button
-	    powPosChartToggle = $('.chart-toggle-side');
-
-
   	// charts draw
 	function drawTheChart(ChartData, ChartOptions, chartId, ChartType) {
 		var myChart = new Chart(document.getElementById(chartId).getContext('2d'),
@@ -776,21 +753,21 @@ This is measured in the following ways:
 	// pos small chart bar
 	drawTheChart(posSmallChartData, barChartOptionsStacked, 'pos-small', 'bar');
 
+  // desktop view, charts toggle
+    var chartTogglers = document.getElementsByClassName('chart-toggle-side');
+    for (var i = 0; i < chartTogglers.length; i++) {
+      chartTogglers[i].addEventListener("click", function (event) {
+        var that = event.target;
+        var thatParent = that.parentNode;
+        var powPosUpgradeInfo = thatParent.children[1];
+        var powPosChart = thatParent.children[2];
 
-
-	// desktop view, charts toggle
-	powPosChartToggle.click(function() {
-		var that = $(this),
-		    thatParent = that.parent(),
-		    powPosUpgradeInfo = that.parent().children().eq(1),
-		    powPosChart = that.parent().children().eq(2);
-
-		$(this).add(thatParent).add(powPosChart).toggleClass(active);
-		powPosUpgradeInfo.toggleClass(inactive);
-
-		$('.chartjs-hidden-iframe').remove();
-	});
-
+        that.classList.toggle("active");
+        thatParent.classList.toggle("active");
+        powPosChart.classList.toggle("active");
+        powPosUpgradeInfo.classList.toggle("inactive");
+      });
+    }
 </script>
 </div>
 </body>
