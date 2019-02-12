@@ -24,7 +24,7 @@ var showProgressBarToolTip = function(event) {
 
 	tooltipOptionName.textContent = that.getAttribute('data-tooltip-text');
 
-	tooltipDot.style.backgroundColor = that.style.backgroundColor;
+	tooltipDot.style.backgroundColor = window.getComputedStyle(that).backgroundColor;
 	tooltipDot.style.display = 'block';
 
 	tooltipOptionValue.textContent = that.getAttribute('data-tooltip-value') + '%';
