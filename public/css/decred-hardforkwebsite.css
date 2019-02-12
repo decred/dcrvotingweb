@@ -1,38 +1,9 @@
-/* inconsolata-regular - latin */
-@font-face {
-  font-family: 'Inconsolata';
-  font-style: normal;
-  font-weight: 400;
-  src: url('../fonts/inconsolata-v15-latin-regular.eot'); /* IE9 Compat Modes */
-  src: local('Inconsolata Regular'), local('Inconsolata-Regular'),
-       url('../fonts/inconsolata-v15-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-       url('../fonts/inconsolata-v15-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
-       url('../fonts/inconsolata-v15-latin-regular.woff') format('woff'), /* Modern Browsers */
-       url('../fonts/inconsolata-v15-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
-       url('../fonts/inconsolata-v15-latin-regular.svg#Inconsolata') format('svg'); /* Legacy iOS */
-}
-
-/* source-sans-pro-regular - latin */
-@font-face {
-  font-family: 'Source Sans Pro';
-  font-style: normal;
-  font-weight: 400;
-  src: url('../fonts/source-sans-pro-v9-latin-regular.eot'); /* IE9 Compat Modes */
-  src: local('Source Sans Pro'), local('SourceSansPro-Regular'),
-       url('../fonts/source-sans-pro-v9-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-       url('../fonts/source-sans-pro-v9-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
-       url('../fonts/source-sans-pro-v9-latin-regular.woff') format('woff'), /* Modern Browsers */
-       url('../fonts/source-sans-pro-v9-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
-       url('../fonts/source-sans-pro-v9-latin-regular.svg#SourceSansPro') format('svg'); /* Legacy iOS */
-}
-
 body {
   background-color: #f4f7f9;
   background-position: 50% 50%;
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  font-family: 'Source Sans Pro', sans-serif;
   color: #f9fbfc;
   font-size: 16px;
   font-weight: 400;
@@ -80,12 +51,6 @@ body {
 
 .font16.colordarkblue.brand {
   display: block;
-}
-
-.font16.inconsolata.colordarkblue.brand {
-  padding-top: 11px;
-  text-align: center;
-  text-transform: uppercase;
 }
 
 .font22 {
@@ -994,15 +959,6 @@ body {
   height: 120px;
 }
 
-.swatchbottom {
-  height: 40px;
-  padding-top: 10px;
-  font-family: Inconsolata, monospace;
-  color: #132f4b;
-  font-size: 16px;
-  text-align: center;
-}
-
 .border4 {
   border-radius: 3px;
 }
@@ -1131,20 +1087,6 @@ body {
   float: left;
 }
 
-.height-122.width-122.margin20.ss {
-  background-image: url('../images/sourceSans.svg');
-  background-position: 50% 50%;
-  background-size: 68px;
-  background-repeat: no-repeat;
-}
-
-.height-122.width-122.margin20.ii {
-  background-image: url('../images/inconsolata.svg');
-  background-position: 50% 50%;
-  background-size: 68px;
-  background-repeat: no-repeat;
-}
-
 .height-122.margin20.brand {
   position: relative;
   background-image: url('../images/logoWithBlueType.svg');
@@ -1199,16 +1141,6 @@ body {
 
 .width-100.colors.brand {
   color: #5a6d81;
-}
-
-.width-100.colors.brand.font16.inconsolata {
-  float: left;
-  color: #8795a3;
-  text-align: center;
-}
-
-.inconsolata {
-  font-family: Inconsolata, monospace;
 }
 
 .backgroundroyalblue {
@@ -1998,7 +1930,7 @@ body {
   display: inline-block;
   width: 40%;
   float: right;
-  font-family: Inconsolata, monospace;
+  font-size: 14px;
   line-height: 26px;
   text-align: right;
 }
@@ -2904,10 +2836,6 @@ body {
   .width-third {
     width: 33.33%;
   }
-  .width-100.colors.brand.font16.inconsolata {
-    display: block;
-    width: 100%;
-  }
   .notification-message {
     height: auto;
   }
@@ -3132,11 +3060,3 @@ html.w-mod-touch * {
 .text a:hover{
   text-decoration: underline !important;
 }
-
-@font-face {
-  font-family: 'Inconsolata';
-  src: url('../fonts/inconsolata-regular.woff2') format('woff2'), url('../fonts/inconsolata-regular.woff') format('woff'), url('../fonts/inconsolata-regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-}
-

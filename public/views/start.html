@@ -13,6 +13,7 @@
   <meta http-equiv="refresh" content="300" >
   <link href="css/normalize.css" rel="stylesheet" type="text/css">
   <link href="css/components.css" rel="stylesheet" type="text/css">
+  <link href="css/fonts.css" rel="stylesheet" type="text/css">
   <link href="css/decred-hardforkwebsite.css" rel="stylesheet" type="text/css">
 
   <!-- Favicon -->
@@ -198,7 +199,7 @@
                 <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
               </div>
               {{if not .StakeVersionSuccess}}
-              <div class="pow-pos-time-remaining transition">{{.StakeVersionTimeRemaining}}</div>
+              <div class="pow-pos-time-remaining transition"><code>{{.StakeVersionTimeRemaining}}</code></div>
               {{end}}
             </div>
             <div class="progress-bar-pow-pos-upgrade">
