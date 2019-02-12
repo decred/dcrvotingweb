@@ -1463,6 +1463,11 @@ body {
   background-color: #596d81;
 }
 
+#agendalisting{
+  display: flex;
+  flex-flow: column;
+}
+
 .agenda {
   position: relative;
   width: 100%;
@@ -1474,12 +1479,8 @@ body {
   color: #09182d;
 }
 
-.agenda.drop-shadow-first-element {
+.agenda.drop-shadow {
   box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .2);
-}
-
-.agenda.drop-shadow-n-element {
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .2);
 }
 
 .header-logo {
@@ -2313,32 +2314,16 @@ body {
   border-radius: 50%;
 }
 
-.agenda-voting-overview-option-dot._1 {
+.agenda-voting-overview-option-dot._yes {
   background-color: #2971ff;
 }
 
-.agenda-voting-overview-option-dot._2 {
+.agenda-voting-overview-option-dot._no {
   background-color: #2ed6a1;
 }
 
-.agenda-voting-overview-option-dot._3 {
+.agenda-voting-overview-option-dot._abstain {
   background-color: #fd714b;
-}
-
-.agenda-voting-overview-option-dot._4 {
-  background-color: #69d3f5;
-}
-
-.agenda-voting-overview-option-dot._5 {
-  background-color: #2252a1;
-}
-
-.agenda-voting-overview-option-dot._6 {
-  background-color: #c4cbd2;
-}
-
-.agenda-voting-overview-option-dot.n {
-  background-color: #000;
 }
 
 .agenda-voting-overview-option-percent {
@@ -2688,9 +2673,6 @@ body {
     padding-right: 50px;
     padding-bottom: 30px;
     padding-left: 50px;
-  }
-  .agenda.drop-shadow-first-element {
-    margin-top: 20px;
   }
   .chart-toggle-side {
     display: none;

@@ -25,6 +25,8 @@ var (
 	activeNetParams *chaincfg.Params
 	// stakeVersion is the stake version we call getvoteinfo with.
 	stakeVersion uint32
+	// the vote versions which include agendas
+	voteVersions []uint32
 
 	// Default configuration options
 	defaultConfigFile  = filepath.Join(defaultHomeDir, defaultConfigFilename)
@@ -138,11 +140,13 @@ func loadConfig() (*config, error) {
 	if cfg.TestNet {
 		activeNetParams = &chaincfg.TestNet3Params
 		stakeVersion = stakeVersionTest
+		voteVersions = voteVersionsTest
 		blockExplorerURL = "https://testnet.dcrdata.org"
 		defaultRPCPort = "19109"
 	} else {
 		activeNetParams = &chaincfg.MainNetParams
 		stakeVersion = stakeVersionMain
+		voteVersions = voteVersionsMain
 		blockExplorerURL = "https://mainnet.dcrdata.org"
 		defaultRPCPort = "9109"
 	}
