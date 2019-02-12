@@ -65,6 +65,12 @@ func (a *Agenda) IsFailed() bool {
 	return a.Status == "failed"
 }
 
+// QuorumMet indicates if the total number of yes/note
+// votes has surpassed the quorum threshold
+func (a *Agenda) QuorumMet() bool {
+	return a.VoteCounts["yes"]+a.VoteCounts["no"] >= a.QuorumThreshold
+}
+
 // BlockLockedIn returns the height of the first block of this agenda's lock-in period. -1 if this agenda has not been locked-in.
 func (a *Agenda) BlockLockedIn() int64 {
 	if a.IsLockedIn() || a.IsActive() {
@@ -99,13 +105,6 @@ func (a *Agenda) VoteCountPercentage() float64 {
 	maxPossibleVotes := float64(activeNetParams.RuleChangeActivationInterval) * float64(activeNetParams.TicketsPerBlock)
 	voteCountPercentage := float64(a.TotalVotes()) / maxPossibleVotes
 	return toFixed(voteCountPercentage*100, 1)
-}
-
-// QuorumVotePercentage returns the total number of Yes and No votes as a
-// percentage of the quorum threshold.
-func (a *Agenda) QuorumVotePercentage() float64 {
-	quorumVotePercentage := float64(a.VoteCounts["yes"]+a.VoteCounts["no"]) / float64(a.QuorumThreshold)
-	return toFixed(quorumVotePercentage*100, 1)
 }
 
 // DescriptionWithDCPURL writes a new description with an link to any DCP that

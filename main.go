@@ -78,7 +78,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	log.Printf("Current best block height: %d", height)
 
 	// Set Current block height
-	templateInformation.BlockHeight = height
+	templateInformation.BlockHeight = int64(height)
 
 	templateInformation.FriendlyAgendaLabels = friendlyAgendaLabels
 	templateInformation.LongAgendaDescriptions = longAgendaDescriptions
