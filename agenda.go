@@ -112,6 +112,7 @@ func (a *Agenda) VoteCountPercentage() float64 {
 // is not escaped when the template is executed.
 func (a *Agenda) DescriptionWithDCPURL() template.HTML {
 	subst := `<a href="https://github.com/decred/dcps/blob/master/dcp-${1}/dcp-${1}.mediawiki" target="_blank" rel="noopener noreferrer">${0}</a>`
+	// #nosec: this method will not auto-escape HTML. Verify data is well formed.
 	return template.HTML(dcpRE.ReplaceAllString(a.Description, subst))
 }
 
