@@ -16,6 +16,11 @@ var funcMap = template.FuncMap{
 	"minus":     minus,
 	"minus64":   minus64,
 	"modiszero": modiszero,
+	"roundDown": roundDown,
+}
+
+func roundDown(a float64) float64 {
+	return math.Floor(a*10) / 10
 }
 
 func plus(a, b int) int {

@@ -48,7 +48,7 @@
     {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
       {{range $cid, $choice := $agenda.VoteChoices}}	
   .option-progress.a_{{$agenda.ID}}-c{{$choice.ID}} {
-  width: {{$agenda.VotePercent $choice.ID}}%;	
+  width: {{roundDown ($agenda.VotePercent $choice.ID)}}%;
   }
       {{end}}
     {{end}}
