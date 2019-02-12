@@ -219,10 +219,10 @@ func agendasForVersions(dcrdClient *rpcclient.Client, versions []uint32, current
 		// Next RCI height tells us the voting start/end heights, and we can add these to the agendas
 		votingStartHeight := nextRCIStartHeight
 		votingEndHeight := nextRCIStartHeight + int64(activeNetParams.RuleChangeActivationInterval) - 1
-		for _, agenda := range agendas {
-			agenda.StartHeight = votingStartHeight
-			agenda.EndHeight = votingEndHeight
-			log.Printf("Voting on %s will occur between %d-%d", agenda.ID, votingStartHeight, votingEndHeight)
+		for i := range agendas {
+			agendas[i].StartHeight = votingStartHeight
+			agendas[i].EndHeight = votingEndHeight
+			log.Printf("Voting on %s will occur between %d-%d", agendas[i].ID, votingStartHeight, votingEndHeight)
 		}
 
 		if votingStartHeight > currentHeight {
