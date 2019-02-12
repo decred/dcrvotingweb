@@ -299,7 +299,7 @@
               <!-- quorum indicator -->
               {{if $agenda.IsStarted}}
               <div class="quorum w-clearfix">Quorum: &nbsp;
-                {{if eq $agenda.QuorumProgress 1.0}}
+                {{if $agenda.QuorumMet}}
                 <span class="highlight-text green transparent quorum">Yes</span>
                 {{else}}
                 <span class="highlight-text orange transparent quorum">No</span>
@@ -372,7 +372,7 @@
                 {{end}}
 
                 {{if $agenda.IsStarted}}
-                  {{if eq $agenda.QuorumProgress 1.0}}
+                  {{if $agenda.QuorumMet}}
                     <!-- <div class="agenda-voting-overview-disclaimer">
                     <p><small><strong>Success!</strong><br />We have reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.<br />
                     There are <strong>{{minus64 $agenda.EndHeight $.BlockHeight}}</strong> blocks left in the vote.</small>
@@ -402,17 +402,14 @@
           </div>
 
           <!-- agenda voting results barchart -->
-          {{if or $agenda.IsStarted }}
+          {{if $agenda.IsStarted }}
           <div class="agenda-section progress-bar w-clearfix">
             <div class="progress-bar-agenda w-clearfix">
               <div class="progress-bar-competing-options-and-total-votes w-clearfix">
-                <div class="progress-bar-competing-options w-clearfix" style="width:{{if gt $agenda.VoteCountPercentage 50.00}}{{$agenda.VoteCountPercentage}}{{else}}{{50}}{{end}}%">
                   {{range $cid, $choice := $agenda.VoteChoices}}
                   <div class="option-{{$choice.ID}} option-progress a_{{$agenda.ID}}-c{{$choice.ID}}" data-tooltip-text="{{$choice.ID}}" data-tooltip-value="{{$agenda.VotePercent $choice.ID}}"></div>
                   {{end}}
-                </div>
               </div>
-              <!-- <div class="agenda progress-bar-threshold"></div> -->
               <div class="heading progress-bar-agenda-voting-percent">{{$agenda.VoteCountPercentage }}%</div>
             </div>
           </div>
@@ -424,7 +421,7 @@
           <div class="agenda-voting-begins">Starts in {{minus64 $agenda.EndHeight $.BlockHeight}} blocks</div>
           {{end}}
           {{if $agenda.IsStarted}}
-            {{if eq $agenda.QuorumProgress 1.0}}
+            {{if $agenda.QuorumMet}}
               <div class="agenda-voting-begins">Quorum achieved
               </div>
             {{else}}
