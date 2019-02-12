@@ -73,7 +73,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	log.Println("updating hard fork information")
 
 	hash := latestBlockHeader.BlockHash()
-	height := latestBlockHeader.Height
+	height := int64(latestBlockHeader.Height)
 
 	log.Printf("Current best block height: %d", height)
 
@@ -168,7 +168,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	}
 
 	// Voting intervals ((height-4096) mod 2016)
-	blocksIntoStakeVersionInterval := (int64(height) - activeNetParams.StakeValidationHeight) %
+	blocksIntoStakeVersionInterval := (height - activeNetParams.StakeValidationHeight) %
 		activeNetParams.StakeVersionInterval
 	// Stake versions per block in current voting interval (getstakeversions hash blocksIntoInterval)
 	intervalStakeVersions, err := dcrdClient.GetStakeVersions(hash.String(),
@@ -231,7 +231,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 			}
 		}
 	}
-	blocksRemainingStakeInterval := stakeVersionIntervalEndHeight - int64(height)
+	blocksRemainingStakeInterval := stakeVersionIntervalEndHeight - height
 	timeLeftDuration := activeNetParams.TargetTimePerBlock * time.Duration(blocksRemainingStakeInterval)
 	templateInformation.StakeVersionTimeRemaining = fmt.Sprintf("%s remaining", fmtDuration(timeLeftDuration))
 	stakeVersionLabels[numIntervals-1] = "Current Interval"
@@ -252,11 +252,25 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		}
 	}
 
+	svis, err := AllStakeVersionIntervals(dcrdClient, height)
+	if err != nil {
+		log.Printf("Error stake version intervals: %v", err)
+		return
+	}
+
 	templateInformation.StakeVersionMostPopularPercentage = toFixed(float64(mostPopularVersionCount)/float64(maxPossibleVotes)*100, 2)
 	templateInformation.StakeVersionMostPopular = mostPopularVersion
 	var stakeVersionRequiredVotes = int32(maxPossibleVotes) *
 		activeNetParams.StakeMajorityMultiplier / activeNetParams.StakeMajorityDivisor
+
+	templateInformation.StakeVersionSuccess = false
 	if int32(mostPopularVersionCount) > stakeVersionRequiredVotes {
+		templateInformation.StakeVersionSuccess = true
+	}
+
+	// Check if upgrade to the latest version occurred in a previous SVI
+	upgradeOccured, upgradeHeight := svis.GetStakeVersionUpgradeHeight(voteVersions[len(voteVersions)-1])
+	if upgradeOccured && upgradeHeight < height {
 		templateInformation.StakeVersionSuccess = true
 	}
 
@@ -275,13 +289,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		templateInformation.IsUpgrading = true
 	}
 
-	svis, err := AllStakeVersionIntervals(dcrdClient, int64(height))
-	if err != nil {
-		log.Printf("Error stake version intervals: %v", err)
-		return
-	}
-
-	templateInformation.Agendas, err = agendasForVersions(dcrdClient, voteVersions, int64(height), svis)
+	templateInformation.Agendas, err = agendasForVersions(dcrdClient, voteVersions, height, svis)
 	if err != nil {
 		log.Printf("Error getting agendas: %v", err)
 		return

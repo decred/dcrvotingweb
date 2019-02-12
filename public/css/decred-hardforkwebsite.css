@@ -1636,7 +1636,7 @@ body {
   position: relative;
   width: 100%;
   height: 60px;
-  margin-top: 20px;
+  margin-top: auto;
   padding-top: 25px;
   padding-bottom: 25px;
 }
@@ -1889,6 +1889,8 @@ body {
 }
 
 .upgrade-content {
+  display: flex;
+  flex-flow: column;
   position: relative;
   left: 0px;
   top: 0px;
