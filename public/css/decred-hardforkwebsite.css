@@ -2257,6 +2257,7 @@ body {
 }
 
 .agenda-voting-overview-option-percent {
+  text-transform: capitalize;
   padding-left: 25px;
   float: left;
   color: #0c1e3e;
@@ -2304,10 +2305,15 @@ body {
   white-space: nowrap;
 }
 
+.option-progress:hover .tooltip {
+  text-transform: capitalize;
+}
+
 .option-progress:hover .tooltip,
 .indicator-icon:hover  .tooltip {
   visibility: visible;
 }
+
 .tooltip-dot {
   width: 6px;
   height: 6px;
