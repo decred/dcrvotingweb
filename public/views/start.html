@@ -82,30 +82,12 @@
         <span class="header-link"> | &nbsp;Current phase: Voting</span>
         {{end}}
         {{end}}
-            <!--
-          {{range $i, $agenda := .Agendas}}
-              {{if $agenda.IsDefined}}
-              <div class="indicator upcoming">{{$agenda.ID}} Upcoming</div>
-              {{end}}
-              {{if $agenda.IsStarted}}
-              <div class="in-progress indicator">{{$agenda.ID}} {{$agenda.QuorumVotedPercentage }}%</div>
-              {{end}}
-              {{if $agenda.IsActive}}
-              <div class="finished indicator">{{$agenda.ID}} Success</div>
-              {{end}}
-              {{if $agenda.IsFailed}}
-              <div class="failed indicator">{{$agenda.ID}} Failed</div>
-              {{end}}
-              {{if $agenda.IsLockedIn}}
-              <div class="finished indicator">{{$agenda.ID}} LockedIn</div>
-              {{end}}
-          {{end}}
-          -->
+
         {{end}}
         <a class="header-link w-button" href="{{.BlockExplorerURL}}/block/{{.BlockHeight}}">Block #{{.BlockHeight}}</a>
       </div>
     </div>
-    {{if .IsUpgrading}}
+
     <div class="pow-pos-upgrade">
       <div class="overflow-hidden pow-pos-upgrade w-clearfix width-1180">
         <div class="pow-upgrade w-clearfix width-half">
@@ -124,7 +106,9 @@
             <div class="upgrade-content-statistics-main w-clearfix">
               <div class="upgrade-content-statistics-numbers w-clearfix">Current Version:
                 <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionCurrent}}</span>
-                <br> Next Version: <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionNext}}</span>
+                {{if not .BlockVersionSuccess}}
+                  <br> Next Version: <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionNext}}</span>
+                {{end}}
                 <br> Upgrade Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
                 <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
               </div>
@@ -242,7 +226,7 @@
         </div>
       </div>
     </div>
-    {{end}}
+    
     <div class="agendas w-clearfix">
       <div id="agendalisting" class="agendas w-clearfix width-1180">
 
@@ -428,30 +412,6 @@
           </div>
           {{end}}
 
-          <!-- agenda toplabel -->
-          <!--
-          {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
-          <div class="agenda-voting-begins">Starts in {{minus64 $agenda.EndHeight $.BlockHeight}} blocks</div>
-          {{end}}
-          {{if $agenda.IsStarted}}
-            {{if $agenda.QuorumMet}}
-              <div class="agenda-voting-begins">Quorum achieved
-              </div>
-            {{else}}
-              <div class="agenda-voting-begins">Quorum Progress: {{$agenda.QuorumVotedPercentage }}%
-              </div>
-            {{end}}
-          {{end}}
-          {{if $agenda.IsLockedIn}}
-            <div class="agenda-voting-begins">
-              Success - Please Upgrade your Software - <strong>{{minus64 $agenda.EndHeight $.BlockHeight}}</strong> blocks left
-            </div>
-          {{end}}
-          {{if $agenda.IsFailed}}
-            <div class="agenda-voting-begins">Voting failed
-            </div>
-          {{end}}
-          -->
         </div>
       {{end}}
 <!-- agenda loop end -->

@@ -40,10 +40,12 @@ const (
 	// stakeVersionMain is the version of the block being generated for
 	// the main network.
 	stakeVersionMain = 6
+	blockVersionMain = 6
 
 	// stakeVersionTest is the version of the block being generated
 	// for the testnet network.
 	stakeVersionTest = 7
+	blockVersionTest = 7
 )
 
 var (
@@ -132,38 +134,32 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	templateInformation.BlockVersionsHeights = blockVersionsHeights
 	templateInformation.BlockVersions = blockVersionsFound
 
-	// Pick min block version (current version) out of most recent window
 	stakeVersionsWindow := stakeVersionResults.StakeVersions[:activeNetParams.BlockUpgradeNumToCheck]
 	blockVersionsCounts := make(map[int32]int64)
 	for _, sv := range stakeVersionsWindow {
 		blockVersionsCounts[sv.BlockVersion]++
 	}
-	var minBlockVersion, maxBlockVersion int32 = math.MaxInt32, -1
-	for v := range blockVersionsCounts {
-		if v < minBlockVersion {
-			minBlockVersion = v
-		}
-		if v > maxBlockVersion {
-			maxBlockVersion = v
-		}
-	}
-	popBlockVersionCount := int64(-1)
-	for v, c := range blockVersionsCounts {
-		if c > popBlockVersionCount && v != minBlockVersion {
-			popBlockVersionCount = c
+
+	var mostPopularBlockVersion int32
+	mostPopularBlockVersionCount := int64(0)
+	for v, count := range blockVersionsCounts {
+		if count > mostPopularBlockVersionCount {
+			mostPopularBlockVersion = v
+			mostPopularBlockVersionCount = count
 		}
 	}
 
-	blockWinUpgradePct := func(count int64) float64 {
-		return 100 * float64(count) / float64(activeNetParams.BlockUpgradeNumToCheck)
-	}
+	log.Printf("Most popular block version in the last %d blocks: v%d (%d blocks)",
+		len(stakeVersionsWindow), mostPopularBlockVersion, blockVersionsCounts[mostPopularBlockVersion])
 
-	templateInformation.BlockVersionCurrent = int32(stakeVersion) - 1
+	templateInformation.BlockVersionCurrent = mostPopularBlockVersion
 
-	templateInformation.BlockVersionNext = minBlockVersion + 1
-	templateInformation.BlockVersionNextPercentage = toFixed(blockWinUpgradePct(blockVersionsCounts[minBlockVersion+1]), 2)
+	templateInformation.BlockVersionNext = blockVersion
 
-	if popBlockVersionCount > int64(activeNetParams.BlockRejectNumRequired) {
+	blockCountPercentage := 100 * float64(blockVersionsCounts[blockVersion]) / float64(activeNetParams.BlockUpgradeNumToCheck)
+	templateInformation.BlockVersionNextPercentage = toFixed(blockCountPercentage, 2)
+
+	if blockVersionsCounts[blockVersion] > int64(activeNetParams.BlockRejectNumRequired) {
 		templateInformation.BlockVersionSuccess = true
 	}
 
