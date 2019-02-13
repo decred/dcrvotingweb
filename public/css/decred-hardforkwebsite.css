@@ -1648,17 +1648,22 @@ body {
   line-height: 17px;
 }
 
-.heading.progress-bar-agenda-voting-percent {
+.heading.blocks-left-for-voting {
   position: absolute;
+  display: flex;
+  align-items: center;
   top: 0px;
   right: 0px;
-  width: 75px;
-  background-image: url('../images/voting-percent-diamond.svg');
-  background-position: 0px 50%;
-  background-repeat: no-repeat;
   color: #0c1e3e;
-  line-height: 17px;
-  text-align: right;
+  padding-bottom: 10px;
+}
+
+.blocks-left-for-voting-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 5px;
+  background-color: #5a6d81;
 }
 
 .heading.voting-overview {

@@ -99,11 +99,11 @@ func (a *Agenda) VotePercent(voteID string) float64 {
 	return toFixed(percent*100, 2)
 }
 
-// VoteCountPercentage returns the number of votes cast against this agenda as
+// VoteCountPercentage returns the number of yes/no/abstain votes cast against this agenda as
 // a percentage of the theoretical maximum number of possible votes
-func (a *Agenda) VoteCountPercentage() float64 {
+func (a *Agenda) VoteCountPercentage(voteID string) float64 {
 	maxPossibleVotes := float64(activeNetParams.RuleChangeActivationInterval) * float64(activeNetParams.TicketsPerBlock)
-	voteCountPercentage := float64(a.TotalVotes()) / maxPossibleVotes
+	voteCountPercentage := float64(a.VoteCounts[voteID]) / maxPossibleVotes
 	return toFixed(voteCountPercentage*100, 1)
 }
 

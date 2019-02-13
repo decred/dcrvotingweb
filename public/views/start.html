@@ -49,7 +49,7 @@
     {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
       {{range $cid, $choice := $agenda.VoteChoices}}	
   .option-progress.a_{{$agenda.ID}}-c{{$choice.ID}} {
-  width: {{roundDown ($agenda.VotePercent $choice.ID)}}%;
+  width: {{roundDown ($agenda.VoteCountPercentage $choice.ID)}}%;
   }
       {{end}}
     {{end}}
@@ -393,7 +393,7 @@
           </div>
 
           <!-- agenda voting results barchart -->
-          {{if not $agenda.IsDefined }}
+          {{if $agenda.IsStarted }}
           <div class="agenda-section progress-bar w-clearfix">
             <div class="progress-bar-agenda w-clearfix">
               <div class="progress-bar-competing-options-and-total-votes w-clearfix">
@@ -407,7 +407,10 @@
                   </div>
                   {{end}}
               </div>
-              <div class="heading progress-bar-agenda-voting-percent">{{$agenda.VoteCountPercentage }}%</div>
+              <div class="heading blocks-left-for-voting">
+                <div class="blocks-left-for-voting-dot"></div>
+                {{minus64 $agenda.EndHeight $.BlockHeight}} blocks left for voting
+              </div>
             </div>
           </div>
           {{end}}
