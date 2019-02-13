@@ -265,12 +265,14 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 
 	templateInformation.StakeVersionSuccess = false
 	if int32(mostPopularVersionCount) > stakeVersionRequiredVotes {
+		templateInformation.StakeVersionMostPopularPercentage = 100
 		templateInformation.StakeVersionSuccess = true
 	}
 
 	// Check if upgrade to the latest version occurred in a previous SVI
 	upgradeOccured, upgradeHeight := svis.GetStakeVersionUpgradeHeight(voteVersions[len(voteVersions)-1])
 	if upgradeOccured && upgradeHeight < height {
+		templateInformation.StakeVersionMostPopularPercentage = 100
 		templateInformation.StakeVersionSuccess = true
 	}
 
