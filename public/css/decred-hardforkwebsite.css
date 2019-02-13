@@ -1696,34 +1696,38 @@ body {
 }
 
 .option-progress {
-  width: 50%;
+  position: relative;
   height: 100%;
   float: left;
   background-color: #000;
 }
 
-.option-progress.option-yes {
-  width: 63%;
+.option-yes {
   background-color: #2971ff;
 }
 
-.option-progress.option-no {
-  width: 30%;
+.option-no {
   background-color: #2ed6a1;
 }
 
-.option-progress.option-abstain {
-  width: 7%;
+.option-abstain {
   background-color: #fd714b;
 }
 
 .progress-bar-competing-options-and-total-votes {
   position: relative;
   z-index: 1;
-  overflow: hidden;
   height: 10px;
   border-radius: 5px;
   background-color: #596d81;
+}
+
+.progress-bar-competing-options-and-total-votes > :first-child {
+  border-radius: 5px 0 0 5px;
+}
+
+.progress-bar-competing-options-and-total-votes >:last-child {
+  border-radius: 0 5px 5px 0;
 }
 
 .text-block.voting-overview {
@@ -2096,6 +2100,7 @@ body {
   height: 20px;
   margin-left: 10px;
   float: right;
+  position: relative;
 }
 
 .indicator-icon.lockin {
@@ -2279,56 +2284,40 @@ body {
   width: 50%;
   font-weight: 600;
 }
-#tooltip {
+.tooltip {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
   position: absolute;
   z-index: 999;
-  display: none;
-  overflow: hidden;
-  height: 22px;
+  visibility: hidden;
+  top: 120%;
+  left: 50%;
+  transform:translateX(-50%);
   padding-right: 10px;
-  padding-left: 15px;
+  padding-left: 10px;
   border-radius: 4px;
   background-color: #f3f6f6;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .15);
   color: #0c1e3e;
   font-size: 11px;
+  white-space: nowrap;
 }
 
-#tooltip.progress-bar {
-  padding-right: 10px;
-  padding-left: 15px;
-  float: left;
+.option-progress:hover .tooltip,
+.indicator-icon:hover  .tooltip {
+  visibility: visible;
 }
-
-#tooltip-dot {
-  display: none;
-  position: absolute;
-  left: 5px;
-  top: 8px;
+.tooltip-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #2971ff;
-}
-
-#tooltip-option-name {
-  position: static;
-  height: 100%;
-  min-width: 30px;
-  margin-right: 20px;
-  float: left;
-}
-
-#tooltip-option-name.margin-right-5 {
   margin-right: 5px;
 }
 
-#tooltip-option-value {
-  position: relative;
-  height: 100%;
-  min-width: 10px;
-  float: right;
-  font-weight: 600;
+.tooltip-option-value {
+  margin-left: 10px;
+  font-weight: bold;
 }
 
 .div-block {
