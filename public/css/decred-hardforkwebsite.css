@@ -623,14 +623,13 @@ body {
   line-height: 17px;
 }
 
-.heading.blocks-left-for-voting {
-  position: absolute;
+.blocks-left-for-voting {
   display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
   align-items: center;
-  top: 0px;
-  right: 0px;
   color: #0c1e3e;
-  padding-bottom: 10px;
+  padding: 10px;
 }
 
 .blocks-left-for-voting-dot {
@@ -666,13 +665,6 @@ body {
   margin-top: 0px;
   margin-bottom: 9px;
   padding: 0px;
-}
-
-.progress-bar-agenda {
-  position: relative;
-  height: 60px;
-  padding-top: 25px;
-  padding-bottom: 25px;
 }
 
 .option-progress {
@@ -1053,11 +1045,9 @@ body {
 
 .agenda-section {
   width: 100%;
-  float: left;
-  clear: left;
 }
 
-.agenda-section.progress-bar {
+.agenda-section.progresss-bar {
   margin-top: 20px;
   float: left;
   clear: left;
