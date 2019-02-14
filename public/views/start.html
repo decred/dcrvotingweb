@@ -325,7 +325,6 @@
 
             <!-- agenda choices list -->
             <div class="left-padding-50 w-clearfix width-half">
-              {{if not $agenda.IsLockedIn}}
               <div class="agenda-voting-overview-options-title w-clearfix">
                 <div class="agenda-voting-overview">
                 {{if $agenda.IsActive}}voting results:{{else}}voting overview:{{end}}</div>
@@ -336,7 +335,9 @@
                   <div class="agenda-voting-overview-option w-clearfix">
                     <div class="_{{$choice.ID}} agenda-voting-overview-option-dot"></div>
                     <div class="agenda-voting-overview-option-percent">{{$choice.ID}}</div>
-                    {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }} <div class="agenda-voting-overview-option-percent value">{{$agenda.VotePercent $choice.ID}}%</div>{{end}}
+                    {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
+                      <div class="agenda-voting-overview-option-percent value">{{$agenda.VotePercent $choice.ID}}%</div>
+                    {{end}}
                   </div>
                   {{end}}
                   </div>
@@ -353,7 +354,6 @@
                 </div>
                 {{end}}
               </div>
-              {{end}}
                 {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
                 <div class="agenda-voting-overview-disclaimer">
                 <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $agenda.EndHeight $.BlockHeight}}</small></p>
@@ -390,10 +390,17 @@
             </div>
           </div>
 
+          {{if $agenda.IsStarted }}
+          <div class="blocks-left-for-voting">
+            <div class="blocks-left-for-voting-dot"></div>
+            <div class="heading">{{minus64 $agenda.EndHeight $.BlockHeight}} blocks left for voting</div>
+          </div>
+          {{end}}
+
           <!-- agenda voting results barchart -->
           {{if $agenda.IsStarted }}
           <div class="agenda-section progress-bar w-clearfix">
-            <div class="progress-bar-agenda w-clearfix">
+            <div class="w-clearfix">
               <div class="progress-bar-competing-options-and-total-votes w-clearfix">
                   {{range $cid, $choice := $agenda.VoteChoices}}
                   <div class="option-{{$choice.ID}} option-progress a_{{$agenda.ID}}-c{{$choice.ID}}">
@@ -404,10 +411,6 @@
                     </div>
                   </div>
                   {{end}}
-              </div>
-              <div class="heading blocks-left-for-voting">
-                <div class="blocks-left-for-voting-dot"></div>
-                {{minus64 $agenda.EndHeight $.BlockHeight}} blocks left for voting
               </div>
             </div>
           </div>
