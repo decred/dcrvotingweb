@@ -215,7 +215,6 @@ body {
 }
 
 .width-half.left-padding-50 {
-  padding-top: 30px;
   padding-left: 50px;
 }
 
@@ -1466,7 +1465,6 @@ body {
     width: 100%;
   }
   .width-half.left-padding-50 {
-    padding-top: 20px;
     padding-left: 0px;
   }
   .width-third {
@@ -1519,9 +1517,6 @@ body {
   }
   .icon {
     margin-top: 12px;
-  }
-  .width-half.left-padding-50 {
-    padding-top: 30px;
   }
   .width-third {
     width: 100%;
