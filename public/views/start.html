@@ -234,6 +234,9 @@
     {{range $i, $agenda := .Agendas}}
         <div class="agenda drop-shadow w-clearfix" style="order: -{{$agenda.VoteVersion}};">
           <div class="agenda-section w-clearfix">
+            <div class="agenda heading">
+              {{index $.FriendlyAgendaLabels $agenda.ID}}
+            </div>
             <div class="agenda-indicator w-clearfix">
               <!-- labels -->
               {{if $agenda.IsDefined}}
@@ -301,9 +304,6 @@
 
             <!-- agenda details -->
             <div class="w-clearfix width-half">
-              <div class="agenda heading">
-                {{index $.FriendlyAgendaLabels $agenda.ID}}
-              </div>
               <div class="agenda-cfg w-clearfix">
                 <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#{{$agenda.ID}}</span>
                 </div>
