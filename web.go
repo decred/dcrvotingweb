@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/dustin/go-humanize"
+	"github.com/dustin/go-humanize/english"
 	"html/template"
 	"log"
 	"math"
@@ -12,15 +14,11 @@ import (
 )
 
 var funcMap = template.FuncMap{
-	"plus":      plus,
-	"minus":     minus,
-	"minus64":   minus64,
-	"modiszero": modiszero,
-	"roundDown": roundDown,
-}
-
-func roundDown(a float64) float64 {
-	return math.Floor(a*10) / 10
+	"plus":             plus,
+	"minus":            minus,
+	"minus64":          minus64,
+	"commaSeparate":    commaSeparate,
+	"twoDecimalPlaces": twoDecimalPlaces,
 }
 
 func plus(a, b int) int {
@@ -32,8 +30,12 @@ func minus(a, b int) int {
 func minus64(a, b int64) int64 {
 	return a - b
 }
-func modiszero(a, b int) bool {
-	return (a % b) == 0
+func commaSeparate(number int64) string {
+	return humanize.Comma(number)
+}
+func twoDecimalPlaces(number float64) string {
+	number = math.Floor(number*100) / 100
+	return fmt.Sprintf("%.2f", number)
 }
 
 // renders the 'home' template which is currently located at "start.html".
@@ -112,15 +114,6 @@ const (
 	minuteCutoffSecs = 2 * secondsPerHour
 )
 
-// pickNoun returns the singular or plural form of a noun depending
-// on the count n.
-func pickNoun(n int, singular, plural string) string {
-	if n == 1 {
-		return singular
-	}
-	return plural
-}
-
 // ceilDiv returns the ceiling of the result of dividing the given value.
 func ceilDiv(numerator, denominator int) int {
 	return int(math.Ceil(float64(numerator) / float64(denominator)))
@@ -132,15 +125,12 @@ func blocksToTimeEstimate(blocksRemaining int) string {
 	remainingSecs := blocksRemaining * int(activeNetParams.TargetTimePerBlock.Seconds())
 	if remainingSecs > hourCutoffSecs {
 		value := ceilDiv(remainingSecs, secondsPerDay)
-		noun := pickNoun(value, "day", "days")
-		return fmt.Sprintf("%d %s", value, noun)
+		return english.Plural(value, "day", "")
 	} else if remainingSecs > minuteCutoffSecs {
 		value := ceilDiv(remainingSecs, secondsPerHour)
-		noun := pickNoun(value, "hour", "hours")
-		return fmt.Sprintf("%d %s", value, noun)
+		return english.Plural(value, "hour", "")
 	}
 
 	value := ceilDiv(remainingSecs, secondsPerMinute)
-	noun := pickNoun(value, "minute", "minutes")
-	return fmt.Sprintf("%d %s", value, noun)
+	return english.Plural(value, "minute", "")
 }

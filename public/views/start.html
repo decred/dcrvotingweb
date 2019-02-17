@@ -33,13 +33,13 @@
   .progress-percent.pow {
   {{if not .BlockVersionSuccess}}
   background-color:#fd714b;
-  width: {{.BlockVersionNextPercentage}}%;
+  width: {{twoDecimalPlaces .BlockVersionNextPercentage}}%;
   {{else}}
   width: 100%;
   {{end}}
   }
   .progress-percent.pos {
-  width: {{.StakeVersionMostPopularPercentage}}%;
+  width: {{twoDecimalPlaces .StakeVersionMostPopularPercentage}}%;
   {{if not .StakeVersionSuccess}}
   background-color:#fd714b;
   {{end}}
@@ -49,7 +49,7 @@
     {{if $agenda.VotingStarted }}
       {{range $cid, $choice := $agenda.VoteChoices}}	
   .option-progress.a_{{$agenda.ID}}-c{{$choice.ID}} {
-  width: {{roundDown ($agenda.VoteCountPercentage $choice.ID)}}%;
+  width: {{twoDecimalPlaces ($agenda.VoteCountPercentage $choice.ID)}}%;
   }
       {{end}}
     {{end}}
@@ -64,20 +64,21 @@
         <a class="header-logo w-inline-block" href="https://www.decred.org">
           <img src="../images/logo.svg" />
         </a>
-        <a class="header-link" href="{{.BlockExplorerURL}}/block/{{.BlockHeight}}">Block #{{.BlockHeight}}</a>
+        <a class="header-link" href="{{.BlockExplorerURL}}/block/{{.BlockHeight}}">Block #{{commaSeparate .BlockHeight}}</a>
         {{if .IsUpgrading}}
 <!-- Phase 1 Upgrading -->
           <span class="header-link"> | &nbsp;Current phase: Upgrading</span>
           {{if .StakeVersionSuccess}}
             <span class="finished indicator transition">PoS</span>
           {{else}}
-            <span class="in-progress indicator transition">PoS {{.StakeVersionMostPopularPercentage}}%</span>
+            <span class="in-progress indicator transition">PoS {{twoDecimalPlaces .StakeVersionMostPopularPercentage}}%</span>
           {{end}}
           {{if .BlockVersionSuccess}}
             <span class="finished indicator transition">PoW</span>
           {{else}}
-            <span class="in-progress indicator transition">PoW {{.BlockVersionNextPercentage}}%</span>
+            <span class="in-progress indicator transition">PoW {{twoDecimalPlaces .BlockVersionNextPercentage}}%</span>
           {{end}}
+
         {{else}}
 <!-- Phase 2 Voting -->
           {{if .PendingActivation}}
@@ -120,7 +121,7 @@
                   <br> Next Version: <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionNext}}</span>
                 {{end}}
                 <br> Upgrade Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
-                <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
+                <br> Rolling Window: <span class="highlight-text">{{commaSeparate .BlockVersionWindowLength}} Blocks</span>
               </div>
               <div class="pow-pos-time-remaining transition"></div>
             </div>
@@ -132,7 +133,7 @@
               <div class="pow-pos-upgrade progress-bar-threshold" style="left: {{.BlockVersionRejectThreshold}}%"></div>
               {{end}}
               <div class="heading progress-bar-pow-pos-percent">{{if not .BlockVersionSuccess}}
-                {{.BlockVersionNextPercentage}}%
+                {{twoDecimalPlaces .BlockVersionNextPercentage}}%
                 {{else}}
                 Phase Complete
                 {{end}}</div>
@@ -151,7 +152,7 @@
                 <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionCurrent}}</span>
                 <br> Next Version: <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionNext}}</span>
                 <br> Upgrade Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
-                <br> Rolling Window: <span class="highlight-text">{{.BlockVersionWindowLength}} Blocks</span>
+                <br> Rolling Window: <span class="highlight-text">{{commaSeparate .BlockVersionWindowLength}} Blocks</span>
               </div>
             </div>
             <div class="chart-draw lines-big w-clearfix">
@@ -195,7 +196,7 @@
                 <br> Next Version: <span class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
                 {{end}}
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
-                <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
+                <br> Upgrade Interval: <span class="highlight-text">{{commaSeparate .StakeVersionIntervalStart}} - {{commaSeparate .StakeVersionIntervalEnd}}</span>
               </div>
               {{if not .StakeVersionSuccess}}
               <div class="pow-pos-time-remaining transition"><code>{{.StakeVersionTimeRemaining}}</code></div>
@@ -209,7 +210,7 @@
               <div class="pow-pos-upgrade progress-bar-threshold" style="left: {{.StakeVersionThreshold}}%"></div>
               {{end}}
               <div class="heading progress-bar-pow-pos-percent">{{if not .StakeVersionSuccess}}
-                {{.StakeVersionMostPopularPercentage}}%
+                {{twoDecimalPlaces .StakeVersionMostPopularPercentage}}%
                 {{else}}
                 Phase Complete
                 {{end}}</div>
@@ -231,7 +232,7 @@
                   class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
                 {{end}}
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
-                <br> Upgrade Interval: <span class="highlight-text">{{.StakeVersionIntervalBlocks}}</span>
+                <br> Upgrade Interval: <span class="highlight-text">{{commaSeparate .StakeVersionIntervalStart}} - {{commaSeparate .StakeVersionIntervalEnd}}</span>
               </div>
             </div>
             <div class="chart-draw lines-big w-clearfix">
@@ -333,12 +334,12 @@
                 </div>
                 {{if $agenda.VotingStarted}}
                 <div class="agenda-cfg-spec w-clearfix">
-                  Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{$agenda.StartHeight}} - {{$agenda.EndHeight}}</span>
+                  Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{commaSeparate $agenda.StartHeight}} - {{commaSeparate $agenda.EndHeight}}</span>
                 </div>
                 {{end}}
                 {{if $agenda.IsStarted}}
                 <div class="agenda-cfg-spec w-clearfix">
-                 Blocks left: &nbsp;<span class="highlight-text cyan transparent">{{minus64 $agenda.EndHeight $.BlockHeight}}</span>
+                 Blocks left: &nbsp;<span class="highlight-text cyan transparent">{{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}}</span>
                 </div>
                 {{end}}
 
@@ -361,8 +362,14 @@
                   <div class="agenda-voting-overview-option w-clearfix">
                     <div class="_{{$choice.ID}} agenda-voting-overview-option-dot"></div>
                     <div class="agenda-voting-overview-option-percent">{{$choice.ID}}</div>
+                   
                     {{if $agenda.VotingStarted }}
-                      <div class="agenda-voting-overview-option-percent value">{{$agenda.VotePercent $choice.ID}}%</div>
+                      <div class="agenda-voting-overview-option-percent value">{{twoDecimalPlaces ($agenda.VotePercent $choice.ID)}}%</div>
+                      <div class="tooltip">
+                        <div class="tooltip-option-name">
+                          {{commaSeparate (index $agenda.VoteCounts $choice.ID)}} votes
+                        </div>
+                      </div>
                     {{end}}
                   </div>
                   {{end}}
@@ -371,24 +378,24 @@
                     {{if $agenda.VotingStarted}}
                     <div class="agenda-voting-overview-option-active w-clearfix">
                       <div class="agenda-voting-overview-option-block">Approval Rating:</div>
-                      <div class="agenda-voting-overview-option-block value">{{$agenda.ApprovalRating}}%</div>
+                      <div class="agenda-voting-overview-option-block value">{{twoDecimalPlaces $agenda.ApprovalRating}}%</div>
                     </div>
                     {{end}}
                     {{if $agenda.IsActive}}
                     <div class="agenda-voting-overview-option-active w-clearfix">
                       <div class="agenda-voting-overview-option-block">Locked In:</div>
-                      <div class="agenda-voting-overview-option-block value">{{$agenda.BlockLockedIn}}</div>
+                      <div class="agenda-voting-overview-option-block value">{{commaSeparate $agenda.BlockLockedIn}}</div>
                     </div>
                     <div class="agenda-voting-overview-option-active w-clearfix">
                       <div class="agenda-voting-overview-option-block">Activated:</div>
-                      <div class="agenda-voting-overview-option-block value">{{$agenda.BlockActivated}}</div>
+                      <div class="agenda-voting-overview-option-block value">{{commaSeparate $agenda.ActivationBlock}}</div>
                     </div>
                     {{end}}
                   </div>
                 </div>
                 {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
                 <div class="agenda-voting-overview-disclaimer">
-                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $agenda.EndHeight $.BlockHeight}}</small></p>
+                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}}</small></p>
                 </div>
                 {{end}}
 
@@ -409,7 +416,7 @@
                 {{end}}
                 {{if $agenda.IsLockedIn}}
                     <div class="agenda-voting-overview-disclaimer-lockedin">
-                    <p><small>The vote has passed! The new rules will be activated in approximately <strong>{{$.TimeLeftString}}</strong> ({{minus64 $agenda.EndHeight $.BlockHeight}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.</small>
+                    <p><small>The vote has passed! The new rules will be activated in approximately <strong>{{$.TimeLeftString}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.</small>
                     </p>
                     </div>
                 {{end}}
@@ -425,7 +432,7 @@
           {{if $agenda.IsStarted }}
           <div class="blocks-left-for-voting">
             <div class="blocks-left-for-voting-dot"></div>
-            <div class="heading">{{minus64 $agenda.EndHeight $.BlockHeight}} blocks left for voting</div>
+            <div class="heading">{{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}} blocks left for voting</div>
           </div>
           {{end}}
 
@@ -439,7 +446,7 @@
                     <div class="tooltip">
                       <div class="tooltip-dot option-{{$choice.ID}}"></div>
                       <div class="tooltip-option-name">{{$choice.ID}}</div>
-                      <div class="tooltip-option-value">{{$agenda.VotePercent $choice.ID}}%</div>
+                      <div class="tooltip-option-value">{{twoDecimalPlaces ($agenda.VotePercent $choice.ID)}}%</div>
                     </div>
                   </div>
                   {{end}}
@@ -465,12 +472,19 @@ There is a two-phase process for voting to implement consensus changes that woul
 <span class="highlightoverview">The first Phase</span> is meeting the upgrade threshold on the network. A majority of PoS/PoW nodes on the network must upgrade before voting can begin.
 This is measured in the following ways:
             </p>
+<<<<<<< HEAD
             <ul>
 <li>For PoW, at least {{.BlockVersionRejectThreshold}}% of the {{.BlockVersionWindowLength}} most recent blocks must have the latest block version.</li>
 <li>For PoS, {{.StakeVersionThreshold}}% of the votes cast within a static {{.StakeVersionWindowLength}} block interval must have the latest vote version.</li>
             </ul>
+=======
             <p>
-<span class="highlightoverview">The second phase</span> is the voting itself. Voting takes place within a static {{.RuleChangeActivationInterval}} block interval. If 75% of votes mined within that interval signal a ‘yes’ vote to the proposals, the changes are implemented. Implementation happens after one additional block interval to allow any remaining nodes to update prior to the fork.
+- For PoW, at least {{.BlockVersionRejectThreshold}}% of the {{commaSeparate .BlockVersionWindowLength}} most recent blocks must have the latest block version.<br />
+- For PoS, {{.StakeVersionThreshold}}% of the votes cast within a static {{commaSeparate .StakeVersionWindowLength}} block interval must have the latest vote version.
+            </p>
+>>>>>>> Add tooltip for vote counts.
+            <p>
+<span class="highlightoverview">The second phase</span> is the voting itself. Voting takes place within a static {{commaSeparate .RuleChangeActivationInterval}} block interval. If 75% of votes mined within that interval signal a ‘yes’ vote to the proposals, the changes are implemented. Implementation happens after one additional block interval to allow any remaining nodes to update prior to the fork.
             </p>
             <p>
 <span class="highlightoverview"><a href="https://docs.decred.org/governance/consensus-rule-voting/consensus-rules-voting/" target="_blank">Visit our Documentation to learn more</a></span>

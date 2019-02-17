@@ -176,7 +176,7 @@ func loadConfig() (*config, error) {
 		// BlockVersion params
 		BlockVersionRejectThreshold: int(float64(activeNetParams.BlockRejectNumRequired) /
 			float64(activeNetParams.BlockUpgradeNumToCheck) * 100),
-		BlockVersionWindowLength: activeNetParams.BlockUpgradeNumToCheck,
+		BlockVersionWindowLength: int64(activeNetParams.BlockUpgradeNumToCheck),
 		// StakeVersion params
 		StakeVersionWindowLength: activeNetParams.StakeVersionInterval,
 		StakeVersionThreshold: toFixed(float64(activeNetParams.StakeMajorityMultiplier)/

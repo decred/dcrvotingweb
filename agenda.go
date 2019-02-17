@@ -21,11 +21,11 @@ type Agenda struct {
 	Description     string
 	Mask            uint16
 	VoteVersion     uint32
-	QuorumThreshold uint32
+	QuorumThreshold int64
 	StartHeight     int64
 	EndHeight       int64
 	VoteChoices     map[string]VoteChoice
-	VoteCounts      map[string]uint32
+	VoteCounts      map[string]int64
 }
 
 // VoteChoice contains the details of a vote choice from an agenda,
@@ -85,40 +85,38 @@ func (a *Agenda) BlockLockedIn() int64 {
 	return -1
 }
 
-// BlockActivated returns the height of the first block with this agenda active. -1 if this agenda has not been activated.
-func (a *Agenda) BlockActivated() int64 {
-	if a.IsActive() {
+// ActivationBlock returns the height of the first block with this agenda active. -1 if this agenda vote has not been locked-in.
+func (a *Agenda) ActivationBlock() int64 {
+	if a.IsLockedIn() || a.IsActive() {
 		return a.BlockLockedIn() + int64(activeNetParams.RuleChangeActivationInterval)
 	}
 	return -1
 }
 
 // TotalVotes returns the total number of No, Yes and Abstain votes cast against this agenda
-func (a *Agenda) TotalVotes() uint32 {
+func (a *Agenda) TotalVotes() int64 {
 	return a.VoteCounts["yes"] + a.VoteCounts["no"] + a.VoteCounts["abstain"]
 }
 
 // VotePercent returns the the number of yes/no/abstains votes, as a percentage of
 // all votes cast against this agenda
 func (a *Agenda) VotePercent(voteID string) float64 {
-	percent := float64(a.VoteCounts[voteID]) / float64(a.TotalVotes())
-	return toFixed(percent*100, 2)
+	return 100 * float64(a.VoteCounts[voteID]) / float64(a.TotalVotes())
 }
 
 // VoteCountPercentage returns the number of yes/no/abstain votes cast against this agenda as
 // a percentage of the theoretical maximum number of possible votes
 func (a *Agenda) VoteCountPercentage(voteID string) float64 {
 	maxPossibleVotes := float64(activeNetParams.RuleChangeActivationInterval) * float64(activeNetParams.TicketsPerBlock)
-	voteCountPercentage := float64(a.VoteCounts[voteID]) / maxPossibleVotes
-	return toFixed(voteCountPercentage*100, 1)
+	return 100 * float64(a.VoteCounts[voteID]) / maxPossibleVotes
 }
 
 // ApprovalRating returns the number of yes votes cast against this agenda as
 // a percentage of all non-abstain votes
 func (a *Agenda) ApprovalRating() float64 {
 	totalActingVotes := a.VoteCounts["yes"] + a.VoteCounts["no"]
-	percentage := float64(a.VoteCounts["yes"]) / float64(totalActingVotes)
-	return toFixed(percentage*100, 2)
+	approvalRating := float64(a.VoteCounts["yes"]) / float64(totalActingVotes)
+	return 100 * approvalRating
 }
 
 // DescriptionWithDCPURL writes a new description with an link to any DCP that
@@ -159,7 +157,7 @@ func (a *Agenda) countVotes(dcrdClient *rpcclient.Client, votingStartHeight int6
 
 	// Count the votes and store the total
 	for vID := range a.VoteChoices {
-		var matchingVotes uint32
+		var matchingVotes int64
 		for _, vote := range votes {
 			if vote.Bits&a.Mask == a.VoteChoices[vID].Bits {
 				matchingVotes++
@@ -192,9 +190,9 @@ func agendasFromJSON(getVoteInfo dcrjson.GetVoteInfoResult) []Agenda {
 			Description:     a.Description,
 			Mask:            a.Mask,
 			VoteVersion:     getVoteInfo.VoteVersion,
-			QuorumThreshold: getVoteInfo.Quorum,
+			QuorumThreshold: int64(getVoteInfo.Quorum),
 			VoteChoices:     voteChoices,
-			VoteCounts:      make(map[string]uint32),
+			VoteCounts:      make(map[string]int64),
 		})
 	}
 	return parsedAgendas

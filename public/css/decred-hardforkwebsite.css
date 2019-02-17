@@ -1203,8 +1203,9 @@ body {
   text-transform: capitalize;
 }
 
-.option-progress:hover .tooltip,
-.indicator-icon:hover  .tooltip {
+.option-progress:hover                .tooltip,
+.indicator-icon:hover                 .tooltip,
+.agenda-voting-overview-option:hover  .tooltip {
   visibility: visible;
 }
 

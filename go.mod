@@ -6,6 +6,7 @@ require (
 	github.com/decred/dcrd/dcrutil v1.2.0
 	github.com/decred/dcrd/rpcclient v1.1.0
 	github.com/decred/dcrd/wire v1.2.0
+	github.com/dustin/go-humanize v1.0.0
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect
 	github.com/hpcloud/tail v1.0.0 // indirect
