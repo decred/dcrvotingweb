@@ -206,7 +206,8 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		stakeVersionLabels[i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight-1)
 		if i == numIntervals-1 {
 			stakeVersionIntervalEndHeight = interval.StartHeight + activeNetParams.StakeVersionInterval - 1
-			templateInformation.StakeVersionIntervalBlocks = fmt.Sprintf("%v - %v", interval.StartHeight, stakeVersionIntervalEndHeight)
+			templateInformation.StakeVersionIntervalStart = interval.StartHeight
+			templateInformation.StakeVersionIntervalEnd = stakeVersionIntervalEndHeight
 		}
 	versionloop:
 		for _, versionCount := range interval.VoteVersions {

@@ -31,7 +31,7 @@ type templateFields struct {
 	BlockVersionSuccess bool
 	// BlockVersionWindowLength is the activeNetParams of BlockUpgradeNumToCheck
 	// rolling window length.
-	BlockVersionWindowLength uint64
+	BlockVersionWindowLength int64
 	// BlockVersionRejectThreshold is the activeNetParams of BlockRejectNumRequired.
 	BlockVersionRejectThreshold int
 	// BlockVersionCurrent is the currently calculated block version based on the rolling window.
@@ -47,8 +47,10 @@ type templateFields struct {
 	StakeVersionThreshold float64
 	// StakeVersionWindowLength is the activeNetParams of StakeVersionInterval
 	StakeVersionWindowLength int64
-	// StakeVersionIntervalBlocks shows the actual blocks for the current window
-	StakeVersionIntervalBlocks string
+	// StakeVersionIntervalStart is when the current SVI started
+	StakeVersionIntervalStart int64
+	// StakeVersionIntervalStart is when the current SVI ends
+	StakeVersionIntervalEnd int64
 	// StakeVersionIntervalLabels are labels for the bar graph for each of the past 4 fixed stake version intervals.
 	StakeVersionIntervalLabels []string
 	// StakeVersionsIntervals  is the data received from GetStakeVersionInfo json-rpc call to dcrd.
