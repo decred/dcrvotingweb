@@ -46,7 +46,7 @@
   }
 
   {{range $i, $agenda := .Agendas}}
-    {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
+    {{if $agenda.VotingStarted }}
       {{range $cid, $choice := $agenda.VoteChoices}}	
   .option-progress.a_{{$agenda.ID}}-c{{$choice.ID}} {
   width: {{roundDown ($agenda.VoteCountPercentage $choice.ID)}}%;
@@ -99,14 +99,19 @@
           <div class="chart-toggle-side pow"></div>
           <div class="transition upgrade-content">
             <div class="upgrade-content-statistics-header w-clearfix">
-              <div class="heading pow-pos">Miner Upgrade</div>
+              <div class="heading-container">
+                <img src="/images/pickaxe.svg" class="heading-icon" />
+                <div>
+                  <div class="heading">Miner Upgrade</div>
+                  <div class="headingsubline">Proof-of-Work</div>
+                </div>
+              </div>
 <!--  POW STATUS LABEL SWITCH -->
               {{if .BlockVersionSuccess}}
               <div class="finished indicator pow-pos transition">Completed</div>
               {{else}}
               <div class="in-progress indicator pow-pos transition">in-progress</div>
               {{end}}
-              <div class="headingsubline">Proof-of-Work</div>
             </div>
             <div class="upgrade-content-statistics-main w-clearfix">
               <div class="upgrade-content-statistics-numbers w-clearfix">Current Version:
@@ -135,8 +140,13 @@
           </div>
           <div class="chart pow w-clearfix">
             <div class="chart-info w-clearfix">
-              <div class="heading pow-pos">Miner Upgrade</div>
-              <div class="headingsubline">Proof-of-Work</div>
+              <div class="heading-container">
+                <img src="/images/pickaxe.svg" class="heading-icon" />
+                <div>
+                  <div class="heading">Miner Upgrade</div>
+                  <div class="headingsubline">Proof-of-Work</div>
+                </div>
+              </div>
               <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version:
                 <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionCurrent}}</span>
                 <br> Next Version: <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionNext}}</span>
@@ -164,14 +174,19 @@
           <div class="chart-toggle-side pos"></div>
           <div class="transition upgrade-content">
             <div class="upgrade-content-statistics-header w-clearfix">
-              <div class="heading pow-pos">Voter Upgrade</div>
+              <div class="heading-container">
+                <img src="/images/ticket.svg" class="heading-icon" />
+                <div>
+                  <div class="heading">Voter Upgrade</div>
+                  <div class="headingsubline">Proof-of-Stake</div>
+                </div>
+              </div>
 <!--  POS STATUS LABEL SWITCH -->
               {{if .StakeVersionSuccess}}
               <div class="finished indicator pow-pos transition">Completed</div>
               {{else}}
               <div class="in-progress indicator pow-pos transition">in-progress</div>
               {{end}}
-              <div class="headingsubline">Proof-of-Stake</div>
             </div>
             <div class="upgrade-content-statistics-main w-clearfix">
               <div class="upgrade-content-statistics-numbers w-clearfix">Current Version:
@@ -202,8 +217,13 @@
           </div>
           <div class="chart pos w-clearfix">
             <div class="chart-info w-clearfix">
-              <div class="heading pow-pos">Voter Upgrade</div>
-              <div class="headingsubline">Proof-of-Stake</div>
+              <div class="heading-container">
+                <img src="/images/ticket.svg" class="heading-icon" />
+                <div>
+                  <div class="heading">Voter Upgrade</div>
+                  <div class="headingsubline">Proof-of-Stake</div>
+                </div>
+              </div>
               <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version:
                 <span class="highlight-text {{if .StakeVersionSuccess}}green{{else}}orange{{end}}">v{{.StakeVersionCurrent}}</span>
                 {{if not .StakeVersionSuccess}}
@@ -311,10 +331,12 @@
               <div class="agenda-cfg w-clearfix">
                 <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#{{$agenda.ID}}</span>
                 </div>
-                {{if $agenda.IsStarted}}
+                {{if $agenda.VotingStarted}}
                 <div class="agenda-cfg-spec w-clearfix">
                   Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{$agenda.StartHeight}} - {{$agenda.EndHeight}}</span>
                 </div>
+                {{end}}
+                {{if $agenda.IsStarted}}
                 <div class="agenda-cfg-spec w-clearfix">
                  Blocks left: &nbsp;<span class="highlight-text cyan transparent">{{minus64 $agenda.EndHeight $.BlockHeight}}</span>
                 </div>
@@ -339,25 +361,31 @@
                   <div class="agenda-voting-overview-option w-clearfix">
                     <div class="_{{$choice.ID}} agenda-voting-overview-option-dot"></div>
                     <div class="agenda-voting-overview-option-percent">{{$choice.ID}}</div>
-                    {{if or $agenda.IsStarted $agenda.IsActive $agenda.IsLockedIn $agenda.IsFailed }}
+                    {{if $agenda.VotingStarted }}
                       <div class="agenda-voting-overview-option-percent value">{{$agenda.VotePercent $choice.ID}}%</div>
                     {{end}}
                   </div>
                   {{end}}
                   </div>
-                {{if $agenda.IsActive}}
-                <div class="width-half">
-                  <div class="agenda-voting-overview-option-active w-clearfix">
-                    <div class="agenda-voting-overview-option-block">Locked In:</div>
-                    <div class="agenda-voting-overview-option-block value">{{$agenda.BlockLockedIn}}</div>
-                  </div>
-                  <div class="agenda-voting-overview-option-active w-clearfix">
-                    <div class="agenda-voting-overview-option-block">Activated:</div>
-                    <div class="agenda-voting-overview-option-block value">{{$agenda.BlockActivated}}</div>
+                  <div class="width-half">
+                    {{if $agenda.VotingStarted}}
+                    <div class="agenda-voting-overview-option-active w-clearfix">
+                      <div class="agenda-voting-overview-option-block">Approval Rating:</div>
+                      <div class="agenda-voting-overview-option-block value">{{$agenda.ApprovalRating}}%</div>
+                    </div>
+                    {{end}}
+                    {{if $agenda.IsActive}}
+                    <div class="agenda-voting-overview-option-active w-clearfix">
+                      <div class="agenda-voting-overview-option-block">Locked In:</div>
+                      <div class="agenda-voting-overview-option-block value">{{$agenda.BlockLockedIn}}</div>
+                    </div>
+                    <div class="agenda-voting-overview-option-active w-clearfix">
+                      <div class="agenda-voting-overview-option-block">Activated:</div>
+                      <div class="agenda-voting-overview-option-block value">{{$agenda.BlockActivated}}</div>
+                    </div>
+                    {{end}}
                   </div>
                 </div>
-                {{end}}
-              </div>
                 {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
                 <div class="agenda-voting-overview-disclaimer">
                 <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{minus64 $agenda.EndHeight $.BlockHeight}}</small></p>

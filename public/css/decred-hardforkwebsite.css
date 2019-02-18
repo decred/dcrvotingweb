@@ -2,7 +2,6 @@ body {
   background-color: #f4f7f9;
   color: #f9fbfc;
   font-size: 16px;
-  font-weight: 400;
 }
 
 .transition {
@@ -467,7 +466,7 @@ body {
   float: right;
   border-radius: 3px;
   line-height: 20px;
-  font-weight: 600;
+  font-weight: bold;
 }
 
 .highlight-text.green {
@@ -560,10 +559,20 @@ body {
   padding: 0px;
 }
 
+.heading-container {
+  display: inline-block;
+  display: flex;
+  align-items: center;
+}
+.heading-icon {
+  height: 40px;
+  float: left;
+  padding-right: 10px;
+}
 .heading {
   display: inline-block;
   font-size: 22px;
-  font-weight: 600;
+  font-weight: bold;
 }
 
 .headingsubline {
@@ -605,11 +614,6 @@ body {
   min-height: 0px;
   float: left;
   background-image: none;
-}
-
-.heading.pow-pos {
-  display: inline-block;
-  float: left;
 }
 
 .heading.agenda {
@@ -1075,7 +1079,7 @@ body {
   float: left;
   color: #0c1e3e;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: bold;
   text-transform: capitalize;
 }
 
@@ -1158,7 +1162,7 @@ body {
   padding-right: 5px;
   padding-left: 5px;
   float: right;
-  font-weight: 600;
+  font-weight: bold;
 }
 
 .agenda-voting-overview-option-block {
@@ -1173,7 +1177,7 @@ body {
   padding-right: 5px;
   float: right;
   width: 50%;
-  font-weight: 600;
+  font-weight: bold;
 }
 .tooltip {
   display: flex;
