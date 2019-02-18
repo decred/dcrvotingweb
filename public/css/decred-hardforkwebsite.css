@@ -181,7 +181,7 @@ body {
   margin-bottom: 8px;
   margin-left: 10px;
   float: right;
-  background-image: url('../images/transparent.png');
+  background-image: url('/images/transparent.png');
   background-position: 50% 100%;
   background-size: 32px;
   background-repeat: no-repeat;
@@ -417,7 +417,7 @@ body {
 
 .indicator.in-progress {
   border-color: #2971ff;
-  background-image: url('../images/indicator-in-progress.svg');
+  background-image: url('/images/indicator-in-progress.svg');
   background-position: 0px 50%;
   background-repeat: no-repeat;
   color: #2971ff;
@@ -435,7 +435,7 @@ body {
 
 .indicator.upcoming {
   border-color: #596d81;
-  background-image: url('../images/indicator-upcoming.svg');
+  background-image: url('/images/indicator-upcoming.svg');
   background-position: 0px 50%;
   background-repeat: no-repeat;
   color: #596d81;
@@ -443,7 +443,7 @@ body {
 
 .indicator.finished {
   border-color: #2ed6a1;
-  background-image: url('../images/indicator-finished.svg');
+  background-image: url('/images/indicator-finished.svg');
   background-position: 0px 50%;
   background-repeat: no-repeat;
   color: #2ed6a1;
@@ -451,7 +451,7 @@ body {
 
 .indicator.failed {
   border-color: #a9b4bf;
-  background-image: url('../images/indicator-failed.svg');
+  background-image: url('/images/indicator-failed.svg');
   background-position: 0px 50%;
   background-repeat: no-repeat;
   color: #a9b4bf;
@@ -674,55 +674,55 @@ body {
 }
 
 .chart-toggle-side.pow {
-  background-image: url('../images/pow-pos-upgrade-chart-open.svg');
+  background-image: url('/images/pow-pos-upgrade-chart-open.svg');
   background-position: 50% 20px;
   background-repeat: no-repeat;
 }
 
 .chart-toggle-side.pow:hover {
-  background-image: -webkit-linear-gradient(270deg, rgba(12, 30, 62, .2), rgba(12, 30, 62, .2)), url('../images/pow-pos-upgrade-chart-open.svg');
-  background-image: linear-gradient(180deg, rgba(12, 30, 62, .2), rgba(12, 30, 62, .2)), url('../images/pow-pos-upgrade-chart-open.svg');
+  background-image: -webkit-linear-gradient(270deg, rgba(12, 30, 62, .2), rgba(12, 30, 62, .2)), url('/images/pow-pos-upgrade-chart-open.svg');
+  background-image: linear-gradient(180deg, rgba(12, 30, 62, .2), rgba(12, 30, 62, .2)), url('/images/pow-pos-upgrade-chart-open.svg');
   background-position: 0px 0px, 50% 20px;
   background-repeat: repeat, no-repeat;
 }
 
 .chart-toggle-side.pow.active {
   background-color: #09182d;
-  background-image: url('../images/pow-pos-upgrade-chart-close.svg');
+  background-image: url('/images/pow-pos-upgrade-chart-close.svg');
   background-size: auto;
 }
 
 .chart-toggle-side.pow.active:hover {
-  background-image: -webkit-linear-gradient(270deg, rgba(9, 24, 45, .2), rgba(9, 24, 45, .2)), url('../images/pow-pos-upgrade-chart-close.svg');
-  background-image: linear-gradient(180deg, rgba(9, 24, 45, .2), rgba(9, 24, 45, .2)), url('../images/pow-pos-upgrade-chart-close.svg');
+  background-image: -webkit-linear-gradient(270deg, rgba(9, 24, 45, .2), rgba(9, 24, 45, .2)), url('/images/pow-pos-upgrade-chart-close.svg');
+  background-image: linear-gradient(180deg, rgba(9, 24, 45, .2), rgba(9, 24, 45, .2)), url('/images/pow-pos-upgrade-chart-close.svg');
   background-position: 0px 0px, 50% 20px;
   background-size: auto, auto;
   background-repeat: repeat, no-repeat;
 }
 
 .chart-toggle-side.pos {
-  background-image: url('../images/pow-pos-upgrade-chart-open.svg');
+  background-image: url('/images/pow-pos-upgrade-chart-open.svg');
   background-position: 50% 20px;
   background-repeat: no-repeat;
 }
 
 .chart-toggle-side.pos:hover {
-  background-image: -webkit-linear-gradient(270deg, rgba(9, 24, 45, .2), rgba(9, 24, 45, .2)), url('../images/pow-pos-upgrade-chart-open.svg');
-  background-image: linear-gradient(180deg, rgba(9, 24, 45, .2), rgba(9, 24, 45, .2)), url('../images/pow-pos-upgrade-chart-open.svg');
+  background-image: -webkit-linear-gradient(270deg, rgba(9, 24, 45, .2), rgba(9, 24, 45, .2)), url('/images/pow-pos-upgrade-chart-open.svg');
+  background-image: linear-gradient(180deg, rgba(9, 24, 45, .2), rgba(9, 24, 45, .2)), url('/images/pow-pos-upgrade-chart-open.svg');
   background-position: 0px 0px, 50% 20px;
   background-repeat: repeat, no-repeat;
 }
 
 .chart-toggle-side.pos.active {
   background-color: #0c1e3e;
-  background-image: url('../images/pow-pos-upgrade-chart-close.svg');
+  background-image: url('/images/pow-pos-upgrade-chart-close.svg');
   background-position: 50% 20px;
   background-size: auto;
 }
 
 .chart-toggle-side.pos.active:hover {
-  background-image: -webkit-linear-gradient(270deg, rgba(12, 30, 62, .2), rgba(12, 30, 62, .2)), url('../images/pow-pos-upgrade-chart-close.svg');
-  background-image: linear-gradient(180deg, rgba(12, 30, 62, .2), rgba(12, 30, 62, .2)), url('../images/pow-pos-upgrade-chart-close.svg');
+  background-image: -webkit-linear-gradient(270deg, rgba(12, 30, 62, .2), rgba(12, 30, 62, .2)), url('/images/pow-pos-upgrade-chart-close.svg');
+  background-image: linear-gradient(180deg, rgba(12, 30, 62, .2), rgba(12, 30, 62, .2)), url('/images/pow-pos-upgrade-chart-close.svg');
   background-position: 0px 0px, 50% 20px;
   background-size: auto, auto;
   background-repeat: repeat, no-repeat;
@@ -782,7 +782,7 @@ body {
 .chart-toggle-button {
   width: 100%;
   height: 60px;
-  background-image: url('../images/pow-pos-upgrade-chart-open.svg');
+  background-image: url('/images/pow-pos-upgrade-chart-open.svg');
   background-position: 50% 50%;
   background-repeat: no-repeat;
 }
@@ -792,19 +792,19 @@ body {
 }
 
 .chart-toggle-button.close {
-  background-image: url('../images/pow-pos-upgrade-chart-close.svg');
+  background-image: url('/images/pow-pos-upgrade-chart-close.svg');
   background-position: 50% 50%;
   background-repeat: no-repeat;
 }
 
 .chart-toggle-button.open {
-  background-image: url('../images/pow-pos-upgrade-chart-open.svg');
+  background-image: url('/images/pow-pos-upgrade-chart-open.svg');
   background-position: 50% 50%;
   background-repeat: no-repeat;
 }
 
 .chart-toggle-button.active {
-  background-image: url('../images/pow-pos-upgrade-chart-close.svg');
+  background-image: url('/images/pow-pos-upgrade-chart-close.svg');
   background-size: auto;
 }
 
@@ -1004,19 +1004,19 @@ body {
 }
 
 .indicator-icon.lockin {
-  background-image: url('../images/indicator-icon-lockin-inactive.svg');
+  background-image: url('/images/indicator-icon-lockin-inactive.svg');
   background-position: 50% 50%;
   background-size: 20px;
   background-repeat: no-repeat;
 }
 
 .indicator-icon.lockin:hover {
-  background-image: url('../images/indicator-icon-lockin-active.svg');
+  background-image: url('/images/indicator-icon-lockin-active.svg');
   background-size: 20px;
 }
 
 .indicator-icon.lockin.active {
-  background-image: url('../images/indicator-icon-lockin-active.svg');
+  background-image: url('/images/indicator-icon-lockin-active.svg');
 }
 
 .indicator-icon.lockin.active:hover {
@@ -1024,19 +1024,19 @@ body {
 }
 
 .indicator-icon.activated {
-  background-image: url('../images/indicator-icon-activated-inactive.svg');
+  background-image: url('/images/indicator-icon-activated-inactive.svg');
   background-position: 50% 50%;
   background-size: 20px;
   background-repeat: no-repeat;
 }
 
 .indicator-icon.activated:hover {
-  background-image: url('../images/indicator-icon-activated-active.svg');
+  background-image: url('/images/indicator-icon-activated-active.svg');
   background-size: 20px;
 }
 
 .indicator-icon.activated.active {
-  background-image: url('../images/indicator-icon-activated-active.svg');
+  background-image: url('/images/indicator-icon-activated-active.svg');
   background-size: 20px;
 }
 

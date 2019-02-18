@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"time"
 
@@ -440,12 +441,22 @@ func mainCore() int {
 	// Register OS signal (USR1 on non-Windows platforms) to reload templates
 	webUI.UseSIGToReloadTemplates()
 
+	noDirListing := func(h http.Handler) http.HandlerFunc {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if strings.HasSuffix(r.URL.Path, "/") {
+				webUI.homePage(w, r)
+				return
+			}
+			h.ServeHTTP(w, r)
+		})
+	}
+
 	// URL handlers for js/css/fonts/images
 	http.HandleFunc("/", webUI.homePage)
-	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("public/js/"))))
-	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("public/css/"))))
-	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir("public/fonts/"))))
-	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("public/images/"))))
+	http.Handle("/js/", noDirListing(http.StripPrefix("/js/", http.FileServer(http.Dir("public/js/")))))
+	http.Handle("/css/", noDirListing(http.StripPrefix("/css/", http.FileServer(http.Dir("public/css/")))))
+	http.Handle("/fonts/", noDirListing(http.StripPrefix("/fonts/", http.FileServer(http.Dir("public/fonts/")))))
+	http.Handle("/images/", noDirListing(http.StripPrefix("/images/", http.FileServer(http.Dir("public/images/")))))
 
 	// Start http server listening and serving, but no way to signal to quit
 	go func() {
