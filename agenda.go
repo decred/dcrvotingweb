@@ -40,6 +40,12 @@ var dcpRE = regexp.MustCompile(`(?i)DCP\-?(\d{4})`)
 
 // Agenda status may be: started, defined, lockedin, failed, active
 
+// VotingStarted always returns true after the vote for this agenda has started,
+// regardless of whether the vote has passed or failed.
+func (a *Agenda) VotingStarted() bool {
+	return a.IsStarted() || a.IsActive() || a.IsFailed() || a.IsLockedIn()
+}
+
 // IsActive indicates if the agenda is active
 func (a *Agenda) IsActive() bool {
 	return a.Status == "active"
@@ -105,6 +111,14 @@ func (a *Agenda) VoteCountPercentage(voteID string) float64 {
 	maxPossibleVotes := float64(activeNetParams.RuleChangeActivationInterval) * float64(activeNetParams.TicketsPerBlock)
 	voteCountPercentage := float64(a.VoteCounts[voteID]) / maxPossibleVotes
 	return toFixed(voteCountPercentage*100, 1)
+}
+
+// ApprovalRating returns the number of yes votes cast against this agenda as
+// a percentage of all non-abstain votes
+func (a *Agenda) ApprovalRating() float64 {
+	totalActingVotes := a.VoteCounts["yes"] + a.VoteCounts["no"]
+	percentage := float64(a.VoteCounts["yes"]) / float64(totalActingVotes)
+	return toFixed(percentage*100, 2)
 }
 
 // DescriptionWithDCPURL writes a new description with an link to any DCP that
