@@ -5,9 +5,11 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"regexp"
+	"strings"
 
 	"github.com/decred/dcrd/dcrjson"
 	"github.com/decred/dcrd/rpcclient"
@@ -91,6 +93,11 @@ func (a *Agenda) ActivationBlock() int64 {
 		return a.BlockLockedIn() + int64(activeNetParams.RuleChangeActivationInterval)
 	}
 	return -1
+}
+
+// TimeUntilActivation returns the approximate time left until this agenda becomes activated
+func (a *Agenda) TimeUntilActivation(currentHeight int64) string {
+	return blocksToTimeEstimate(a.ActivationBlock() - currentHeight)
 }
 
 // TotalVotes returns the total number of No, Yes and Abstain votes cast against this agenda
@@ -198,12 +205,15 @@ func agendasFromJSON(getVoteInfo dcrjson.GetVoteInfoResult) []Agenda {
 	return parsedAgendas
 }
 
-func agendasForVersions(dcrdClient *rpcclient.Client, versions []uint32, currentHeight int64, svis StakeVersionIntervals) ([]Agenda, error) {
+func agendasForVersions(dcrdClient *rpcclient.Client, maxVoteVersion uint32, currentHeight int64, svis StakeVersionIntervals) ([]Agenda, error) {
 	var allAgendas []Agenda
-	for _, version := range versions {
+	for version := uint32(0); version <= maxVoteVersion; version++ {
 		// Retrieve Agendas for this voting period
 		getVoteInfo, err := dcrdClient.GetVoteInfo(version)
 		if err != nil {
+			if strings.Contains(err.Error(), fmt.Sprintf("stake version %d does not exist", version)) {
+				continue
+			}
 			return nil, err
 		}
 		agendas := agendasFromJSON(*getVoteInfo)

@@ -199,7 +199,7 @@
                 <br> Upgrade Interval: <span class="highlight-text">{{commaSeparate .StakeVersionIntervalStart}} - {{commaSeparate .StakeVersionIntervalEnd}}</span>
               </div>
               {{if not .StakeVersionSuccess}}
-              <div class="pow-pos-time-remaining transition"><code>{{.StakeVersionTimeRemaining}}</code></div>
+              <div class="pow-pos-time-remaining transition"><code>{{.StakeVersionTimeRemaining}} remaining</code></div>
               {{end}}
             </div>
             <div class="progress-bar-pow-pos-upgrade">
@@ -416,7 +416,7 @@
                 {{end}}
                 {{if $agenda.IsLockedIn}}
                     <div class="agenda-voting-overview-disclaimer-lockedin">
-                    <p><small>The vote has passed! The new rules will be activated in approximately <strong>{{$.TimeLeftString}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.</small>
+                    <p><small>The vote has passed! The new rules will be activated in approximately <strong>{{$agenda.TimeUntilActivation $.BlockHeight}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.</small>
                     </p>
                     </div>
                 {{end}}

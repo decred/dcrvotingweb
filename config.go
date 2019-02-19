@@ -24,10 +24,7 @@ var (
 	// Default network parameters
 	activeNetParams *chaincfg.Params
 	// stakeVersion is the stake version we call getvoteinfo with.
-	stakeVersion uint32
 	blockVersion int32
-	// the vote versions which include agendas
-	voteVersions []uint32
 
 	// Default configuration options
 	defaultConfigFile  = filepath.Join(defaultHomeDir, defaultConfigFilename)
@@ -140,16 +137,12 @@ func loadConfig() (*config, error) {
 
 	if cfg.TestNet {
 		activeNetParams = &chaincfg.TestNet3Params
-		stakeVersion = stakeVersionTest
 		blockVersion = blockVersionTest
-		voteVersions = voteVersionsTest
 		blockExplorerURL = "https://testnet.dcrdata.org"
 		defaultRPCPort = "19109"
 	} else {
 		activeNetParams = &chaincfg.MainNetParams
-		stakeVersion = stakeVersionMain
 		blockVersion = blockVersionMain
-		voteVersions = voteVersionsMain
 		blockExplorerURL = "https://mainnet.dcrdata.org"
 		defaultRPCPort = "9109"
 	}
@@ -179,8 +172,8 @@ func loadConfig() (*config, error) {
 		BlockVersionWindowLength: int64(activeNetParams.BlockUpgradeNumToCheck),
 		// StakeVersion params
 		StakeVersionWindowLength: activeNetParams.StakeVersionInterval,
-		StakeVersionThreshold: toFixed(float64(activeNetParams.StakeMajorityMultiplier)/
-			float64(activeNetParams.StakeMajorityDivisor)*100, 0),
+		StakeVersionThreshold: float64(activeNetParams.StakeMajorityMultiplier) /
+			float64(activeNetParams.StakeMajorityDivisor) * 100,
 		// RuleChange params
 		QuorumThreshold: float64(activeNetParams.RuleChangeActivationQuorum) /
 			float64(activeNetParams.RuleChangeActivationInterval*

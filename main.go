@@ -9,7 +9,6 @@ import (
 	"html/template"
 	"io/ioutil"
 	"log"
-	"math"
 	"net/http"
 	"os"
 	"os/signal"
@@ -38,14 +37,12 @@ const (
 	// getstakeversioninfo
 	numberOfIntervals = 4
 
-	// stakeVersionMain is the version of the block being generated for
+	// blockVersionMain is the version of the block being generated for
 	// the main network.
-	stakeVersionMain = 6
 	blockVersionMain = 6
 
-	// stakeVersionTest is the version of the block being generated
+	// blockVersionTest is the version of the block being generated
 	// for the testnet network.
-	stakeVersionTest = 7
 	blockVersionTest = 7
 )
 
@@ -54,9 +51,6 @@ var (
 	// templateInformation is the template holding the active network
 	// parameters.
 	templateInformation *templateFields
-
-	voteVersionsMain = []uint32{4, 5, 6}
-	voteVersionsTest = []uint32{7}
 
 	friendlyAgendaLabels = map[string]string{
 		"sdiffalgorithm": "Change PoS Staking Algorithm",
@@ -158,7 +152,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	templateInformation.BlockVersionNext = blockVersion
 
 	blockCountPercentage := 100 * float64(blockVersionsCounts[blockVersion]) / float64(activeNetParams.BlockUpgradeNumToCheck)
-	templateInformation.BlockVersionNextPercentage = toFixed(blockCountPercentage, 2)
+	templateInformation.BlockVersionNextPercentage = blockCountPercentage
 
 	if blockVersionsCounts[blockVersion] > int64(activeNetParams.BlockRejectNumRequired) {
 		templateInformation.BlockVersionSuccess = true
@@ -231,7 +225,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	}
 	blocksRemainingStakeInterval := stakeVersionIntervalEndHeight - height
 	timeLeftDuration := activeNetParams.TargetTimePerBlock * time.Duration(blocksRemainingStakeInterval)
-	templateInformation.StakeVersionTimeRemaining = fmt.Sprintf("%s remaining", fmtDuration(timeLeftDuration))
+	templateInformation.StakeVersionTimeRemaining = fmtDuration(timeLeftDuration)
 	stakeVersionLabels[numIntervals-1] = "Current Interval"
 	currentInterval := stakeVersionInfo.Intervals[0]
 
@@ -250,13 +244,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		}
 	}
 
-	svis, err := AllStakeVersionIntervals(dcrdClient, height)
-	if err != nil {
-		log.Printf("Error stake version intervals: %v", err)
-		return
-	}
-
-	templateInformation.StakeVersionMostPopularPercentage = toFixed(float64(mostPopularVersionCount)/float64(maxPossibleVotes)*100, 2)
+	templateInformation.StakeVersionMostPopularPercentage = float64(mostPopularVersionCount) / float64(maxPossibleVotes) * 100
 	templateInformation.StakeVersionMostPopular = mostPopularVersion
 	var stakeVersionRequiredVotes = int32(maxPossibleVotes) *
 		activeNetParams.StakeMajorityMultiplier / activeNetParams.StakeMajorityDivisor
@@ -267,21 +255,19 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		templateInformation.StakeVersionSuccess = true
 	}
 
+	svis, err := AllStakeVersionIntervals(dcrdClient, height)
+	if err != nil {
+		log.Printf("Error stake version intervals: %v", err)
+		return
+	}
+
 	// Check if upgrade to the latest version occurred in a previous SVI
-	upgradeOccured, upgradeHeight := svis.GetStakeVersionUpgradeHeight(voteVersions[len(voteVersions)-1])
+	upgradeOccured, upgradeHeight := svis.GetStakeVersionUpgradeHeight(svis.MaxVoteVersion)
 	if upgradeOccured && upgradeHeight < height {
 		templateInformation.StakeVersionMostPopularPercentage = 100
 		templateInformation.StakeVersionSuccess = true
 	}
 
-	// Quorum/vote information
-	getVoteInfo, err := dcrdClient.GetVoteInfo(stakeVersion)
-	if err != nil {
-		log.Printf("Get vote info error: %v", err)
-		return
-	}
-
-	templateInformation.TimeLeftString = blocksToTimeEstimate(int(getVoteInfo.EndHeight - getVoteInfo.CurrentHeight))
 	// Check if Phase Upgrading or Voting
 	if templateInformation.StakeVersionSuccess && templateInformation.BlockVersionSuccess {
 		templateInformation.IsUpgrading = false
@@ -289,7 +275,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		templateInformation.IsUpgrading = true
 	}
 
-	templateInformation.Agendas, err = agendasForVersions(dcrdClient, voteVersions, height, svis)
+	templateInformation.Agendas, err = agendasForVersions(dcrdClient, svis.MaxVoteVersion, height, svis)
 	if err != nil {
 		log.Printf("Error getting agendas: %v", err)
 		return
@@ -473,16 +459,6 @@ func mainCore() int {
 	wg.Wait()
 
 	return 0
-}
-
-// Some various helper math helper funcs
-func round(num float64) int {
-	return int(num + math.Copysign(0.5, num))
-}
-
-func toFixed(num float64, precision int) float64 {
-	output := math.Pow(10, float64(precision))
-	return float64(round(num*output)) / output
 }
 
 // fmtDuration will convert a Duration into a human readable string formatted "0d 0h 0m".
