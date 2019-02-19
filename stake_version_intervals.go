@@ -13,7 +13,8 @@ import (
 
 // StakeVersionIntervals wraps a set of dcrjson.VersionIntervals
 type StakeVersionIntervals struct {
-	Intervals []dcrjson.VersionInterval
+	Intervals      []dcrjson.VersionInterval
+	MaxVoteVersion uint32
 }
 
 // GetStakeVersionUpgradeHeight will search through every stake version interval
@@ -62,6 +63,18 @@ func AllStakeVersionIntervals(dcrdClient *rpcclient.Client, height int64) (Stake
 		opp := len(svis.Intervals) - 1 - i
 		svis.Intervals[i], svis.Intervals[opp] = svis.Intervals[opp], svis.Intervals[i]
 	}
+
+	// Get max vote version
+	max := uint32(0)
+	for _, i := range svis.Intervals {
+		for _, voteVersion := range i.VoteVersions {
+			if voteVersion.Version > max {
+				max = voteVersion.Version
+			}
+		}
+	}
+
+	svis.MaxVoteVersion = max
 
 	return svis, nil
 }

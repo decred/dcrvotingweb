@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/dustin/go-humanize"
-	"github.com/dustin/go-humanize/english"
 	"html/template"
 	"log"
 	"math"
@@ -11,6 +9,9 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+
+	"github.com/dustin/go-humanize"
+	"github.com/dustin/go-humanize/english"
 )
 
 var funcMap = template.FuncMap{
@@ -115,14 +116,14 @@ const (
 )
 
 // ceilDiv returns the ceiling of the result of dividing the given value.
-func ceilDiv(numerator, denominator int) int {
+func ceilDiv(numerator, denominator int64) int {
 	return int(math.Ceil(float64(numerator) / float64(denominator)))
 }
 
 // blocksToTimeEstimate returns a human-readable estimate for the amount of time
 // a given number of blocks would take.
-func blocksToTimeEstimate(blocksRemaining int) string {
-	remainingSecs := blocksRemaining * int(activeNetParams.TargetTimePerBlock.Seconds())
+func blocksToTimeEstimate(blocksRemaining int64) string {
+	remainingSecs := blocksRemaining * int64(activeNetParams.TargetTimePerBlock.Seconds())
 	if remainingSecs > hourCutoffSecs {
 		value := ceilDiv(remainingSecs, secondsPerDay)
 		return english.Plural(value, "day", "")

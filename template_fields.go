@@ -80,8 +80,6 @@ type templateFields struct {
 	PendingActivation bool
 	// Rules Activated to show that all rules have activated
 	RulesActivated bool
-	// TimeLeftString shows the approximate time left until activation
-	TimeLeftString string
 	// Human friendly readable labels for each agenda
 	FriendlyAgendaLabels map[string]string
 	// Human friendly readable descriptions for each agenda
