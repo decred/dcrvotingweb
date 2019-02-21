@@ -22,6 +22,12 @@ type StakeVersionIntervals struct {
 // It then returns the end height of that SVI.
 func (s *StakeVersionIntervals) GetStakeVersionUpgradeHeight(version uint32) (bool, int64) {
 	for i, svi := range s.Intervals {
+		// If this is an incomplete SVI, then the upgrade has not happened.
+		if svi.EndHeight-svi.StartHeight < activeNetParams.StakeVersionInterval {
+			continue
+		}
+
+		// Count the votes in this SVI to see if the upgrade threshold has been met
 		var totalVotes int32
 		var versionVotes int32
 		for _, voteVersion := range svi.VoteVersions {

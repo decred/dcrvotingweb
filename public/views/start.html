@@ -30,21 +30,6 @@
 
   <script src="/js/modernizr.js"></script>
   <style>
-  .progress-percent.pow {
-  {{if not .BlockVersionSuccess}}
-  background-color:#fd714b;
-  width: {{twoDecimalPlaces .BlockVersionNextPercentage}}%;
-  {{else}}
-  width: 100%;
-  {{end}}
-  }
-  .progress-percent.pos {
-  width: {{twoDecimalPlaces .StakeVersionMostPopularPercentage}}%;
-  {{if not .StakeVersionSuccess}}
-  background-color:#fd714b;
-  {{end}}
-  }
-
   {{range $i, $agenda := .Agendas}}
     {{if $agenda.VotingStarted }}
       {{range $cid, $choice := $agenda.VoteChoices}}	
@@ -68,15 +53,15 @@
         {{if .IsUpgrading}}
 <!-- Phase 1 Upgrading -->
           <span class="header-link"> | &nbsp;Current phase: Upgrading</span>
+          {{if .BlockVersionSuccess}}
+          <span class="finished indicator transition">PoW</span>
+          {{else}}
+          <span class="in-progress indicator transition">PoW {{twoDecimalPlaces .BlockVersionNextPercentage}}%</span>
+          {{end}}
           {{if .StakeVersionSuccess}}
             <span class="finished indicator transition">PoS</span>
           {{else}}
             <span class="in-progress indicator transition">PoS {{twoDecimalPlaces .StakeVersionMostPopularPercentage}}%</span>
-          {{end}}
-          {{if .BlockVersionSuccess}}
-            <span class="finished indicator transition">PoW</span>
-          {{else}}
-            <span class="in-progress indicator transition">PoW {{twoDecimalPlaces .BlockVersionNextPercentage}}%</span>
           {{end}}
 
         {{else}}
@@ -127,7 +112,15 @@
             </div>
             <div class="progress-bar-pow-pos-upgrade">
               <div class="progress-indicator w-clearfix">
-                <div class="pow progress-percent"></div>
+                <div class="pow progress-percent" style="
+                  {{if not .BlockVersionSuccess}}
+                  background-color:#fd714b;
+                  width: {{twoDecimalPlaces .BlockVersionNextPercentage}}%;
+                  {{else}}
+                  width: 100%;
+                  {{end}}
+                ">
+                </div>
               </div>
               {{if not .BlockVersionSuccess}}
               <div class="pow-pos-upgrade progress-bar-threshold" style="left: {{.BlockVersionRejectThreshold}}%"></div>
@@ -193,7 +186,7 @@
               <div class="upgrade-content-statistics-numbers w-clearfix">Current Version:
                 <span class="highlight-text {{if .StakeVersionSuccess}}green{{else}}orange{{end}}">v{{.StakeVersionCurrent}}</span>
                 {{if not .StakeVersionSuccess}}
-                <br> Next Version: <span class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
+                <br> Next Version: <span class="highlight-text {{if gt .StakeVersionMostPopularPercentage .StakeVersionThreshold}}green{{else}}orange{{end}}">v{{.StakeVersionMostPopular}}</span>
                 {{end}}
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
                 <br> Upgrade Interval: <span class="highlight-text">{{commaSeparate .StakeVersionIntervalStart}} - {{commaSeparate .StakeVersionIntervalEnd}}</span>
@@ -204,7 +197,13 @@
             </div>
             <div class="progress-bar-pow-pos-upgrade">
               <div class="progress-indicator w-clearfix">
-                <div class="pos progress-percent"></div>
+                <div class="pos progress-percent" style="
+                  width: {{twoDecimalPlaces .StakeVersionMostPopularPercentage}}%;
+                  {{if lt .StakeVersionMostPopularPercentage .StakeVersionThreshold}}
+                  background-color: #fd714b;
+                  {{end}}
+                ">
+                </div>
               </div>
               {{if not .StakeVersionSuccess}}
               <div class="pow-pos-upgrade progress-bar-threshold" style="left: {{.StakeVersionThreshold}}%"></div>
@@ -229,7 +228,7 @@
                 <span class="highlight-text {{if .StakeVersionSuccess}}green{{else}}orange{{end}}">v{{.StakeVersionCurrent}}</span>
                 {{if not .StakeVersionSuccess}}
                 <br> Next Version: <span
-                  class="highlight-text orange">v{{.StakeVersionMostPopular}}</span>
+                  class="highlight-text {{if gt .StakeVersionMostPopularPercentage .StakeVersionThreshold}}green{{else}}orange{{end}}">v{{.StakeVersionMostPopular}}</span>
                 {{end}}
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
                 <br> Upgrade Interval: <span class="highlight-text">{{commaSeparate .StakeVersionIntervalStart}} - {{commaSeparate .StakeVersionIntervalEnd}}</span>
