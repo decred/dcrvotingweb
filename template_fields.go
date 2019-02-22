@@ -47,18 +47,18 @@ type templateFields struct {
 	StakeVersionThreshold float64
 	// StakeVersionWindowLength is the activeNetParams of StakeVersionInterval
 	StakeVersionWindowLength int64
-	// StakeVersionIntervalStart is when the current SVI started
-	StakeVersionIntervalStart int64
-	// StakeVersionIntervalStart is when the current SVI ends
-	StakeVersionIntervalEnd int64
+	// CurrentSVIStartHeight is when the current SVI started
+	CurrentSVIStartHeight int64
+	// CurrentSVIStartHeight is when the current SVI ends
+	CurrentSVIEndHeight int64
 	// StakeVersionIntervalLabels are labels for the bar graph for each of the past 4 fixed stake version intervals.
 	StakeVersionIntervalLabels []string
 	// StakeVersionsIntervals  is the data received from GetStakeVersionInfo json-rpc call to dcrd.
 	StakeVersionsIntervals []dcrjson.VersionInterval
 	// StakeVersionIntervalResults is the data after being analyzed for graph displaying.
 	StakeVersionIntervalResults []intervalVersionCounts
-	// StakeVersionSuccess is a bool for whether or not the StakeVersion has rolled over in this window.
-	StakeVersionSuccess bool
+	// PosUpgrade contains fields describing the stake version upgrade.
+	PosUpgrade posUpgrade
 	// StakeVersionCurrent is the StakeVersion that has been seen in the recent block header.
 	StakeVersionCurrent uint32
 	// StakeVersionMostPopular is the most popular stake version that is NOT the current stake version.
