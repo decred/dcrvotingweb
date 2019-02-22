@@ -58,7 +58,7 @@
           {{else}}
           <span class="in-progress indicator transition">PoW {{twoDecimalPlaces .BlockVersionNextPercentage}}%</span>
           {{end}}
-          {{if .StakeVersionSuccess}}
+          {{if .PosUpgrade.Completed}}
             <span class="finished indicator transition">PoS</span>
           {{else}}
             <span class="in-progress indicator transition">PoS {{twoDecimalPlaces .StakeVersionMostPopularPercentage}}%</span>
@@ -176,7 +176,7 @@
                 </div>
               </div>
 <!--  POS STATUS LABEL SWITCH -->
-              {{if .StakeVersionSuccess}}
+              {{if .PosUpgrade.Completed}}
               <div class="finished indicator pow-pos transition">Completed</div>
               {{else}}
               <div class="in-progress indicator pow-pos transition">in-progress</div>
@@ -184,14 +184,19 @@
             </div>
             <div class="upgrade-content-statistics-main w-clearfix">
               <div class="upgrade-content-statistics-numbers w-clearfix">Current Version:
-                <span class="highlight-text {{if .StakeVersionSuccess}}green{{else}}orange{{end}}">v{{.StakeVersionCurrent}}</span>
-                {{if not .StakeVersionSuccess}}
+                <span class="highlight-text {{if .PosUpgrade.Completed}}green{{else}}orange{{end}}">v{{.StakeVersionCurrent}}</span>
+                {{if not .PosUpgrade.Completed}}
                 <br> Next Version: <span class="highlight-text {{if gt .StakeVersionMostPopularPercentage .StakeVersionThreshold}}green{{else}}orange{{end}}">v{{.StakeVersionMostPopular}}</span>
                 {{end}}
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
-                <br> Upgrade Interval: <span class="highlight-text">{{commaSeparate .StakeVersionIntervalStart}} - {{commaSeparate .StakeVersionIntervalEnd}}</span>
+                {{if .PosUpgrade.Completed}}
+                  <br> Upgrade Interval: <span class="highlight-text">{{commaSeparate .PosUpgrade.UpgradeInterval.StartHeight}} -
+                  {{commaSeparate .PosUpgrade.UpgradeInterval.EndHeight}}</span>
+                  {{else}}
+                  <br> Current Interval: <span class="highlight-text">{{commaSeparate .CurrentSVIStartHeight}} - {{commaSeparate .CurrentSVIEndHeight}}</span>
+                {{end}}
               </div>
-              {{if not .StakeVersionSuccess}}
+              {{if not .PosUpgrade.Completed}}
               <div class="pow-pos-time-remaining transition"><code>{{.StakeVersionTimeRemaining}} remaining</code></div>
               {{end}}
             </div>
@@ -205,10 +210,10 @@
                 ">
                 </div>
               </div>
-              {{if not .StakeVersionSuccess}}
+              {{if not .PosUpgrade.Completed}}
               <div class="pow-pos-upgrade progress-bar-threshold" style="left: {{.StakeVersionThreshold}}%"></div>
               {{end}}
-              <div class="heading progress-bar-pow-pos-percent">{{if not .StakeVersionSuccess}}
+              <div class="heading progress-bar-pow-pos-percent">{{if not .PosUpgrade.Completed}}
                 {{twoDecimalPlaces .StakeVersionMostPopularPercentage}}%
                 {{else}}
                 Phase Complete
@@ -225,13 +230,19 @@
                 </div>
               </div>
               <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version:
-                <span class="highlight-text {{if .StakeVersionSuccess}}green{{else}}orange{{end}}">v{{.StakeVersionCurrent}}</span>
-                {{if not .StakeVersionSuccess}}
+                <span class="highlight-text {{if .PosUpgrade.Completed}}green{{else}}orange{{end}}">v{{.StakeVersionCurrent}}</span>
+                {{if not .PosUpgrade.Completed}}
                 <br> Next Version: <span
                   class="highlight-text {{if gt .StakeVersionMostPopularPercentage .StakeVersionThreshold}}green{{else}}orange{{end}}">v{{.StakeVersionMostPopular}}</span>
                 {{end}}
                 <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
-                <br> Upgrade Interval: <span class="highlight-text">{{commaSeparate .StakeVersionIntervalStart}} - {{commaSeparate .StakeVersionIntervalEnd}}</span>
+                {{if .PosUpgrade.Completed}}
+                  <br> Upgrade Interval: <span class="highlight-text">{{commaSeparate .PosUpgrade.UpgradeInterval.StartHeight}} -
+                  {{commaSeparate .PosUpgrade.UpgradeInterval.EndHeight}}</span>
+                {{else}}
+                    <br> Current Interval: <span class="highlight-text">{{commaSeparate .CurrentSVIStartHeight}} -
+                    {{commaSeparate .CurrentSVIEndHeight}}</span>
+                {{end}}
               </div>
             </div>
             <div class="chart-draw lines-big w-clearfix">
@@ -392,7 +403,7 @@
                     {{end}}
                   </div>
                 </div>
-                {{if and $.StakeVersionSuccess $.BlockVersionSuccess $agenda.IsDefined}}
+                {{if and $.PosUpgrade.Completed $.BlockVersionSuccess $agenda.IsDefined}}
                 <div class="agenda-voting-overview-disclaimer">
                 <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}}</small></p>
                 </div>

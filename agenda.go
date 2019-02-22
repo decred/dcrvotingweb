@@ -219,7 +219,7 @@ func agendasForVersions(dcrdClient *rpcclient.Client, maxVoteVersion uint32, cur
 		agendas := agendasFromJSON(*getVoteInfo)
 
 		// Check if upgrade to this version has occurred yet
-		upgradeOccurred, upgradeHeight := svis.GetStakeVersionUpgradeHeight(version)
+		upgradeOccurred, upgradeSVI := svis.GetStakeVersionUpgradeSVI(version)
 
 		if !upgradeOccurred {
 			// Haven't upgraded to this stake version yet. Therefore
@@ -229,6 +229,8 @@ func agendasForVersions(dcrdClient *rpcclient.Client, maxVoteVersion uint32, cur
 			allAgendas = append(allAgendas, agendas...)
 			break
 		}
+
+		upgradeHeight := upgradeSVI.EndHeight
 
 		log.Printf("Upgrade to version %d happened at height %d", version, upgradeHeight)
 

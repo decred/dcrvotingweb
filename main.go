@@ -192,7 +192,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	// Each element in each dataset needs counts for each interval
 	// For example:
 	// version 1: [100, 200, 0, 400]
-	var stakeVersionIntervalEndHeight = int64(0)
+	var CurrentSVIEndHeightHeight = int64(0)
 	var stakeVersionIntervalResults []intervalVersionCounts
 	stakeVersionLabels := make([]string, numIntervals)
 	// Oldest to newest interval (charts are left to right)
@@ -200,9 +200,9 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		interval := &stakeVersionInfo.Intervals[numIntervals-1-i]
 		stakeVersionLabels[i] = fmt.Sprintf("%v - %v", interval.StartHeight, interval.EndHeight-1)
 		if i == numIntervals-1 {
-			stakeVersionIntervalEndHeight = interval.StartHeight + activeNetParams.StakeVersionInterval - 1
-			templateInformation.StakeVersionIntervalStart = interval.StartHeight
-			templateInformation.StakeVersionIntervalEnd = stakeVersionIntervalEndHeight
+			CurrentSVIEndHeightHeight = interval.StartHeight + activeNetParams.StakeVersionInterval - 1
+			templateInformation.CurrentSVIStartHeight = interval.StartHeight
+			templateInformation.CurrentSVIEndHeight = CurrentSVIEndHeightHeight
 		}
 	versionloop:
 		for _, versionCount := range interval.VoteVersions {
@@ -223,7 +223,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 			}
 		}
 	}
-	blocksRemainingStakeInterval := stakeVersionIntervalEndHeight - height
+	blocksRemainingStakeInterval := CurrentSVIEndHeightHeight - height
 	timeLeftDuration := activeNetParams.TargetTimePerBlock * time.Duration(blocksRemainingStakeInterval)
 	templateInformation.StakeVersionTimeRemaining = fmtDuration(timeLeftDuration)
 	stakeVersionLabels[numIntervals-1] = "Current Interval"
@@ -253,16 +253,18 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		return
 	}
 
-	templateInformation.StakeVersionSuccess = false
+	templateInformation.PosUpgrade.Completed = false
+
 	// Check if upgrade to the latest version occurred in a previous SVI
-	upgradeOccured, upgradeHeight := svis.GetStakeVersionUpgradeHeight(svis.MaxVoteVersion)
-	if upgradeOccured && upgradeHeight < height {
+	upgradeOccurred, svi := svis.GetStakeVersionUpgradeSVI(svis.MaxVoteVersion)
+	if upgradeOccurred {
 		templateInformation.StakeVersionMostPopularPercentage = 100
-		templateInformation.StakeVersionSuccess = true
+		templateInformation.PosUpgrade.Completed = true
+		templateInformation.PosUpgrade.UpgradeInterval = svi
 	}
 
 	// Check if Phase Upgrading or Voting
-	if templateInformation.StakeVersionSuccess && templateInformation.BlockVersionSuccess {
+	if templateInformation.PosUpgrade.Completed && templateInformation.BlockVersionSuccess {
 		templateInformation.IsUpgrading = false
 	} else {
 		templateInformation.IsUpgrading = true

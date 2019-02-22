@@ -17,10 +17,9 @@ type StakeVersionIntervals struct {
 	MaxVoteVersion uint32
 }
 
-// GetStakeVersionUpgradeHeight will search through every stake version interval
+// GetStakeVersionUpgradeSVI will search through every stake version interval
 // to find the first SVI which meets the upgrade threshold for the provided version.
-// It then returns the end height of that SVI.
-func (s *StakeVersionIntervals) GetStakeVersionUpgradeHeight(version uint32) (bool, int64) {
+func (s *StakeVersionIntervals) GetStakeVersionUpgradeSVI(version uint32) (upgradeOccurred bool, upgradeSVI dcrjson.VersionInterval) {
 	for i, svi := range s.Intervals {
 		// If this is an incomplete SVI, then the upgrade has not happened.
 		if svi.EndHeight-svi.StartHeight < activeNetParams.StakeVersionInterval {
@@ -40,10 +39,10 @@ func (s *StakeVersionIntervals) GetStakeVersionUpgradeHeight(version uint32) (bo
 		if versionVotes > upgradeThreshold {
 			log.Printf("v%d upgrade threshold was met during SVI %d (blocks %d-%d). Total votes: %d, v%d votes: %d, threshold: %d",
 				version, i+1, svi.StartHeight, svi.EndHeight, totalVotes, version, versionVotes, upgradeThreshold)
-			return true, svi.EndHeight
+			return true, svi
 		}
 	}
-	return false, -1
+	return false, dcrjson.VersionInterval{}
 }
 
 // AllStakeVersionIntervals uses the dcrd client to create an ordered
