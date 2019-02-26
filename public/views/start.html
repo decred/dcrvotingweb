@@ -405,7 +405,7 @@
                 </div>
                 {{if and $.PosUpgrade.Completed $.BlockVersionSuccess $agenda.IsDefined}}
                 <div class="agenda-voting-overview-disclaimer">
-                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}}</small></p>
+                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{if $agenda.IsStarted}}{{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}}{{else}}{{commaSeparate (minus64 $agenda.StartHeight $.BlockHeight)}}{{end}}</small></p>
                 </div>
                 {{end}}
 
