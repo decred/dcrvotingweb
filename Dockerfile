@@ -1,5 +1,5 @@
 # builder image
-FROM golang:1.11
+FROM golang:1.12
 
 LABEL description="hardforkdemo"
 LABEL version="1.0"
