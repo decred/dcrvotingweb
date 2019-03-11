@@ -95,11 +95,6 @@ func (a *Agenda) ActivationBlock() int64 {
 	return -1
 }
 
-// TimeUntilActivation returns the approximate time left until this agenda becomes activated
-func (a *Agenda) TimeUntilActivation(currentHeight int64) string {
-	return blocksToTimeEstimate(a.ActivationBlock() - currentHeight)
-}
-
 // TotalVotes returns the total number of No, Yes and Abstain votes cast against this agenda
 func (a *Agenda) TotalVotes() int64 {
 	return a.VoteCounts["yes"] + a.VoteCounts["no"] + a.VoteCounts["abstain"]

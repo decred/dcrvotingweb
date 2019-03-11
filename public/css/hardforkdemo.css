@@ -1085,22 +1085,6 @@ body {
 
 .agenda-voting-overview-disclaimer {
   clear:both;
-  padding: 5px;
-  width: 66%; 
-  font-size: 14px;
-  background-color: #d1f2fc;
-  border-radius: 3px;
-}
-
-.agenda-voting-overview-disclaimer-lockedin {
-  clear:both;
-  padding: 10px;
-  font-size: 17px;
-  background-color: #d1f2fc;
-  border-radius: 3px;
-}
-.agenda-voting-overview-disclaimer-activated {
-  clear:both;
   padding: 10px;
   font-size: 17px;
   background-color: #d1f2fc;

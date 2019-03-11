@@ -15,11 +15,12 @@ import (
 )
 
 var funcMap = template.FuncMap{
-	"plus":             plus,
-	"minus":            minus,
-	"minus64":          minus64,
-	"commaSeparate":    commaSeparate,
-	"twoDecimalPlaces": twoDecimalPlaces,
+	"plus":                 plus,
+	"minus":                minus,
+	"minus64":              minus64,
+	"commaSeparate":        commaSeparate,
+	"twoDecimalPlaces":     twoDecimalPlaces,
+	"blocksToTimeEstimate": blocksToTimeEstimate,
 }
 
 func plus(a, b int) int {
@@ -122,7 +123,8 @@ func ceilDiv(numerator, denominator int64) int {
 
 // blocksToTimeEstimate returns a human-readable estimate for the amount of time
 // a given number of blocks would take.
-func blocksToTimeEstimate(blocksRemaining int64) string {
+func blocksToTimeEstimate(startHeight int64, currentHeight int64) string {
+	blocksRemaining := startHeight - currentHeight
 	remainingSecs := blocksRemaining * int64(activeNetParams.TargetTimePerBlock.Seconds())
 	if remainingSecs > hourCutoffSecs {
 		value := ceilDiv(remainingSecs, secondsPerDay)
