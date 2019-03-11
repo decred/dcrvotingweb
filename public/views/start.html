@@ -403,39 +403,26 @@
                     {{end}}
                   </div>
                 </div>
-                {{if and $.PosUpgrade.Completed $.BlockVersionSuccess $agenda.IsDefined}}
-                <div class="agenda-voting-overview-disclaimer">
-                <p><small>Blocks left {{if $agenda.IsStarted}}for{{else}}until{{end}} voting: {{if $agenda.IsStarted}}{{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}}{{else}}{{commaSeparate (minus64 $agenda.StartHeight $.BlockHeight)}}{{end}}</small></p>
-                </div>
-                {{end}}
 
-                {{if $agenda.IsStarted}}
-                  {{if $agenda.QuorumMet}}
-                    <!-- <div class="agenda-voting-overview-disclaimer">
-                    <p><small><strong>Success!</strong><br />We have reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.<br />
-                    There are <strong>{{minus64 $agenda.EndHeight $.BlockHeight}}</strong> blocks left in the vote.</small>
-                    </p>
-                    </div> -->
-                  {{else}}
-                  <!--
-                    <div class="agenda-voting-overview-disclaimer">
-                    <p>We have yet not reached the minimum Quorum of {{$.QuorumThreshold}}% actively made votes.
-                    </p>
-                    </div> -->
+                <div class="agenda-voting-overview-disclaimer">
+                <p><small>
+                  {{if and $.PosUpgrade.Completed $.BlockVersionSuccess $agenda.IsDefined}}
+                    Approximately <strong>{{blocksToTimeEstimate $agenda.StartHeight $.BlockHeight}}</strong> until voting starts ({{commaSeparate (minus64 $agenda.StartHeight $.BlockHeight)}} blocks).
                   {{end}}
-                {{end}}
-                {{if $agenda.IsLockedIn}}
-                    <div class="agenda-voting-overview-disclaimer-lockedin">
-                    <p><small>The vote has passed! The new rules will be activated in approximately <strong>{{$agenda.TimeUntilActivation $.BlockHeight}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.</small>
-                    </p>
-                    </div>
-                {{end}}
-                {{if $agenda.IsActive}}
-                    <div class="agenda-voting-overview-disclaimer-activated">
-                    <p><small>The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.</small>
-                    </p>
-                    </div>
-                {{end}}
+                  
+                  {{if $agenda.IsStarted}}
+                    Approximately <strong>{{blocksToTimeEstimate $agenda.EndHeight $.BlockHeight}}</strong> left for voting ({{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}} blocks).
+                  {{end}}
+
+                  {{if $agenda.IsLockedIn}}
+                    The vote has passed! The new rules will be activated in approximately <strong>{{blocksToTimeEstimate $agenda.ActivationBlock $.BlockHeight}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.
+                  {{end}}
+
+                  {{if $agenda.IsActive}}
+                    The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.
+                  {{end}}
+                </small></p>
+                </div>
             </div>
           </div>
 
