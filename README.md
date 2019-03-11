@@ -10,23 +10,28 @@ information about the tesnet hardfork voting.
 
 ## Developing
 
-``` bash
-go get -v github.com/golang/dep/cmd/dep
-go get -v github.com/decred/hardforkdemo
-cd $GOPATH/github.com/decred/hardforkdemo
-dep ensure
+It is recommended to use Go 1.12 for development:
+
+```no-highlight
+$ go version
+go version go1.12 linux/amd64
+```
+
+To build the code:
+
+```no-highlight
 go install
 ```
 
-Start dcrd with the following options.  
+Start dcrd with the following options:
 
-```bash
+```no-highlight
 dcrd --testnet -u USER -P PASSWORD --rpclisten=127.0.0.1:19109 --rpccert=$HOME/.dcrd/rpc.cert
 ```
 
-Start hardforkdemo
+Start hardforkdemo:
 
-```bash
+```no-highlight
 hardforkdemo
 ```
 
@@ -34,13 +39,13 @@ hardforkdemo
 
 Build the docker container:
 
-```bash
+```no-highlight
 docker build -t decred/hardforkdemo .
 ```
 
 Run the container:
 
-```bash
+```no-highlight
 docker run -it -v ~/.dcrd:/root/.dcrd -v ~/.hardforkdemo:/root/.hardforkdemo -p <local port>:8000 hardforkdemo
 ```
 
@@ -50,18 +55,11 @@ Your `hardforkdemo.conf` file will need to specificy `listen=0.0.0.0` in order f
 
 ## Contact
 
-If you have any further questions you can find us at:
-
-- irc.freenode.net (channel #decred)
-- [webchat](https://webchat.freenode.net/?channels=decred)
-- forum.decred.org
-- decred.slack.com
+If you have any further questions you can join the [Decred community](https://decred.org/community/) using your preferred chat platform.
 
 ## Issue Tracker
 
-The
-[integrated github issue tracker](https://github.com/decred/hardforkdemo/issues)
-is used for this project.
+The [integrated github issue tracker](https://github.com/decred/hardforkdemo/issues) is used for this project.
 
 ## License
 
