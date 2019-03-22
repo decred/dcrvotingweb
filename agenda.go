@@ -76,7 +76,7 @@ func (a *Agenda) IsFailed() bool {
 // QuorumMet indicates if the total number of yes/note
 // votes has surpassed the quorum threshold
 func (a *Agenda) QuorumMet() bool {
-	return a.VoteCounts["yes"]+a.VoteCounts["no"] >= a.QuorumThreshold
+	return a.TotalNonAbstainVotes() >= a.QuorumThreshold
 }
 
 // BlockLockedIn returns the height of the first block of this agenda's lock-in period. -1 if this agenda has not been locked-in.
@@ -95,9 +95,14 @@ func (a *Agenda) ActivationBlock() int64 {
 	return -1
 }
 
+// TotalNonAbstainVotes returns the sum of Yes votes and No votes
+func (a *Agenda) TotalNonAbstainVotes() int64 {
+	return a.VoteCounts["yes"] + a.VoteCounts["no"]
+}
+
 // TotalVotes returns the total number of No, Yes and Abstain votes cast against this agenda
 func (a *Agenda) TotalVotes() int64 {
-	return a.VoteCounts["yes"] + a.VoteCounts["no"] + a.VoteCounts["abstain"]
+	return a.TotalNonAbstainVotes() + a.VoteCounts["abstain"]
 }
 
 // VotePercent returns the the number of yes/no/abstains votes, as a percentage of
@@ -116,8 +121,7 @@ func (a *Agenda) VoteCountPercentage(voteID string) float64 {
 // ApprovalRating returns the number of yes votes cast against this agenda as
 // a percentage of all non-abstain votes
 func (a *Agenda) ApprovalRating() float64 {
-	totalActingVotes := a.VoteCounts["yes"] + a.VoteCounts["no"]
-	approvalRating := float64(a.VoteCounts["yes"]) / float64(totalActingVotes)
+	approvalRating := float64(a.VoteCounts["yes"]) / float64(a.TotalNonAbstainVotes())
 	return 100 * approvalRating
 }
 

@@ -326,13 +326,18 @@
 
 
               <!-- quorum indicator -->
-              {{if $agenda.IsStarted}}
+              {{if $agenda.VotingStarted}}
               <div class="quorum w-clearfix">Quorum: &nbsp;
                 {{if $agenda.QuorumMet}}
                 <span class="highlight-text green transparent quorum">Yes</span>
                 {{else}}
                 <span class="highlight-text orange transparent quorum">No</span>
                 {{end}}
+                <div class="tooltip">
+                  <div class="tooltip-option-name">
+                    {{commaSeparate $agenda.TotalNonAbstainVotes}} votes of {{commaSeparate $agenda.QuorumThreshold}} required
+                  </div>
+                </div>
               </div>
               {{end}}
             </div>

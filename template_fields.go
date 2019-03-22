@@ -68,8 +68,6 @@ type templateFields struct {
 	// StakeVersionTimeRemaining is a string to show how much estimated time is remaining in the stake version interval.
 	StakeVersionTimeRemaining string
 
-	// QuorumThreshold is the percentage required for the RuleChange to become active.
-	QuorumThreshold float64
 	// Length of the static rule change interval
 	RuleChangeActivationInterval int64
 	// Agendas contains all the agendas and their statuses

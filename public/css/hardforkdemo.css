@@ -1187,9 +1187,7 @@ body {
   text-transform: capitalize;
 }
 
-.option-progress:hover                .tooltip,
-.indicator-icon:hover                 .tooltip,
-.agenda-voting-overview-option:hover  .tooltip {
+*:hover > .tooltip {
   visibility: visible;
 }
 
@@ -1213,6 +1211,7 @@ body {
 }
 
 .quorum {
+  position: relative;
   margin-top: 10px;
   float: right;
   clear: right;
