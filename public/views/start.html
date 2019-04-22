@@ -287,7 +287,7 @@
               <div class="failed indicator">Failed</div>
               {{end}}
               {{if $agenda.IsLockedIn}}
-              <div class="finished indicator">Lockedin</div>
+              <div class="finished indicator">Locked In</div>
               {{end}}
 
               <!-- status icons -->
@@ -391,13 +391,13 @@
                       <div class="agenda-voting-overview-option-block value">{{twoDecimalPlaces $agenda.ApprovalRating}}%</div>
                     </div>
                     {{end}}
-                    {{if $agenda.IsActive}}
+                    {{if or $agenda.IsLockedIn $agenda.IsActive}}
                     <div class="agenda-voting-overview-option-active w-clearfix">
                       <div class="agenda-voting-overview-option-block">Locked In:</div>
                       <div class="agenda-voting-overview-option-block value">{{commaSeparate $agenda.BlockLockedIn}}</div>
                     </div>
                     <div class="agenda-voting-overview-option-active w-clearfix">
-                      <div class="agenda-voting-overview-option-block">Activated:</div>
+                      <div class="agenda-voting-overview-option-block">{{if $agenda.IsLockedIn}}Activates{{else}}Activated{{end}}:</div>
                       <div class="agenda-voting-overview-option-block value">{{commaSeparate $agenda.ActivationBlock}}</div>
                     </div>
                     {{end}}
