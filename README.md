@@ -1,10 +1,10 @@
-# hardforkdemo
+# dcrvotingweb
 
-[![Build Status](https://travis-ci.org/decred/hardforkdemo.png?branch=master)](https://travis-ci.org/decred/hardforkdemo)
+[![Build Status](https://travis-ci.org/decred/dcrvotingweb.png?branch=master)](https://travis-ci.org/decred/dcrvotingweb)
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 
-hardforkdemo is a simple web app that connects to dcrd and displays
-information about the tesnet hardfork voting.
+dcrvotingweb is a simple web app that connects to dcrd and displays
+information about consensus rule voting.
 
 ## Installation
 
@@ -29,10 +29,10 @@ Start dcrd with the following options:
 dcrd --testnet -u USER -P PASSWORD --rpclisten=127.0.0.1:19109 --rpccert=$HOME/.dcrd/rpc.cert
 ```
 
-Start hardforkdemo:
+Start dcrvotingweb:
 
 ```no-highlight
-hardforkdemo
+dcrvotingweb
 ```
 
 ## Docker
@@ -40,18 +40,18 @@ hardforkdemo
 Build the docker container:
 
 ```no-highlight
-docker build -t decred/hardforkdemo .
+docker build -t decred/dcrvotingweb .
 ```
 
 Run the container:
 
 ```no-highlight
-docker run -it -v ~/.dcrd:/root/.dcrd -v ~/.hardforkdemo:/root/.hardforkdemo -p <local port>:8000 hardforkdemo
+docker run -it -v ~/.dcrd:/root/.dcrd -v ~/.dcrvotingweb:/root/.dcrvotingweb -p <local port>:8000 dcrvotingweb
 ```
 
-This example assumes you have configured `.dcrd` and `.hardforkdemo` directories in `~` on the host machine.
+This example assumes you have configured `.dcrd` and `.dcrvotingweb` directories in `~` on the host machine.
 
-Your `hardforkdemo.conf` file will need to specificy `listen=0.0.0.0` in order for the external port mapping to work correctly.
+Your `dcrvotingweb.conf` file will need to specificy `listen=0.0.0.0` in order for the external port mapping to work correctly.
 
 ## Contact
 
@@ -59,8 +59,8 @@ If you have any further questions you can join the [Decred community](https://de
 
 ## Issue Tracker
 
-The [integrated github issue tracker](https://github.com/decred/hardforkdemo/issues) is used for this project.
+The [integrated github issue tracker](https://github.com/decred/dcrvotingweb/issues) is used for this project.
 
 ## License
 
-hardforkdemo is licensed under the [copyfree](http://copyfree.org) ISC License.
+dcrvotingweb is licensed under the [copyfree](http://copyfree.org) ISC License.

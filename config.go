@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	defaultConfigFilename = "hardforkdemo.conf"
+	defaultConfigFilename = "dcrvotingweb.conf"
 )
 
 var (
@@ -28,12 +28,12 @@ var (
 
 	// Default configuration options
 	defaultConfigFile  = filepath.Join(defaultHomeDir, defaultConfigFilename)
-	defaultHomeDir     = dcrutil.AppDataDir("hardforkdemo", false)
+	defaultHomeDir     = dcrutil.AppDataDir("dcrvotingweb", false)
 	defaultRPCCertFile = filepath.Join(defaultHomeDir, "rpc.cert")
 	defaultListenPort  = "8000"
 )
 
-// config defines the configuration options for hardforkdemo.
+// config defines the configuration options.
 //
 // See loadConfig for details on the configuration load process.
 type config struct {

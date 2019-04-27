@@ -1,4 +1,6 @@
 *~
 vendor/
 hardforkdemo
+dcrvotingweb
 *.orig
+.vscode
