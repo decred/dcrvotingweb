@@ -1,5 +1,5 @@
 @font-face {
-    font-family: "hardforkdemo-code";
+    font-family: "dcrvotingweb-code";
     src:
         url("/fonts/SourceCodePro-Regular/SourceCodePro-Regular.ttf.woff2") format("woff2"),
         url("/fonts/SourceCodePro-Regular/SourceCodePro-Regular.ttf.woff")  format("woff"),
@@ -8,7 +8,7 @@
 }
 
 @font-face {
-    font-family: "hardforkdemo";
+    font-family: "dcrvotingweb";
     src:
         url("/fonts/SourceSansPro-Regular/SourceSansPro-Regular.ttf.woff2") format("woff2"),
         url("/fonts/SourceSansPro-Regular/SourceSansPro-Regular.ttf.woff") format("woff"),
@@ -17,7 +17,7 @@
 }
 
 @font-face {
-    font-family: "hardforkdemo";
+    font-family: "dcrvotingweb";
     src:
         url("/fonts/SourceSansPro-Semibold/SourceSansPro-Semibold.ttf.woff2") format("woff2"),
         url("/fonts/SourceSansPro-Semibold/SourceSansPro-Semibold.ttf.woff") format("woff"),
@@ -27,7 +27,7 @@
 }
 
 @font-face {
-    font-family: "hardforkdemo";
+    font-family: "dcrvotingweb";
     src:
         url("/fonts/SourceSansPro-It/SourceSansPro-It.ttf.woff2") format("woff2"),
         url("/fonts/SourceSansPro-It/SourceSansPro-It.ttf.woff") format("woff"),
@@ -37,7 +37,7 @@
 }
 
 @font-face {
-    font-family: "hardforkdemo";
+    font-family: "dcrvotingweb";
     src:
         url("/fonts/SourceSansPro-SemiboldIt/SourceSansPro-SemiboldIt.ttf.woff2") format("woff2"),
         url("/fonts/SourceSansPro-SemiboldIt/SourceSansPro-SemiboldIt.ttf.woff") format("woff"),
@@ -49,10 +49,10 @@
 
 html, body {
     /* use !important to prevent issues with browser extensions that change fonts */
-    font-family: "hardforkdemo", "Verdana", "sans-serif" !important;
+    font-family: "dcrvotingweb", "Verdana", "sans-serif" !important;
 }
 
 pre, code {
     /* use !important to prevent issues with browser extensions that change fonts */
-    font-family: "hardforkdemo-code", "Courier New", "monospace" !important;
+    font-family: "dcrvotingweb-code", "Courier New", "monospace" !important;
 }

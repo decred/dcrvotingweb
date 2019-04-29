@@ -1,4 +1,4 @@
-module github.com/decred/hardforkdemo
+module github.com/decred/dcrvotingweb
 
 go 1.12
 

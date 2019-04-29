@@ -1,7 +1,7 @@
 # builder image
 FROM golang:1.12
 
-LABEL description="hardforkdemo"
+LABEL description="dcrvotingweb"
 LABEL version="1.0"
 LABEL maintainer "holdstockjamie@gmail.com"
 
@@ -12,4 +12,4 @@ WORKDIR /app
 RUN go build
 
 EXPOSE 8000
-CMD ["/app/hardforkdemo"]
+CMD ["/app/dcrvotingweb"]

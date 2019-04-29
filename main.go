@@ -67,7 +67,7 @@ var (
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
 func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *wire.BlockHeader) {
-	log.Println("updating hard fork information")
+	log.Println("updating vote information")
 
 	hash := latestBlockHeader.BlockHash()
 	height := int64(latestBlockHeader.Height)
@@ -405,7 +405,7 @@ func mainCore() int {
 					blkHdr.BlockHash(), blkHdr.Height)
 				updatetemplateInformation(dcrdClient, &blkHdr)
 			case <-quit:
-				log.Println("Closing hardfork demo.")
+				log.Println("Closing dcrvotingweb")
 				wg.Done()
 				return
 			}
