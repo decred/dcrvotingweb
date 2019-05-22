@@ -46,10 +46,10 @@
   <div class="main">
     <div class="header-bg">
       <div class="header w-clearfix width-1180">
-        <a class="header-logo w-inline-block" href="https://www.decred.org">
+        <a class="header-logo w-inline-block" href="https://www.decred.org" target="_blank" rel="noopener noreferrer">
           <img src="/images/logo.svg" />
         </a>
-        <a class="header-link" href="{{.BlockExplorerURL}}/block/{{.BlockHeight}}">Block #{{commaSeparate .BlockHeight}}</a>
+        <a class="header-link" href="{{.BlockExplorerURL}}/block/{{.BlockHeight}}" target="_blank" rel="noopener noreferrer">Block #{{commaSeparate .BlockHeight}}</a>
         {{if .IsUpgrading}}
 <!-- Phase 1 Upgrading -->
           <span class="header-link"> | &nbsp;Current phase: Upgrading</span>
@@ -420,11 +420,11 @@
                   {{end}}
 
                   {{if $agenda.IsLockedIn}}
-                    The vote has passed! The new rules will be activated in approximately <strong>{{blocksToTimeEstimate $agenda.ActivationBlock $.BlockHeight}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.
+                    The vote has passed! The new rules will be activated in approximately <strong>{{blocksToTimeEstimate $agenda.ActivationBlock $.BlockHeight}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
                   {{end}}
 
                   {{if $agenda.IsActive}}
-                    The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank">Downloads Page</a> to get the latest Software.
+                    The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
                   {{end}}
                 </small></p>
                 </div>
@@ -482,7 +482,7 @@ This is measured in the following ways:
 <span class="highlightoverview">The second phase</span> is the voting itself. Voting takes place within a static {{commaSeparate .RuleChangeActivationInterval}} block interval. If 75% of votes mined within that interval signal a ‘yes’ vote to the proposals, the changes are implemented. Implementation happens after one additional block interval to allow any remaining nodes to update prior to the fork.
             </p>
             <p>
-<span class="highlightoverview"><a href="https://docs.decred.org/governance/consensus-rule-voting/consensus-rules-voting/" target="_blank">Visit our Documentation to learn more</a></span>
+<span class="highlightoverview"><a href="https://docs.decred.org/governance/consensus-rule-voting/consensus-rules-voting/" target="_blank" rel="noopener noreferrer">Visit our Documentation to learn more</a></span>
             </p>
         </div>
     </div>
