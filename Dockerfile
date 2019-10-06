@@ -1,5 +1,5 @@
 # builder image
-FROM golang:1.12
+FROM golang:1.13
 
 LABEL description="dcrvotingweb"
 LABEL version="1.0"
