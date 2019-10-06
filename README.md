@@ -1,6 +1,6 @@
 # dcrvotingweb
 
-[![Build Status](https://travis-ci.org/decred/dcrvotingweb.png?branch=master)](https://travis-ci.org/decred/dcrvotingweb)
+[![Build Status](https://github.com/decred/dcrvotingweb/workflows/Build%20and%20Test/badge.svg)](https://github.com/decred/dcrvotingweb/actions)
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 
 dcrvotingweb is a simple web app that connects to dcrd and displays
@@ -10,11 +10,11 @@ information about consensus rule voting.
 
 ## Developing
 
-It is recommended to use Go 1.12 for development:
+It is recommended to use Go 1.13 (or newer) for development:
 
 ```no-highlight
 $ go version
-go version go1.12 linux/amd64
+go version go1.13.1 linux/amd64
 ```
 
 To build the code:
