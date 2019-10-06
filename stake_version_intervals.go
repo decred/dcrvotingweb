@@ -7,19 +7,19 @@ package main
 import (
 	"log"
 
-	"github.com/decred/dcrd/dcrjson"
-	"github.com/decred/dcrd/rpcclient"
+	"github.com/decred/dcrd/rpc/jsonrpc/types"
+	"github.com/decred/dcrd/rpcclient/v4"
 )
 
-// StakeVersionIntervals wraps a set of dcrjson.VersionIntervals
+// StakeVersionIntervals wraps a set of types.VersionIntervals
 type StakeVersionIntervals struct {
-	Intervals      []dcrjson.VersionInterval
+	Intervals      []types.VersionInterval
 	MaxVoteVersion uint32
 }
 
 // GetStakeVersionUpgradeSVI will search through every stake version interval
 // to find the first SVI which meets the upgrade threshold for the provided version.
-func (s *StakeVersionIntervals) GetStakeVersionUpgradeSVI(version uint32) (upgradeOccurred bool, upgradeSVI dcrjson.VersionInterval) {
+func (s *StakeVersionIntervals) GetStakeVersionUpgradeSVI(version uint32) (upgradeOccurred bool, upgradeSVI types.VersionInterval) {
 	for i, svi := range s.Intervals {
 		// If this is an incomplete SVI, then the upgrade has not happened.
 		if svi.EndHeight-svi.StartHeight < activeNetParams.StakeVersionInterval {
@@ -42,7 +42,7 @@ func (s *StakeVersionIntervals) GetStakeVersionUpgradeSVI(version uint32) (upgra
 			return true, svi
 		}
 	}
-	return false, dcrjson.VersionInterval{}
+	return false, types.VersionInterval{}
 }
 
 // AllStakeVersionIntervals uses the dcrd client to create an ordered

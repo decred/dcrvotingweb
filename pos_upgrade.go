@@ -5,12 +5,12 @@
 package main
 
 import (
-	"github.com/decred/dcrd/dcrjson"
+	"github.com/decred/dcrd/rpc/jsonrpc/types"
 )
 
 type posUpgrade struct {
 	// Completed is a bool indicating whether the stake version has upgraded to the latest version.
 	Completed bool
 	// UpgradeInterval is the interval where the upgrade took place. Nil if upgrade has not happened.
-	UpgradeInterval dcrjson.VersionInterval
+	UpgradeInterval types.VersionInterval
 }
