@@ -11,8 +11,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/decred/dcrd/dcrjson"
-	"github.com/decred/dcrd/rpcclient"
+	"github.com/decred/dcrd/rpc/jsonrpc/types"
+	"github.com/decred/dcrd/rpcclient/v4"
 )
 
 // Agenda contains all of the data representing an agenda for the html
@@ -152,7 +152,7 @@ func (a *Agenda) countVotes(dcrdClient *rpcclient.Client, votingStartHeight int6
 	}
 
 	// Collect all votes of the correct version
-	var votes []dcrjson.VersionBits
+	var votes []types.VersionBits
 	for _, sVer := range stakeVersions.StakeVersions {
 		for _, vote := range sVer.Votes {
 			if vote.Version == a.VoteVersion {
@@ -178,7 +178,7 @@ func (a *Agenda) countVotes(dcrdClient *rpcclient.Client, votingStartHeight int6
 
 // agendasFromJSON parses the response from GetVoteInfo, and
 // uses the data to create a set of Agenda objects
-func agendasFromJSON(getVoteInfo dcrjson.GetVoteInfoResult) []Agenda {
+func agendasFromJSON(getVoteInfo types.GetVoteInfoResult) []Agenda {
 	var parsedAgendas []Agenda
 	for _, a := range getVoteInfo.Agendas {
 		voteChoices := make(map[string]VoteChoice)

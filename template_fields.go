@@ -7,7 +7,7 @@ package main
 import (
 	"html/template"
 
-	"github.com/decred/dcrd/dcrjson"
+	"github.com/decred/dcrd/rpc/jsonrpc/types"
 )
 
 // Overall data structure given to the template to render.
@@ -54,7 +54,7 @@ type templateFields struct {
 	// StakeVersionIntervalLabels are labels for the bar graph for each of the past 4 fixed stake version intervals.
 	StakeVersionIntervalLabels []string
 	// StakeVersionsIntervals  is the data received from GetStakeVersionInfo json-rpc call to dcrd.
-	StakeVersionsIntervals []dcrjson.VersionInterval
+	StakeVersionsIntervals []types.VersionInterval
 	// StakeVersionIntervalResults is the data after being analyzed for graph displaying.
 	StakeVersionIntervalResults []intervalVersionCounts
 	// PosUpgrade contains fields describing the stake version upgrade.

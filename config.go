@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/decred/dcrd/chaincfg"
-	"github.com/decred/dcrd/dcrutil"
+	"github.com/decred/dcrd/chaincfg/v2"
+	"github.com/decred/dcrd/dcrutil/v2"
 	flags "github.com/jessevdk/go-flags"
 )
 
@@ -136,12 +136,12 @@ func loadConfig() (*config, error) {
 	var defaultRPCPort string
 
 	if cfg.TestNet {
-		activeNetParams = &chaincfg.TestNet3Params
+		activeNetParams = chaincfg.TestNet3Params()
 		blockVersion = blockVersionTest
 		blockExplorerURL = "https://testnet.dcrdata.org"
 		defaultRPCPort = "19109"
 	} else {
-		activeNetParams = &chaincfg.MainNetParams
+		activeNetParams = chaincfg.MainNetParams()
 		blockVersion = blockVersionMain
 		blockExplorerURL = "https://mainnet.dcrdata.org"
 		defaultRPCPort = "9109"

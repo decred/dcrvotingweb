@@ -16,7 +16,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/decred/dcrd/rpcclient"
+	"github.com/decred/dcrd/rpcclient/v4"
 	"github.com/decred/dcrd/wire"
 )
 
