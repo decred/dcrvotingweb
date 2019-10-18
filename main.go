@@ -39,11 +39,11 @@ const (
 
 	// blockVersionMain is the version of the block being generated for
 	// the main network.
-	blockVersionMain = 6
+	blockVersionMain = 7
 
 	// blockVersionTest is the version of the block being generated
 	// for the testnet network.
-	blockVersionTest = 7
+	blockVersionTest = 8
 )
 
 var (
@@ -53,16 +53,18 @@ var (
 	templateInformation *templateFields
 
 	friendlyAgendaLabels = map[string]string{
-		"sdiffalgorithm": "Change PoS Staking Algorithm",
-		"lnsupport":      "Start Lightning Network Support",
-		"lnfeatures":     "Enable Lightning Network Features",
-		"fixlnseqlocks":  "Update Sequence Lock Rules"}
+		"sdiffalgorithm":    "Change PoS Staking Algorithm",
+		"lnsupport":         "Start Lightning Network Support",
+		"lnfeatures":        "Enable Lightning Network Features",
+		"fixlnseqlocks":     "Update Sequence Lock Rules",
+		"headercommitments": "Enable Block Header Commitments"}
 
 	longAgendaDescriptions = map[string]template.HTML{
-		"sdiffalgorithm": template.HTML("Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals."),
-		"lnsupport":      template.HTML("The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration."),
-		"lnfeatures":     template.HTML("The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration."),
-		"fixlnseqlocks":  template.HTML("In order to fully support the <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a>, the current sequence lock consensus rules need to be modified.")}
+		"sdiffalgorithm":    template.HTML("Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals."),
+		"lnsupport":         template.HTML("The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration."),
+		"lnfeatures":        template.HTML("The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration."),
+		"fixlnseqlocks":     template.HTML("In order to fully support the <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a>, the current sequence lock consensus rules need to be modified."),
+		"headercommitments": template.HTML("Proposed modifications to the Decred block header to increase the security and efficiency of lightweight clients, as well as adding infrastructure to enable future scalability enhancements.")}
 )
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
