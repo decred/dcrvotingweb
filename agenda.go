@@ -11,8 +11,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/decred/dcrd/rpc/jsonrpc/types"
-	"github.com/decred/dcrd/rpcclient/v4"
+	"github.com/decred/dcrd/rpc/jsonrpc/types/v2"
+	"github.com/decred/dcrd/rpcclient/v5"
 )
 
 // Agenda contains all of the data representing an agenda for the html
@@ -179,7 +179,7 @@ func (a *Agenda) countVotes(dcrdClient *rpcclient.Client, votingStartHeight int6
 // agendasFromJSON parses the response from GetVoteInfo, and
 // uses the data to create a set of Agenda objects
 func agendasFromJSON(getVoteInfo types.GetVoteInfoResult) []Agenda {
-	var parsedAgendas []Agenda
+	parsedAgendas := make([]Agenda, 0, len(getVoteInfo.Agendas))
 	for _, a := range getVoteInfo.Agendas {
 		voteChoices := make(map[string]VoteChoice)
 		for _, choice := range a.Choices {

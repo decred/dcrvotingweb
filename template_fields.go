@@ -7,7 +7,7 @@ package main
 import (
 	"html/template"
 
-	"github.com/decred/dcrd/rpc/jsonrpc/types"
+	"github.com/decred/dcrd/rpc/jsonrpc/types/v2"
 )
 
 // Overall data structure given to the template to render.
