@@ -6,6 +6,6 @@ import "fmt"
 
 // UseSIGToReloadTemplates wraps (*WebUI).UseSIGToReloadTemplates for Windows
 // systems, where there are no signals to use.
-func (wu *WebUI) UseSIGToReloadTemplates() {
+func (td *WebUI) UseSIGToReloadTemplates() {
 	fmt.Println("Signals are unsupported on Windows.")
 }

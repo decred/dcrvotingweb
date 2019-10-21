@@ -16,7 +16,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/decred/dcrd/rpcclient/v4"
+	"github.com/decred/dcrd/rpcclient/v5"
 	"github.com/decred/dcrd/wire"
 )
 
@@ -282,7 +282,6 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	templateInformation.RulesActivated = true
 
 	for _, agenda := range templateInformation.Agendas {
-
 		// Check to see if all agendas are pending activation
 		if !agenda.IsLockedIn() {
 			templateInformation.PendingActivation = false

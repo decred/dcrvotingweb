@@ -7,8 +7,8 @@ package main
 import (
 	"log"
 
-	"github.com/decred/dcrd/rpc/jsonrpc/types"
-	"github.com/decred/dcrd/rpcclient/v4"
+	"github.com/decred/dcrd/rpc/jsonrpc/types/v2"
+	"github.com/decred/dcrd/rpcclient/v5"
 )
 
 // StakeVersionIntervals wraps a set of types.VersionIntervals
@@ -30,9 +30,9 @@ func (s *StakeVersionIntervals) GetStakeVersionUpgradeSVI(version uint32) (upgra
 		var totalVotes int32
 		var versionVotes int32
 		for _, voteVersion := range svi.VoteVersions {
-			totalVotes = totalVotes + int32(voteVersion.Count)
+			totalVotes += int32(voteVersion.Count)
 			if voteVersion.Version == version {
-				versionVotes = versionVotes + int32(voteVersion.Count)
+				versionVotes += int32(voteVersion.Count)
 			}
 		}
 		upgradeThreshold := totalVotes * activeNetParams.StakeMajorityMultiplier / activeNetParams.StakeMajorityDivisor

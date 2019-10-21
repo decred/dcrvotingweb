@@ -5,7 +5,7 @@
 package main
 
 import (
-	"github.com/decred/dcrd/rpc/jsonrpc/types"
+	"github.com/decred/dcrd/rpc/jsonrpc/types/v2"
 )
 
 type posUpgrade struct {
