@@ -409,25 +409,39 @@
                   </div>
                 </div>
 
-                <div class="agenda-voting-overview-disclaimer">
-                <p><small>
-                  {{if and $.PosUpgrade.Completed $.BlockVersionSuccess $agenda.IsDefined}}
-                    Approximately <strong>{{blocksToTimeEstimate $agenda.StartHeight $.BlockHeight}}</strong> until voting starts ({{commaSeparate (minus64 $agenda.StartHeight $.BlockHeight)}} blocks).
-                  {{end}}
-                  
-                  {{if $agenda.IsStarted}}
-                    Approximately <strong>{{blocksToTimeEstimate $agenda.EndHeight $.BlockHeight}}</strong> left for voting ({{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}} blocks).
-                  {{end}}
-
-                  {{if $agenda.IsLockedIn}}
-                    The vote has passed! The new rules will be activated in approximately <strong>{{blocksToTimeEstimate $agenda.ActivationBlock $.BlockHeight}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
-                  {{end}}
-
-                  {{if $agenda.IsActive}}
-                    The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
-                  {{end}}
-                </small></p>
+                
+                {{if and $.PosUpgrade.Completed $.BlockVersionSuccess $agenda.IsDefined}}
+                  <div class="agenda-voting-overview-disclaimer">
+                    <p><small>
+                      Approximately <strong>{{blocksToTimeEstimate $agenda.StartHeight $.BlockHeight}}</strong> until voting starts ({{commaSeparate (minus64 $agenda.StartHeight $.BlockHeight)}} blocks).
+                    </small></p>
+                  </div>
+                {{end}}
+                
+                {{if $agenda.IsStarted}}
+                  <div class="agenda-voting-overview-disclaimer">
+                    <p><small>
+                      Approximately <strong>{{blocksToTimeEstimate $agenda.EndHeight $.BlockHeight}}</strong> left for voting ({{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}} blocks).
+                    </small></p>
                 </div>
+                {{end}}
+
+                {{if $agenda.IsLockedIn}}
+                  <div class="agenda-voting-overview-disclaimer">
+                    <p><small>
+                      The vote has passed! The new rules will be activated in approximately <strong>{{blocksToTimeEstimate $agenda.ActivationBlock $.BlockHeight}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
+                    </small></p>
+                  </div>
+                {{end}}
+
+                {{if $agenda.IsActive}}
+                  <div class="agenda-voting-overview-disclaimer">
+                    <p><small>
+                      The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
+                    </small></p>
+                  </div>
+                {{end}}
+                
             </div>
           </div>
 
