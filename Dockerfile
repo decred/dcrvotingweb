@@ -23,6 +23,7 @@ USER root
 WORKDIR /root
 
 COPY --from=0 /root/dcrvotingweb /root/
+COPY --from=0 /root/public       /root/
 
 EXPOSE 8000
 CMD ["/root/dcrvotingweb"]
