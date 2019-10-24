@@ -1,15 +1,29 @@
-# builder image
+# Build image
 FROM golang:1.13
 
-LABEL description="dcrvotingweb"
+LABEL description="dcrvotingweb build"
 LABEL version="1.0"
-LABEL maintainer "holdstockjamie@gmail.com"
+LABEL maintainer "jholdstock@decred.org"
 
 USER root
-RUN mkdir /app
-COPY . /app
-WORKDIR /app
-RUN go build
+WORKDIR /root
+
+COPY ./ /root/
+
+RUN go build -v .
+
+# Serve image
+FROM golang:1.13
+
+LABEL description="dcrvotingweb serve"
+LABEL version="1.0"
+LABEL maintainer "jholdstock@decred.org"
+
+USER root
+WORKDIR /root
+
+COPY --from=0 /root/dcrvotingweb /root/
+COPY --from=0 /root/public       /root/
 
 EXPOSE 8000
-CMD ["/app/dcrvotingweb"]
+CMD ["/root/dcrvotingweb"]

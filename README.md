@@ -48,7 +48,7 @@ docker build -t decred/dcrvotingweb .
 Run the container:
 
 ```no-highlight
-docker run -it -v ~/.dcrd:/root/.dcrd -v ~/.dcrvotingweb:/root/.dcrvotingweb -p <local port>:8000 dcrvotingweb
+docker run -it -v ~/.dcrd:/root/.dcrd -v ~/.dcrvotingweb:/root/.dcrvotingweb -p <local port>:8000 decred/dcrvotingweb
 ```
 
 This example assumes you have configured `.dcrd` and `.dcrvotingweb` directories in `~` on the host machine.
