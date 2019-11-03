@@ -70,12 +70,10 @@ func AllStakeVersionIntervals(dcrdClient *rpcclient.Client, height int64) (Stake
 	}
 
 	// Get max vote version
-	max := uint32(0)
-	for _, i := range svis.Intervals {
-		for _, voteVersion := range i.VoteVersions {
-			if voteVersion.Version > max {
-				max = voteVersion.Version
-			}
+	var max uint32
+	for version := range activeNetParams.Deployments {
+		if version > max {
+			max = version
 		}
 	}
 
