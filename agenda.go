@@ -5,7 +5,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"regexp"
@@ -210,7 +209,7 @@ func agendasForVersions(dcrdClient *rpcclient.Client, maxVoteVersion uint32, cur
 		// Retrieve Agendas for this voting period
 		getVoteInfo, err := dcrdClient.GetVoteInfo(version)
 		if err != nil {
-			if strings.Contains(err.Error(), fmt.Sprintf("stake version %d does not exist", version)) {
+			if strings.Contains(err.Error(), "unrecognized vote version") {
 				continue
 			}
 			return nil, err
