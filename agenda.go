@@ -145,7 +145,7 @@ func (a *Agenda) countVotes(dcrdClient *rpcclient.Client, votingStartHeight int6
 	}
 
 	// Retrieve all votes for this voting period
-	stakeVersions, err := dcrdClient.GetStakeVersions(lastBlockHash.String(), int32(votingEndHeight-votingStartHeight))
+	stakeVersions, err := dcrdClient.GetStakeVersions(lastBlockHash.String(), int32(votingEndHeight-votingStartHeight)+1)
 	if err != nil {
 		return err
 	}
