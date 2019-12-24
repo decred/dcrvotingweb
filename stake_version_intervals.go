@@ -20,6 +20,15 @@ type StakeVersionIntervals struct {
 // GetStakeVersionUpgradeSVI will search through every stake version interval
 // to find the first SVI which meets the upgrade threshold for the provided version.
 func (s *StakeVersionIntervals) GetStakeVersionUpgradeSVI(version uint32) (upgradeOccurred bool, upgradeSVI types.VersionInterval) {
+
+	// Vote version 8 on testnet3 is a strange case - the PoS threshold was met
+	// before the PoW threshold, and this site is not able to cope with that
+	// scenario. Hardcoding the upgrade SVI rather than detecting it
+	// programmatically.
+	if activeNetParams.Name == "testnet3" && version == 8 {
+		return true, s.Intervals[152]
+	}
+
 	for i, svi := range s.Intervals {
 		// If this is an incomplete SVI, then the upgrade has not happened.
 		if svi.EndHeight-svi.StartHeight < activeNetParams.StakeVersionInterval {
