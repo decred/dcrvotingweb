@@ -156,7 +156,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	blockCountPercentage := 100 * float64(blockVersionsCounts[blockVersion]) / float64(activeNetParams.BlockUpgradeNumToCheck)
 	templateInformation.BlockVersionNextPercentage = blockCountPercentage
 
-	if blockVersionsCounts[blockVersion] > int64(activeNetParams.BlockRejectNumRequired) {
+	if blockVersionsCounts[blockVersion] >= int64(activeNetParams.BlockRejectNumRequired) {
 		templateInformation.BlockVersionSuccess = true
 	}
 
