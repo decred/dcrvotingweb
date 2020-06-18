@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -16,7 +17,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/decred/dcrd/rpcclient/v5"
+	"github.com/decred/dcrd/rpcclient/v6"
 	"github.com/decred/dcrd/wire"
 )
 
@@ -68,7 +69,7 @@ var (
 )
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
-func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *wire.BlockHeader) {
+func updatetemplateInformation(ctx context.Context, dcrdClient *rpcclient.Client, latestBlockHeader *wire.BlockHeader) {
 	log.Println("updating vote information")
 
 	hash := latestBlockHeader.BlockHash()
@@ -85,7 +86,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	// Request GetStakeVersions to receive information about past block versions.
 	//
 	// Request twice as many, so we can populate the rolling block version window's first
-	stakeVersionResults, err := dcrdClient.GetStakeVersions(hash.String(),
+	stakeVersionResults, err := dcrdClient.GetStakeVersions(ctx, hash.String(),
 		int32(activeNetParams.BlockUpgradeNumToCheck*2))
 	if err != nil {
 		log.Printf("GetStakeVersions error: %v", err)
@@ -164,7 +165,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	blocksIntoStakeVersionInterval := (height - activeNetParams.StakeValidationHeight) %
 		activeNetParams.StakeVersionInterval
 	// Stake versions per block in current voting interval (getstakeversions hash blocksIntoInterval)
-	intervalStakeVersions, err := dcrdClient.GetStakeVersions(hash.String(),
+	intervalStakeVersions, err := dcrdClient.GetStakeVersions(ctx, hash.String(),
 		int32(blocksIntoStakeVersionInterval))
 	if err != nil {
 		log.Printf("GetStakeVersions error: %v", err)
@@ -177,7 +178,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	}
 
 	// Vote tallies for previous intervals
-	stakeVersionInfo, err := dcrdClient.GetStakeVersionInfo(numberOfIntervals)
+	stakeVersionInfo, err := dcrdClient.GetStakeVersionInfo(ctx, numberOfIntervals)
 	if err != nil {
 		log.Println(err)
 		return
@@ -249,7 +250,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 	templateInformation.StakeVersionMostPopularPercentage = float64(mostPopularVersionCount) / float64(maxPossibleVotes) * 100
 	templateInformation.StakeVersionMostPopular = mostPopularVersion
 
-	svis, err := AllStakeVersionIntervals(dcrdClient, height)
+	svis, err := AllStakeVersionIntervals(ctx, dcrdClient, height)
 	if err != nil {
 		log.Printf("Error stake version intervals: %v", err)
 		return
@@ -272,7 +273,7 @@ func updatetemplateInformation(dcrdClient *rpcclient.Client, latestBlockHeader *
 		templateInformation.IsUpgrading = true
 	}
 
-	templateInformation.Agendas, err = agendasForVersions(dcrdClient, svis.MaxVoteVersion, height, svis)
+	templateInformation.Agendas, err = agendasForVersions(ctx, dcrdClient, svis.MaxVoteVersion, height, svis)
 	if err != nil {
 		log.Printf("Error getting agendas: %v", err)
 		return
@@ -359,8 +360,10 @@ func mainCore() int {
 		dcrdClient.Disconnect()
 	}()
 
+	ctx := context.Background()
+
 	// Subscribe to block notifications
-	if err = dcrdClient.NotifyBlocks(); err != nil {
+	if err = dcrdClient.NotifyBlocks(ctx); err != nil {
 		log.Printf("Failed to start register daemon rpc client for  "+
 			"block notifications: %v\n", err)
 		return 1
@@ -380,20 +383,20 @@ func mainCore() int {
 	}()
 
 	// Get the current best block (height and hash)
-	hash, err := dcrdClient.GetBestBlockHash()
+	hash, err := dcrdClient.GetBestBlockHash(ctx)
 	if err != nil {
 		log.Println(err)
 		return 1
 	}
 	// Request the current block header
-	latestBlockHeader, err := dcrdClient.GetBlockHeader(hash)
+	latestBlockHeader, err := dcrdClient.GetBlockHeader(ctx, hash)
 	if err != nil {
 		log.Println(err)
 		return 1
 	}
 
 	// Run an initial templateInforation update based on current change
-	updatetemplateInformation(dcrdClient, latestBlockHeader)
+	updatetemplateInformation(ctx, dcrdClient, latestBlockHeader)
 
 	// Run goroutine for notifications
 	var wg sync.WaitGroup
@@ -404,7 +407,7 @@ func mainCore() int {
 			case blkHdr := <-connectChan:
 				log.Printf("Block %v (height %v) connected",
 					blkHdr.BlockHash(), blkHdr.Height)
-				updatetemplateInformation(dcrdClient, &blkHdr)
+				updatetemplateInformation(ctx, dcrdClient, &blkHdr)
 			case <-quit:
 				log.Println("Closing dcrvotingweb")
 				wg.Done()
