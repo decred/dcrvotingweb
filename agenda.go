@@ -5,13 +5,14 @@
 package main
 
 import (
+	"context"
 	"html/template"
 	"log"
 	"regexp"
 	"strings"
 
 	"github.com/decred/dcrd/rpc/jsonrpc/types/v2"
-	"github.com/decred/dcrd/rpcclient/v5"
+	"github.com/decred/dcrd/rpcclient/v6"
 )
 
 // Agenda contains all of the data representing an agenda for the html
@@ -136,16 +137,16 @@ func (a *Agenda) DescriptionWithDCPURL() template.HTML {
 // CountVotes uses the dcrd client to find all yes/no/abstain votes
 // cast against this agenda. It will count the votes and store the
 // totals inside the Agenda
-func (a *Agenda) countVotes(dcrdClient *rpcclient.Client, votingStartHeight int64, votingEndHeight int64) error {
+func (a *Agenda) countVotes(ctx context.Context, dcrdClient *rpcclient.Client, votingStartHeight int64, votingEndHeight int64) error {
 	// Find the last block hash of this voting period
 	// Required to call GetStakeVersions
-	lastBlockHash, err := dcrdClient.GetBlockHash(votingEndHeight)
+	lastBlockHash, err := dcrdClient.GetBlockHash(ctx, votingEndHeight)
 	if err != nil {
 		return err
 	}
 
 	// Retrieve all votes for this voting period
-	stakeVersions, err := dcrdClient.GetStakeVersions(lastBlockHash.String(), int32(votingEndHeight-votingStartHeight)+1)
+	stakeVersions, err := dcrdClient.GetStakeVersions(ctx, lastBlockHash.String(), int32(votingEndHeight-votingStartHeight)+1)
 	if err != nil {
 		return err
 	}
@@ -203,11 +204,11 @@ func agendasFromJSON(getVoteInfo types.GetVoteInfoResult) []Agenda {
 	return parsedAgendas
 }
 
-func agendasForVersions(dcrdClient *rpcclient.Client, maxVoteVersion uint32, currentHeight int64, svis StakeVersionIntervals) ([]Agenda, error) {
+func agendasForVersions(ctx context.Context, dcrdClient *rpcclient.Client, maxVoteVersion uint32, currentHeight int64, svis StakeVersionIntervals) ([]Agenda, error) {
 	var allAgendas []Agenda
 	for version := uint32(0); version <= maxVoteVersion; version++ {
 		// Retrieve Agendas for this voting period
-		getVoteInfo, err := dcrdClient.GetVoteInfo(version)
+		getVoteInfo, err := dcrdClient.GetVoteInfo(ctx, version)
 		if err != nil {
 			if strings.Contains(err.Error(), "unrecognized vote version") {
 				continue
@@ -265,7 +266,7 @@ func agendasForVersions(dcrdClient *rpcclient.Client, maxVoteVersion uint32, cur
 		for _, agenda := range agendas {
 			log.Printf("Counting votes for %s between blocks %d-%d",
 				agenda.ID, votingStartHeight, votingEndHeight)
-			err = agenda.countVotes(dcrdClient, votingStartHeight, votingEndHeight)
+			err = agenda.countVotes(ctx, dcrdClient, votingStartHeight, votingEndHeight)
 			if err != nil {
 				return nil, err
 			}

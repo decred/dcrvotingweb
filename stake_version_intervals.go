@@ -5,10 +5,11 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/decred/dcrd/rpc/jsonrpc/types/v2"
-	"github.com/decred/dcrd/rpcclient/v5"
+	"github.com/decred/dcrd/rpcclient/v6"
 )
 
 // StakeVersionIntervals wraps a set of types.VersionIntervals
@@ -57,12 +58,12 @@ func (s *StakeVersionIntervals) GetStakeVersionUpgradeSVI(version uint32) (upgra
 // AllStakeVersionIntervals uses the dcrd client to create an ordered
 // set of objects representing every Stake Version Interval up to the
 // provided block height
-func AllStakeVersionIntervals(dcrdClient *rpcclient.Client, height int64) (StakeVersionIntervals, error) {
+func AllStakeVersionIntervals(ctx context.Context, dcrdClient *rpcclient.Client, height int64) (StakeVersionIntervals, error) {
 	// Use current height to calculate the number of the current SVI
 	totalSVIs := 1 + int32((height-activeNetParams.StakeValidationHeight)/activeNetParams.StakeVersionInterval)
 
 	// Get SVIs details from dcrd
-	stakeVersionInfoResult, err := dcrdClient.GetStakeVersionInfo(totalSVIs)
+	stakeVersionInfoResult, err := dcrdClient.GetStakeVersionInfo(ctx, totalSVIs)
 	if err != nil {
 		return StakeVersionIntervals{}, err
 	}
