@@ -430,7 +430,7 @@
                 {{if $agenda.IsLockedIn}}
                   <div class="agenda-voting-overview-disclaimer">
                     <p><small>
-                      The vote has passed! The new rules will be activated in approximately <strong>{{blocksToTimeEstimate $agenda.ActivationBlock $.BlockHeight}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
+                      The vote has passed! The new rules will be activated in approximately <strong>{{blocksToTimeEstimate $agenda.ActivationBlock $.BlockHeight}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/wallets/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
                     </small></p>
                   </div>
                 {{end}}
@@ -438,7 +438,7 @@
                 {{if $agenda.IsActive}}
                   <div class="agenda-voting-overview-disclaimer">
                     <p><small>
-                      The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/downloads/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
+                      The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/wallets/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
                     </small></p>
                   </div>
                 {{end}}
