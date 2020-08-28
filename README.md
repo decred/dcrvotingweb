@@ -12,11 +12,11 @@ information about consensus rule voting.
 
 ## Developing
 
-It is recommended to use Go 1.14 (or newer) for development:
+It is recommended to use Go 1.15 (or newer) for development:
 
 ```no-highlight
 $ go version
-go version go1.14.4 linux/amd64
+go version go1.15 linux/amd64
 ```
 
 To build the code:
