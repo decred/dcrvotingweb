@@ -309,7 +309,6 @@ func mainCore() int {
 
 	// Chans for rpccclient notification handlers
 	connectChan := make(chan wire.BlockHeader, 100)
-	quit := make(chan struct{})
 
 	// Read in current dcrd cert
 	var dcrdCerts []byte
@@ -360,7 +359,8 @@ func mainCore() int {
 		dcrdClient.Disconnect()
 	}()
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	// Subscribe to block notifications
 	if err = dcrdClient.NotifyBlocks(ctx); err != nil {
@@ -379,7 +379,7 @@ func mainCore() int {
 		signal.Stop(c)
 		// Close the channel so multiple goroutines can get the message
 		log.Println("CTRL+C hit.  Closing.")
-		close(quit)
+		cancel()
 	}()
 
 	// Get the current best block (height and hash)
@@ -408,7 +408,7 @@ func mainCore() int {
 				log.Printf("Block %v (height %v) connected",
 					blkHdr.BlockHash(), blkHdr.Height)
 				updatetemplateInformation(ctx, dcrdClient, &blkHdr)
-			case <-quit:
+			case <-ctx.Done():
 				log.Println("Closing dcrvotingweb")
 				wg.Done()
 				return
@@ -450,7 +450,7 @@ func mainCore() int {
 		err = http.ListenAndServe(cfg.Listen, nil)
 		if err != nil {
 			log.Printf("Failed to bind http server: %v", err)
-			close(quit)
+			cancel()
 		}
 	}()
 
