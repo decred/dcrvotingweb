@@ -18,6 +18,14 @@ import (
 
 const (
 	defaultConfigFilename = "dcrvotingweb.conf"
+
+	// blockVersionMain is the version of the block being generated for
+	// the main network.
+	blockVersionMain = 8
+
+	// blockVersionTest is the version of the block being generated
+	// for the testnet network.
+	blockVersionTest = 9
 )
 
 var (
