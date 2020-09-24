@@ -46,7 +46,7 @@ func (td *WebUI) homePage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-XSS-Protection", "1; mode=block")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("Referrer-Policy", "no-referrer")
-	err := td.templ.Execute(w, td.TemplateData)
+	err := td.templ.ExecuteTemplate(w, "home", td.TemplateData)
 	if err != nil {
 		log.Printf("Failed to Execute: %v", err)
 		return
@@ -61,31 +61,29 @@ func (td *WebUI) homePage(w http.ResponseWriter, r *http.Request) {
 type WebUI struct {
 	TemplateData *templateFields
 	templ        *template.Template
-	templFiles   []string
 }
 
 // NewWebUI is the constructor for WebUI.  It creates a html/template.Template,
 // loads the function map, and parses the template files.
 func NewWebUI() (*WebUI, error) {
-	fp := filepath.Join("public", "views", "start.html")
-	tmpl, err := template.New("home").Funcs(funcMap).ParseFiles(fp)
+	tmpl, err := parseTemplates()
 	if err != nil {
 		return nil, err
 	}
 
-	// may have multiple template files eventually
-	templFiles := []string{fp}
-
 	return &WebUI{
-		templ:      tmpl,
-		templFiles: templFiles,
+		templ: tmpl,
 	}, nil
 }
 
-// ParseTemplates parses the html templates into a new html/template.Temlate.
-func (td *WebUI) ParseTemplates() (err error) {
-	td.templ, err = template.New("home").ParseFiles(td.templFiles...)
-	return
+func parseTemplates() (*template.Template, error) {
+	fp := filepath.Join("public", "views", "*.html")
+	tmpl, err := template.New("home").Funcs(funcMap).ParseGlob(fp)
+	if err != nil {
+		return nil, err
+	}
+
+	return tmpl, nil
 }
 
 // See reloadsig*.go for an exported method
@@ -98,10 +96,12 @@ func (td *WebUI) reloadTemplatesSig(sig os.Signal) {
 			sigr := <-sigChan
 			log.Printf("Received %s", sig)
 			if sigr == sig {
-				if err := td.ParseTemplates(); err != nil {
+				tmpl, err := parseTemplates()
+				if err != nil {
 					log.Println(err)
 					continue
 				}
+				td.templ = tmpl
 				log.Println("Web UI html templates reparsed.")
 			}
 		}

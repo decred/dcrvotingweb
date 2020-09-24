@@ -1,0 +1,185 @@
+{{ define "charts"}}
+<div class="pow-pos-upgrade">
+    <div class="overflow-hidden pow-pos-upgrade w-clearfix width-1180">
+      <div class="pow-upgrade w-clearfix width-half">
+        <div class="chart-toggle-side pow"></div>
+        <div class="transition upgrade-content">
+          <div class="upgrade-content-statistics-header w-clearfix">
+            <div class="heading-container">
+              <img src="/images/pickaxe.svg" class="heading-icon" />
+              <div>
+                <div class="heading">Miner Upgrade</div>
+                <div class="headingsubline">Proof-of-Work</div>
+              </div>
+            </div>
+<!--  POW STATUS LABEL SWITCH -->
+            {{if .BlockVersionSuccess}}
+            <div class="finished indicator pow-pos transition">Completed</div>
+            {{else}}
+            <div class="in-progress indicator pow-pos transition">in-progress</div>
+            {{end}}
+          </div>
+          <div class="upgrade-content-statistics-main w-clearfix">
+            <div class="upgrade-content-statistics-numbers w-clearfix">Current Version:
+              <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionCurrent}}</span>
+              {{if not .BlockVersionSuccess}}
+                <br> Next Version: <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionNext}}</span>
+              {{end}}
+              <br> Upgrade Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
+              <br> Rolling Window: <span class="highlight-text">{{commaSeparate .BlockVersionWindowLength}} Blocks</span>
+            </div>
+            <div class="pow-pos-time-remaining transition"></div>
+          </div>
+          <div class="progress-bar-pow-pos-upgrade">
+            <div class="progress-indicator w-clearfix">
+              <div class="pow progress-percent" style="
+                {{if not .BlockVersionSuccess}}
+                background-color:#fd714b;
+                width: {{twoDecimalPlaces .BlockVersionNextPercentage}}%;
+                {{else}}
+                width: 100%;
+                {{end}}
+              ">
+              </div>
+            </div>
+            {{if not .BlockVersionSuccess}}
+            <div class="pow-pos-upgrade progress-bar-threshold" style="left: {{.BlockVersionRejectThreshold}}%"></div>
+            {{end}}
+            <div class="heading progress-bar-pow-pos-percent">{{if not .BlockVersionSuccess}}
+              {{twoDecimalPlaces .BlockVersionNextPercentage}}%
+              {{else}}
+              Phase Complete
+              {{end}}</div>
+          </div>
+        </div>
+        <div class="chart pow w-clearfix">
+          <div class="chart-info w-clearfix">
+            <div class="heading-container">
+              <img src="/images/pickaxe.svg" class="heading-icon" />
+              <div>
+                <div class="heading">Miner Upgrade</div>
+                <div class="headingsubline">Proof-of-Work</div>
+              </div>
+            </div>
+            <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version:
+              <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionCurrent}}</span>
+              <br> Next Version: <span class="highlight-text {{if .BlockVersionSuccess}}green{{else}}orange{{end}}">v{{.BlockVersionNext}}</span>
+              <br> Upgrade Threshold: <span class="highlight-text">{{.BlockVersionRejectThreshold}}%</span>
+              <br> Rolling Window: <span class="highlight-text">{{commaSeparate .BlockVersionWindowLength}} Blocks</span>
+            </div>
+          </div>
+          <div class="chart-draw lines-big w-clearfix">
+            <div class="chart-draw-header w-clearfix" id="pow-bigLegend">
+            </div>
+            <div class="chart-draw-area">
+                <canvas id="pow-big"></canvas>
+            </div>
+          </div>
+          <div class="bars-small chart-draw w-clearfix">
+            <div class="chart-draw-area">
+                <canvas id="pow-small"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="pos-upgrade w-clearfix width-half">
+        <div class="chart-toggle-side pos"></div>
+        <div class="transition upgrade-content">
+          <div class="upgrade-content-statistics-header w-clearfix">
+            <div class="heading-container">
+              <img src="/images/ticket.svg" class="heading-icon" />
+              <div>
+                <div class="heading">Voter Upgrade</div>
+                <div class="headingsubline">Proof-of-Stake</div>
+              </div>
+            </div>
+<!--  POS STATUS LABEL SWITCH -->
+            {{if .PosUpgrade.Completed}}
+            <div class="finished indicator pow-pos transition">Completed</div>
+            {{else}}
+            <div class="in-progress indicator pow-pos transition">in-progress</div>
+            {{end}}
+          </div>
+          <div class="upgrade-content-statistics-main w-clearfix">
+            <div class="upgrade-content-statistics-numbers w-clearfix">Current Version:
+              <span class="highlight-text {{if .PosUpgrade.Completed}}green{{else}}orange{{end}}">v{{.StakeVersionCurrent}}</span>
+              {{if not .PosUpgrade.Completed}}
+              <br> Next Version: <span class="highlight-text {{if gt .StakeVersionMostPopularPercentage .StakeVersionThreshold}}green{{else}}orange{{end}}">v{{.StakeVersionMostPopular}}</span>
+              {{end}}
+              <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
+              {{if .PosUpgrade.Completed}}
+                <br> Upgrade Interval: <span class="highlight-text">{{commaSeparate .PosUpgrade.UpgradeInterval.StartHeight}} -
+                {{commaSeparate .PosUpgrade.UpgradeInterval.EndHeight}}</span>
+                {{else}}
+                <br> Current Interval: <span class="highlight-text">{{commaSeparate .CurrentSVIStartHeight}} - {{commaSeparate .CurrentSVIEndHeight}}</span>
+              {{end}}
+            </div>
+            {{if not .PosUpgrade.Completed}}
+            <div class="pow-pos-time-remaining transition"><code>{{.StakeVersionTimeRemaining}} remaining</code></div>
+            {{end}}
+          </div>
+          <div class="progress-bar-pow-pos-upgrade">
+            <div class="progress-indicator w-clearfix">
+              <div class="pos progress-percent" style="
+                width: {{twoDecimalPlaces .StakeVersionMostPopularPercentage}}%;
+                {{if lt .StakeVersionMostPopularPercentage .StakeVersionThreshold}}
+                background-color: #fd714b;
+                {{end}}
+              ">
+              </div>
+            </div>
+            {{if not .PosUpgrade.Completed}}
+            <div class="pow-pos-upgrade progress-bar-threshold" style="left: {{.StakeVersionThreshold}}%"></div>
+            {{end}}
+            <div class="heading progress-bar-pow-pos-percent">{{if not .PosUpgrade.Completed}}
+              {{twoDecimalPlaces .StakeVersionMostPopularPercentage}}%
+              {{else}}
+              Phase Complete
+              {{end}}</div>
+          </div>
+        </div>
+        <div class="chart pos w-clearfix">
+          <div class="chart-info w-clearfix">
+            <div class="heading-container">
+              <img src="/images/ticket.svg" class="heading-icon" />
+              <div>
+                <div class="heading">Voter Upgrade</div>
+                <div class="headingsubline">Proof-of-Stake</div>
+              </div>
+            </div>
+            <div class="chart-statistics-numbers upgrade-content-statistics-numbers w-clearfix">Current Version:
+              <span class="highlight-text {{if .PosUpgrade.Completed}}green{{else}}orange{{end}}">v{{.StakeVersionCurrent}}</span>
+              {{if not .PosUpgrade.Completed}}
+              <br> Next Version: <span
+                class="highlight-text {{if gt .StakeVersionMostPopularPercentage .StakeVersionThreshold}}green{{else}}orange{{end}}">v{{.StakeVersionMostPopular}}</span>
+              {{end}}
+              <br> Upgrade Threshold: <span class="highlight-text">{{.StakeVersionThreshold}}%</span>
+              {{if .PosUpgrade.Completed}}
+                <br> Upgrade Interval: <span class="highlight-text">{{commaSeparate .PosUpgrade.UpgradeInterval.StartHeight}} -
+                {{commaSeparate .PosUpgrade.UpgradeInterval.EndHeight}}</span>
+              {{else}}
+                  <br> Current Interval: <span class="highlight-text">{{commaSeparate .CurrentSVIStartHeight}} -
+                  {{commaSeparate .CurrentSVIEndHeight}}</span>
+              {{end}}
+            </div>
+          </div>
+          <div class="chart-draw lines-big w-clearfix">
+            <div class="chart-draw-area">
+                <canvas id="pos-big"></canvas>
+            </div>
+          </div>
+          <div class="bars-small chart-draw w-clearfix">
+            <div class="chart-draw-header w-clearfix">
+            <!-- custom legend removed -->
+            </div>
+            <div class="chart-draw-area">
+                <canvas id="pos-small"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{{ end }}

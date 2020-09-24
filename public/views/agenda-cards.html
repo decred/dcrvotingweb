@@ -1,0 +1,213 @@
+{{ define "agenda-cards" }}
+<div id="agendalisting" class="w-clearfix">
+  
+  {{range $i, $agenda := .Agendas}}
+  <div class="agenda drop-shadow w-clearfix" style="order: -{{$agenda.VoteVersion}};">
+    <div class="agenda-section w-clearfix">
+      <div class="agenda heading">
+        {{index $.FriendlyAgendaLabels $agenda.ID}}
+      </div>
+      <div class="agenda-indicator w-clearfix">
+        <!-- labels -->
+        {{if $agenda.IsDefined}}
+        <div class="indicator upcoming">upcoming</div>
+        {{end}}
+        {{if $agenda.IsStarted}}
+        <div class="in-progress indicator">in-progress</div>
+        {{end}}
+        {{if $agenda.IsActive}}
+        <div class="finished indicator">Finished</div>
+        {{end}}
+        {{if $agenda.IsFailed}}
+        <div class="failed indicator">Failed</div>
+        {{end}}
+        {{if $agenda.IsLockedIn}}
+        <div class="finished indicator">Locked In</div>
+        {{end}}
+  
+        <!-- status icons -->
+        <div class="indicator-icon lockin {{if or $agenda.IsLockedIn $agenda.IsActive}}active{{end}}">
+          <div class="tooltip">
+            <div class="tooltip-option-name">
+              {{if $agenda.IsActive}}
+              Locked-in, new rules activated
+              {{else if $agenda.IsLockedIn}}
+              Lock-in phase, new rules not yet activated
+              {{else if $agenda.IsStarted}}
+              Voting phase, new rules not yet locked-in
+              {{else}}
+              Upgrading phase, new rules not yet activated
+              {{end}}
+            </div>
+          </div>
+        </div>
+  
+  
+        <div class="indicator-icon activated {{if $agenda.IsActive}}active{{end}}">
+          <div class="tooltip">
+            <div class="tooltip-option-name">
+              {{if $agenda.IsActive}}
+                Lock-in phase passed, new rules activated
+              {{else if $agenda.IsLockedIn}}
+                Lock-in phase, new rules will activate soon. Upgrade your software
+              {{else if $agenda.IsStarted}}
+                Voting phase, new rules not yet activated
+              {{else}}
+                Upgrading phase, new rules not yet activated
+              {{end}}
+            </div>
+          </div>
+        </div>
+  
+  
+        <!-- quorum indicator -->
+        {{if $agenda.VotingStarted}}
+        <div class="quorum w-clearfix">Quorum: &nbsp;
+          {{if $agenda.QuorumMet}}
+          <span class="highlight-text green transparent quorum">Yes</span>
+          {{else}}
+          <span class="highlight-text orange transparent quorum">No</span>
+          {{end}}
+          <div class="tooltip">
+            <div class="tooltip-option-name">
+              {{commaSeparate $agenda.TotalNonAbstainVotes}} votes of {{commaSeparate $agenda.QuorumThreshold}} required
+            </div>
+          </div>
+        </div>
+        {{end}}
+      </div>
+  
+      <!-- agenda details -->
+      <div class="w-clearfix width-half">
+        <div class="agenda-cfg w-clearfix">
+          <div class="agenda-cfg-spec w-clearfix">Agenda ID: &nbsp;<span class="highlight-text cyan transparent">#{{$agenda.ID}}</span>
+          </div>
+          {{if $agenda.VotingStarted}}
+          <div class="agenda-cfg-spec w-clearfix">
+            Voting Interval: &nbsp;<span class="highlight-text cyan transparent">{{commaSeparate $agenda.StartHeight}} - {{commaSeparate $agenda.EndHeight}}</span>
+          </div>
+          {{end}}
+          {{if $agenda.IsStarted}}
+          <div class="agenda-cfg-spec w-clearfix">
+           Blocks left: &nbsp;<span class="highlight-text cyan transparent">{{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}}</span>
+          </div>
+          {{end}}
+  
+        </div>
+        <div class="agenda-paragraph">
+          <p style="font-weight: bold;">{{$agenda.DescriptionWithDCPURL}}</p>
+          <p>{{index $.LongAgendaDescriptions $agenda.ID}}</p>
+        </div>
+      </div>
+  
+      <!-- agenda choices list -->
+      <div class="left-padding-50 w-clearfix width-half">
+        <div class="agenda-voting-overview-options-title w-clearfix">
+          <div class="agenda-voting-overview">
+          {{if $agenda.IsActive}}voting results:{{else}}voting overview:{{end}}</div>
+        </div>
+        <div class="agenda-voting-overview-options w-clearfix">
+          <div class="width-third">
+            {{range $cid, $choice := $agenda.VoteChoices}}
+            <div class="agenda-voting-overview-option w-clearfix">
+              <div class="_{{$choice.ID}} agenda-voting-overview-option-dot"></div>
+              <div class="agenda-voting-overview-option-percent">{{$choice.ID}}</div>
+             
+              {{if $agenda.VotingStarted }}
+                <div class="agenda-voting-overview-option-percent value">{{twoDecimalPlaces ($agenda.VotePercent $choice.ID)}}%</div>
+                <div class="tooltip">
+                  <div class="tooltip-option-name">
+                    {{commaSeparate (index $agenda.VoteCounts $choice.ID)}} votes
+                  </div>
+                </div>
+              {{end}}
+            </div>
+            {{end}}
+            </div>
+            <div class="width-half">
+              {{if $agenda.VotingStarted}}
+              <div class="agenda-voting-overview-option-active w-clearfix">
+                <div class="agenda-voting-overview-option-block">Approval Rating:</div>
+                <div class="agenda-voting-overview-option-block value">{{twoDecimalPlaces $agenda.ApprovalRating}}%</div>
+              </div>
+              {{end}}
+              {{if or $agenda.IsLockedIn $agenda.IsActive}}
+              <div class="agenda-voting-overview-option-active w-clearfix">
+                <div class="agenda-voting-overview-option-block">Locked In:</div>
+                <div class="agenda-voting-overview-option-block value">{{commaSeparate $agenda.BlockLockedIn}}</div>
+              </div>
+              <div class="agenda-voting-overview-option-active w-clearfix">
+                <div class="agenda-voting-overview-option-block">{{if $agenda.IsLockedIn}}Activates{{else}}Activated{{end}}:</div>
+                <div class="agenda-voting-overview-option-block value">{{commaSeparate $agenda.ActivationBlock}}</div>
+              </div>
+              {{end}}
+            </div>
+          </div>
+  
+          
+          {{if and $.PosUpgrade.Completed $.BlockVersionSuccess $agenda.IsDefined}}
+            <div class="agenda-voting-overview-disclaimer">
+              <p><small>
+                Approximately <strong>{{blocksToTimeEstimate $agenda.StartHeight $.BlockHeight}}</strong> until voting starts ({{commaSeparate (minus64 $agenda.StartHeight $.BlockHeight)}} blocks).
+              </small></p>
+            </div>
+          {{end}}
+          
+          {{if $agenda.IsStarted}}
+            <div class="agenda-voting-overview-disclaimer">
+              <p><small>
+                Approximately <strong>{{blocksToTimeEstimate $agenda.EndHeight $.BlockHeight}}</strong> left for voting ({{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}} blocks).
+              </small></p>
+          </div>
+          {{end}}
+  
+          {{if $agenda.IsLockedIn}}
+            <div class="agenda-voting-overview-disclaimer">
+              <p><small>
+                The vote has passed! The new rules will be activated in approximately <strong>{{blocksToTimeEstimate $agenda.ActivationBlock $.BlockHeight}}</strong> ({{commaSeparate (minus64 $agenda.ActivationBlock $.BlockHeight)}} blocks). Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/wallets/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
+              </small></p>
+            </div>
+          {{end}}
+  
+          {{if $agenda.IsActive}}
+            <div class="agenda-voting-overview-disclaimer">
+              <p><small>
+                The new rules have been activated. Ensure you are running a recent enough software version that supports the new rules. Visit our <a href="https://decred.org/wallets/" target="_blank" rel="noopener noreferrer">Downloads Page</a> to get the latest Software.
+              </small></p>
+            </div>
+          {{end}}
+          
+      </div>
+    </div>
+  
+    {{if $agenda.IsStarted }}
+    <div class="blocks-left-for-voting">
+      <div class="blocks-left-for-voting-dot"></div>
+      <div class="heading">{{commaSeparate (minus64 $agenda.EndHeight $.BlockHeight)}} blocks left for voting</div>
+    </div>
+    {{end}}
+  
+    <!-- agenda voting results barchart -->
+    {{if $agenda.IsStarted }}
+    <div class="agenda-section progress-bar w-clearfix">
+      <div class="w-clearfix">
+        <div class="progress-bar-competing-options-and-total-votes w-clearfix">
+            {{range $cid, $choice := $agenda.VoteChoices}}
+            <div class="option-{{$choice.ID}} option-progress a_{{$agenda.ID}}-c{{$choice.ID}}">
+              <div class="tooltip">
+                <div class="tooltip-dot option-{{$choice.ID}}"></div>
+                <div class="tooltip-option-name">{{$choice.ID}}</div>
+                <div class="tooltip-option-value">{{twoDecimalPlaces ($agenda.VotePercent $choice.ID)}}%</div>
+              </div>
+            </div>
+            {{end}}
+        </div>
+      </div>
+    </div>
+    {{end}}
+  
+  </div>
+  {{end}}
+
+</div>
+{{ end }}
