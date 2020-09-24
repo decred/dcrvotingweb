@@ -37,14 +37,6 @@ const (
 	// numberOfIntervals is the number of intervals to use when calling
 	// getstakeversioninfo
 	numberOfIntervals = 4
-
-	// blockVersionMain is the version of the block being generated for
-	// the main network.
-	blockVersionMain = 7
-
-	// blockVersionTest is the version of the block being generated
-	// for the testnet network.
-	blockVersionTest = 8
 )
 
 var (
@@ -58,14 +50,17 @@ var (
 		"lnsupport":         "Start Lightning Network Support",
 		"lnfeatures":        "Enable Lightning Network Features",
 		"fixlnseqlocks":     "Update Sequence Lock Rules",
-		"headercommitments": "Enable Block Header Commitments"}
-
+		"headercommitments": "Enable Block Header Commitments",
+		"treasury":          "Enable Decentralized Treasury",
+	}
 	longAgendaDescriptions = map[string]template.HTML{
 		"sdiffalgorithm":    template.HTML("Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals."),
 		"lnsupport":         template.HTML("The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration."),
 		"lnfeatures":        template.HTML("The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration."),
 		"fixlnseqlocks":     template.HTML("In order to fully support the <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a>, the current sequence lock consensus rules need to be modified."),
-		"headercommitments": template.HTML("Proposed modifications to the Decred block header to increase the security and efficiency of lightweight clients, as well as adding infrastructure to enable future scalability enhancements.")}
+		"headercommitments": template.HTML("Proposed modifications to the Decred block header to increase the security and efficiency of lightweight clients, as well as adding infrastructure to enable future scalability enhancements."),
+		"treasury":          template.HTML("Proposed support for a decentralized treasury defined by <a href='https://github.com/decred/dcps/blob/master/dcp-0006/dcp-0006.mediawiki' target='_blank' rel='noopener noreferrer'>DCP0006</a>."),
+	}
 )
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
@@ -309,7 +304,6 @@ func mainCore() int {
 
 	// Chans for rpccclient notification handlers
 	connectChan := make(chan wire.BlockHeader, 100)
-	quit := make(chan struct{})
 
 	// Read in current dcrd cert
 	var dcrdCerts []byte
@@ -360,7 +354,8 @@ func mainCore() int {
 		dcrdClient.Disconnect()
 	}()
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	// Subscribe to block notifications
 	if err = dcrdClient.NotifyBlocks(ctx); err != nil {
@@ -379,7 +374,7 @@ func mainCore() int {
 		signal.Stop(c)
 		// Close the channel so multiple goroutines can get the message
 		log.Println("CTRL+C hit.  Closing.")
-		close(quit)
+		cancel()
 	}()
 
 	// Get the current best block (height and hash)
@@ -408,7 +403,7 @@ func mainCore() int {
 				log.Printf("Block %v (height %v) connected",
 					blkHdr.BlockHash(), blkHdr.Height)
 				updatetemplateInformation(ctx, dcrdClient, &blkHdr)
-			case <-quit:
+			case <-ctx.Done():
 				log.Println("Closing dcrvotingweb")
 				wg.Done()
 				return
@@ -450,7 +445,7 @@ func mainCore() int {
 		err = http.ListenAndServe(cfg.Listen, nil)
 		if err != nil {
 			log.Printf("Failed to bind http server: %v", err)
-			close(quit)
+			cancel()
 		}
 	}()
 
