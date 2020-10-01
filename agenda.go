@@ -196,10 +196,11 @@ func agendasFromJSON(getVoteInfo types.GetVoteInfoResult) []Agenda {
 			voteChoices[vote.ID] = vote
 		}
 		parsedAgendas = append(parsedAgendas, Agenda{
-			ID:              a.ID,
-			Status:          a.Status,
-			Title:           agendaTitles[a.ID],
-			Description:     a.Description,
+			ID:          a.ID,
+			Status:      a.Status,
+			Title:       agendaTitles[a.ID],
+			Description: a.Description,
+			// #nosec: this method will not auto-escape HTML. Verify data is well formed.
 			LongDescription: template.HTML(longAgendaDescriptions[a.ID]),
 			Mask:            a.Mask,
 			VoteVersion:     getVoteInfo.VoteVersion,
