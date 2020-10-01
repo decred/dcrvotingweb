@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -45,7 +44,7 @@ var (
 	// parameters.
 	templateInformation *templateFields
 
-	friendlyAgendaLabels = map[string]string{
+	agendaTitles = map[string]string{
 		"sdiffalgorithm":    "Change PoS Staking Algorithm",
 		"lnsupport":         "Start Lightning Network Support",
 		"lnfeatures":        "Enable Lightning Network Features",
@@ -53,19 +52,19 @@ var (
 		"headercommitments": "Enable Block Header Commitments",
 		"treasury":          "Enable Decentralized Treasury",
 	}
-	longAgendaDescriptions = map[string]template.HTML{
-		"sdiffalgorithm":    template.HTML("Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals."),
-		"lnsupport":         template.HTML("The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration."),
-		"lnfeatures":        template.HTML("The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration."),
-		"fixlnseqlocks":     template.HTML("In order to fully support the <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a>, the current sequence lock consensus rules need to be modified."),
-		"headercommitments": template.HTML("Proposed modifications to the Decred block header to increase the security and efficiency of lightweight clients, as well as adding infrastructure to enable future scalability enhancements."),
-		"treasury":          template.HTML("Proposed support for a decentralized treasury defined by <a href='https://github.com/decred/dcps/blob/master/dcp-0006/dcp-0006.mediawiki' target='_blank' rel='noopener noreferrer'>DCP0006</a>."),
+	longAgendaDescriptions = map[string]string{
+		"sdiffalgorithm":    "Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals.",
+		"lnsupport":         "The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration.",
+		"lnfeatures":        "The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration.",
+		"fixlnseqlocks":     "In order to fully support the <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a>, the current sequence lock consensus rules need to be modified.",
+		"headercommitments": "Proposed modifications to the Decred block header to increase the security and efficiency of lightweight clients, as well as adding infrastructure to enable future scalability enhancements.",
+		"treasury":          "In May 2019, Decred stakeholders approved the development of <a href='https://proposals.decred.org/proposals/c96290a' target='_blank' rel='noopener noreferrer'>a proposed solution</a> to further decentralize the process of spending from the Decred treasury.",
 	}
 )
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
 func updatetemplateInformation(ctx context.Context, dcrdClient *rpcclient.Client, latestBlockHeader *wire.BlockHeader) {
-	log.Println("updating vote information")
+	log.Println("Updating vote information")
 
 	hash := latestBlockHeader.BlockHash()
 	height := int64(latestBlockHeader.Height)
@@ -74,9 +73,6 @@ func updatetemplateInformation(ctx context.Context, dcrdClient *rpcclient.Client
 
 	// Set Current block height
 	templateInformation.BlockHeight = height
-
-	templateInformation.FriendlyAgendaLabels = friendlyAgendaLabels
-	templateInformation.LongAgendaDescriptions = longAgendaDescriptions
 
 	// Request GetStakeVersions to receive information about past block versions.
 	//
@@ -325,7 +321,7 @@ func mainCore() int {
 				log.Printf("Failed to deserialize block header: %v", errLocal)
 				return
 			}
-			log.Printf("received new block %v (height %d)", blockHeader.BlockHash(),
+			log.Printf("Received new block %v (height %d)", blockHeader.BlockHash(),
 				blockHeader.Height)
 			connectChan <- blockHeader
 		},
