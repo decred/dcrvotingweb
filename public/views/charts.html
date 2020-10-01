@@ -35,7 +35,7 @@
               <div class="pow progress-percent" style="
                 {{if not .BlockVersionSuccess}}
                 background-color:#fd714b;
-                width: {{twoDecimalPlaces .BlockVersionNextPercentage}}%;
+                width: {{ printf "%.1f" .BlockVersionNextPercentage}}%;
                 {{else}}
                 width: 100%;
                 {{end}}
@@ -46,7 +46,7 @@
             <div class="pow-pos-upgrade progress-bar-threshold" style="left: {{.BlockVersionRejectThreshold}}%"></div>
             {{end}}
             <div class="heading progress-bar-pow-pos-percent">{{if not .BlockVersionSuccess}}
-              {{twoDecimalPlaces .BlockVersionNextPercentage}}%
+              {{ printf "%.1f" .BlockVersionNextPercentage}}%
               {{else}}
               Phase Complete
               {{end}}</div>
