@@ -5,8 +5,6 @@
 package main
 
 import (
-	"html/template"
-
 	"github.com/decred/dcrd/rpc/jsonrpc/types/v2"
 )
 
@@ -78,8 +76,4 @@ type templateFields struct {
 	PendingActivation bool
 	// Rules Activated to show that all rules have activated
 	RulesActivated bool
-	// Human friendly readable labels for each agenda
-	FriendlyAgendaLabels map[string]string
-	// Human friendly readable descriptions for each agenda
-	LongAgendaDescriptions map[string]template.HTML
 }

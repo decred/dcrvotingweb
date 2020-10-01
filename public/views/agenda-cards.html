@@ -1,11 +1,11 @@
 {{ define "agenda-cards" }}
 <div id="agendalisting" class="w-clearfix">
   
-  {{range $i, $agenda := .Agendas}}
+  {{range $agenda := .Agendas}}
   <div class="agenda drop-shadow w-clearfix" style="order: -{{$agenda.VoteVersion}};">
     <div class="agenda-section w-clearfix">
       <div class="agenda heading">
-        {{index $.FriendlyAgendaLabels $agenda.ID}}
+        {{$agenda.Title}}
       </div>
       <div class="agenda-indicator w-clearfix">
         <!-- labels -->
@@ -96,7 +96,7 @@
         </div>
         <div class="agenda-paragraph">
           <p style="font-weight: bold;">{{$agenda.DescriptionWithDCPURL}}</p>
-          <p>{{index $.LongAgendaDescriptions $agenda.ID}}</p>
+          <p>{{$agenda.LongDescription}}</p>
         </div>
       </div>
   

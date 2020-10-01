@@ -18,9 +18,14 @@ import (
 // Agenda contains all of the data representing an agenda for the html
 // template programming.
 type Agenda struct {
-	ID              string
-	Status          string
-	Description     string
+	ID     string
+	Status string
+	// Title is the main heading for the agenda card, hard-coded in main.go.
+	Title string
+	// Description is the short description from dcrd GetVoteInfo RPC response.
+	Description string
+	// LongDescription is a more verbose description, hard-coded in main.go.
+	LongDescription template.HTML
 	Mask            uint16
 	VoteVersion     uint32
 	QuorumThreshold int64
@@ -193,7 +198,9 @@ func agendasFromJSON(getVoteInfo types.GetVoteInfoResult) []Agenda {
 		parsedAgendas = append(parsedAgendas, Agenda{
 			ID:              a.ID,
 			Status:          a.Status,
+			Title:           agendaTitles[a.ID],
 			Description:     a.Description,
+			LongDescription: template.HTML(longAgendaDescriptions[a.ID]),
 			Mask:            a.Mask,
 			VoteVersion:     getVoteInfo.VoteVersion,
 			QuorumThreshold: int64(getVoteInfo.Quorum),
