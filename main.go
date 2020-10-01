@@ -58,13 +58,13 @@ var (
 		"lnfeatures":        "The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration.",
 		"fixlnseqlocks":     "In order to fully support the <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a>, the current sequence lock consensus rules need to be modified.",
 		"headercommitments": "Proposed modifications to the Decred block header to increase the security and efficiency of lightweight clients, as well as adding infrastructure to enable future scalability enhancements.",
-		"treasury":          "Proposed support for a decentralized treasury defined by <a href='https://github.com/decred/dcps/blob/master/dcp-0006/dcp-0006.mediawiki' target='_blank' rel='noopener noreferrer'>DCP0006</a>.",
+		"treasury":          "In May 2019, Decred stakeholders approved the development of <a href='https://proposals.decred.org/proposals/c96290a' target='_blank' rel='noopener noreferrer'>a proposed solution</a> to further decentralize the process of spending from the Decred treasury.",
 	}
 )
 
 // updatetemplateInformation is called on startup and upon every block connected notification received.
 func updatetemplateInformation(ctx context.Context, dcrdClient *rpcclient.Client, latestBlockHeader *wire.BlockHeader) {
-	log.Println("updating vote information")
+	log.Println("Updating vote information")
 
 	hash := latestBlockHeader.BlockHash()
 	height := int64(latestBlockHeader.Height)
@@ -321,7 +321,7 @@ func mainCore() int {
 				log.Printf("Failed to deserialize block header: %v", errLocal)
 				return
 			}
-			log.Printf("received new block %v (height %d)", blockHeader.BlockHash(),
+			log.Printf("Received new block %v (height %d)", blockHeader.BlockHash(),
 				blockHeader.Height)
 			connectChan <- blockHeader
 		},
