@@ -57,7 +57,7 @@
           {{if .BlockVersionSuccess}}
           <span class="finished indicator transition">PoW</span>
           {{else}}
-          <span class="in-progress indicator transition">PoW {{twoDecimalPlaces .BlockVersionNextPercentage}}%</span>
+          <span class="in-progress indicator transition">PoW {{ printf "%.1f" .BlockVersionNextPercentage }}%</span>
           {{end}}
           {{if .PosUpgrade.Completed}}
             <span class="finished indicator transition">PoS</span>
