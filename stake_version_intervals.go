@@ -8,6 +8,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/decred/dcrd/chaincfg/v3"
 	"github.com/decred/dcrd/rpc/jsonrpc/types/v2"
 	"github.com/decred/dcrd/rpcclient/v6"
 )
@@ -22,12 +23,19 @@ type StakeVersionIntervals struct {
 // to find the first SVI which meets the upgrade threshold for the provided version.
 func (s *StakeVersionIntervals) GetStakeVersionUpgradeSVI(version uint32) (upgradeOccurred bool, upgradeSVI types.VersionInterval) {
 
-	// Vote version 8 on testnet3 is a strange case - the PoS threshold was met
+	// Vote version 8 is a strange case - the PoS threshold was met
 	// before the PoW threshold, and this site is not able to cope with that
 	// scenario. Hardcoding the upgrade SVI rather than detecting it
 	// programmatically.
-	if activeNetParams.Name == "testnet3" && version == 8 {
-		return true, s.Intervals[152]
+	if version == 8 {
+		switch activeNetParams.Name {
+		case chaincfg.MainNetParams().Name:
+			return true, s.Intervals[261]
+		case chaincfg.TestNet3Params().Name:
+			return true, s.Intervals[152]
+		default:
+			panic("unsupported network")
+		}
 	}
 
 	for i, svi := range s.Intervals {
