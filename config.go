@@ -182,6 +182,8 @@ func loadConfig() (*config, error) {
 		StakeVersionWindowLength: activeNetParams.StakeVersionInterval,
 		StakeVersionThreshold: float64(activeNetParams.StakeMajorityMultiplier) /
 			float64(activeNetParams.StakeMajorityDivisor) * 100,
+
+		RuleChangeActivationInterval: int64(activeNetParams.RuleChangeActivationInterval),
 	}
 
 	return &cfg, nil
