@@ -287,7 +287,7 @@ func updatetemplateInformation(ctx context.Context, dcrdClient *rpcclient.Client
 }
 
 // main wraps mainCore, which does all the work, because deferred functions do
-/// not run after os.Exit().
+// not run after os.Exit().
 func main() {
 	os.Exit(mainCore())
 }
