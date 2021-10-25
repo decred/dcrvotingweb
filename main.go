@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -304,7 +303,7 @@ func mainCore() int {
 	// Read in current dcrd cert
 	var dcrdCerts []byte
 	if !cfg.DisableTLS {
-		dcrdCerts, err = ioutil.ReadFile(cfg.RPCCert)
+		dcrdCerts, err = os.ReadFile(cfg.RPCCert)
 		if err != nil {
 			log.Printf("Failed to read dcrd cert file at %v: %v",
 				cfg.RPCCert, err)

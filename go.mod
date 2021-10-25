@@ -1,6 +1,6 @@
 module github.com/decred/dcrvotingweb
 
-go 1.13
+go 1.16
 
 require (
 	github.com/decred/dcrd/chaincfg/v3 v3.0.0
