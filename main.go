@@ -13,6 +13,7 @@ import (
 	"os/signal"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/decred/dcrd/rpcclient/v7"
@@ -361,7 +362,7 @@ func mainCore() int {
 
 	// Only accept a single CTRL+C
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP)
 
 	// Start waiting for the interrupt signal
 	go func() {
