@@ -1,5 +1,5 @@
 # Build image
-FROM golang:1.15
+FROM golang:1.17
 
 LABEL description="dcrvotingweb build"
 LABEL version="1.0"
@@ -13,7 +13,7 @@ COPY ./ /root/
 RUN go build -v .
 
 # Serve image
-FROM golang:1.15
+FROM golang:1.17
 
 LABEL description="dcrvotingweb serve"
 LABEL version="1.0"
