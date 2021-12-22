@@ -45,20 +45,28 @@ var (
 	templateInformation *templateFields
 
 	agendaTitles = map[string]string{
-		"sdiffalgorithm":    "Change PoS Staking Algorithm",
-		"lnsupport":         "Start Lightning Network Support",
-		"lnfeatures":        "Enable Lightning Network Features",
-		"fixlnseqlocks":     "Update Sequence Lock Rules",
-		"headercommitments": "Enable Block Header Commitments",
-		"treasury":          "Enable Decentralized Treasury",
+		"sdiffalgorithm":       "Change PoS Staking Algorithm",
+		"lnsupport":            "Start Lightning Network Support",
+		"lnfeatures":           "Enable Lightning Network Features",
+		"fixlnseqlocks":        "Update Sequence Lock Rules",
+		"headercommitments":    "Enable Block Header Commitments",
+		"treasury":             "Enable Decentralized Treasury",
+		"reverttreasurypolicy": "Revert Treasury Expenditure Policy",
+		"explicitverupgrades":  "Explicit Version Upgrades",
+		"autorevocations":      "Automatic Ticket Revocations",
+		"changesubsidysplit":   "Change PoW/PoS Subsidy Split",
 	}
 	longAgendaDescriptions = map[string]string{
-		"sdiffalgorithm":    "Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals.",
-		"lnsupport":         "The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration.",
-		"lnfeatures":        "The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration.",
-		"fixlnseqlocks":     "In order to fully support the <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a>, the current sequence lock consensus rules need to be modified.",
-		"headercommitments": "Proposed modifications to the Decred block header to increase the security and efficiency of lightweight clients, as well as adding infrastructure to enable future scalability enhancements.",
-		"treasury":          "In May 2019, Decred stakeholders approved the development of <a href='https://proposals.decred.org/proposals/c96290a' target='_blank' rel='noopener noreferrer'>a proposed solution</a> to further decentralize the process of spending from the Decred treasury.",
+		"sdiffalgorithm":       "Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals.",
+		"lnsupport":            "The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration.",
+		"lnfeatures":           "The <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a> is the most directly useful application of smart contracts to date since it allows for off-chain transactions that optionally settle on-chain. This infrastructure has clear benefits for both scaling and privacy. Decred is optimally positioned for this integration.",
+		"fixlnseqlocks":        "In order to fully support the <a href='https://lightning.network/' target='_blank' rel='noopener noreferrer'>Lightning Network</a>, the current sequence lock consensus rules need to be modified.",
+		"headercommitments":    "Proposed modifications to the Decred block header to increase the security and efficiency of lightweight clients, as well as adding infrastructure to enable future scalability enhancements.",
+		"treasury":             "In May 2019, Decred stakeholders approved the development of <a href='https://proposals.decred.org/proposals/c96290a' target='_blank' rel='noopener noreferrer'>a proposed solution</a> to further decentralize the process of spending from the Decred treasury.",
+		"reverttreasurypolicy": "Change the algorithm used to calculate Treasury spending limits such that it enforces the policy originally approved by stakeholders in the <a href='https://proposals.decred.org/proposals/c96290a' target='_blank' rel='noopener noreferrer'>Decentralized Treasury proposal</a>.",
+		"explicitverupgrades":  "Modifications to Decred transaction and scripting language version enforcement which will simplify deployment and integration of future consensus changes across the Decred ecosystem.",
+		"autorevocations":      "Changes to ticket revocation transactions and block acceptance criteria in order to enable <a href='https://proposals.decred.org/record/e2d7b7d' target='_blank' rel='noopener noreferrer'>automatic ticket revocations</a>, significantly improving the user experience for stakeholders.",
+		"changesubsidysplit":   "<a href='https://proposals.decred.org/record/427e1d4' target='_blank' rel='noopener noreferrer'>Proposal</a> to modify to the block reward subsidy split such that 10% goes to Proof-of-Work and 80% goes to Proof-of-Stake.",
 	}
 )
 
