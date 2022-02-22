@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"html/template"
 	"log"
 	"regexp"
@@ -147,13 +148,13 @@ func (a *Agenda) countVotes(ctx context.Context, dcrdClient *rpcclient.Client, v
 	// Required to call GetStakeVersions
 	lastBlockHash, err := dcrdClient.GetBlockHash(ctx, votingEndHeight)
 	if err != nil {
-		return err
+		return fmt.Errorf("GetBlockHash error: %v", err)
 	}
 
 	// Retrieve all votes for this voting period
 	stakeVersions, err := dcrdClient.GetStakeVersions(ctx, lastBlockHash.String(), int32(votingEndHeight-votingStartHeight)+1)
 	if err != nil {
-		return err
+		return fmt.Errorf("GetStakeVersions error: %v", err)
 	}
 
 	// Collect all votes of the correct version
@@ -259,14 +260,14 @@ func agendasForVersions(ctx context.Context, dcrdClient *rpcclient.Client, maxVo
 		if votingStartHeight > currentHeight {
 			// Voting hasnt started yet. So we cannot count the votes.
 			// Nothing more to do with these agendas
-			log.Printf("Voting is in the future so not counting votes yet")
+			log.Printf("v%d voting is in the future so not counting votes yet", version)
 			allAgendas = append(allAgendas, agendas...)
 			break
 		}
 
 		// If agenda voting is currently in progress, only check votes up to the latest block
 		if votingEndHeight > currentHeight {
-			log.Printf("Voting is currently on-going")
+			log.Printf("v%d voting is currently on-going", version)
 			votingEndHeight = currentHeight
 		}
 
@@ -276,6 +277,7 @@ func agendasForVersions(ctx context.Context, dcrdClient *rpcclient.Client, maxVo
 				agenda.ID, votingStartHeight, votingEndHeight)
 			err = agenda.countVotes(ctx, dcrdClient, votingStartHeight, votingEndHeight)
 			if err != nil {
+				log.Printf("Error counting agenda %q votes: %v", agenda.ID, err)
 				return nil, err
 			}
 		}

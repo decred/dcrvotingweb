@@ -23,9 +23,11 @@ type StakeVersionIntervals struct {
 // to find the first SVI which meets the upgrade threshold for the provided version.
 func (s *StakeVersionIntervals) GetStakeVersionUpgradeSVI(version uint32) (upgradeOccurred bool, upgradeSVI types.VersionInterval) {
 
-	// Vote version 8 is a strange case - the PoS threshold was met
-	// before the PoW threshold, and this site is not able to cope with that
-	// scenario. Hardcoding the upgrade SVI rather than detecting it
+	// This site is not able to cope with the PoS upgrade threshold being met
+	// before the PoW threshold.
+	// That happened on both testnet and mainnet during the version 8 upgrade,
+	// and on mainnet during version 9.
+	// Hardcoding those upgrade SVIs rather than detecting them
 	// programmatically.
 	if version == 8 {
 		switch activeNetParams.Name {
@@ -36,6 +38,9 @@ func (s *StakeVersionIntervals) GetStakeVersionUpgradeSVI(version uint32) (upgra
 		default:
 			panic("unsupported network")
 		}
+	}
+	if version == 9 && activeNetParams.Name == chaincfg.MainNetParams().Name {
+		return true, s.Intervals[312]
 	}
 
 	for i, svi := range s.Intervals {
