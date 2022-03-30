@@ -1,14 +1,12 @@
-dcrvotingweb
-============
+# dcrvotingweb
 
 [![Build Status](https://github.com/decred/dcrvotingweb/workflows/Build%20and%20Test/badge.svg)](https://github.com/decred/dcrvotingweb/actions)
 [![ISC License](https://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 
 ## Overview
+
 dcrvotingweb is a simple web app that connects to dcrd and displays
 information about consensus rule voting.
-
-## Installation
 
 ## Developing
 
