@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2019 The Decred developers
+// Copyright (c) 2017-2023 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -446,7 +446,7 @@ func mainCore() int {
 	// Start http server listening and serving, but no way to signal to quit
 	go func() {
 		log.Printf("Starting webserver on %v", cfg.Listen)
-		err = http.ListenAndServe(cfg.Listen, nil)
+		err = http.ListenAndServe(cfg.Listen, nil) // #nosec G114 - Ignore linter warning: "G114: Use of net/http serve function that has no support for setting timeouts (gosec)"
 		if err != nil {
 			log.Printf("Failed to bind http server: %v", err)
 			cancel()
