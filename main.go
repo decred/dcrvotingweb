@@ -16,7 +16,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/decred/dcrd/rpcclient/v7"
+	"github.com/decred/dcrd/rpcclient/v8"
 	"github.com/decred/dcrd/wire"
 )
 

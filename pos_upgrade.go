@@ -1,11 +1,11 @@
-// Copyright (c) 2017-2019 The Decred developers
+// Copyright (c) 2017-2023 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
 package main
 
 import (
-	"github.com/decred/dcrd/rpc/jsonrpc/types/v3"
+	"github.com/decred/dcrd/rpc/jsonrpc/types/v4"
 )
 
 type posUpgrade struct {
