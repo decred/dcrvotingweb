@@ -18,11 +18,4 @@ env GORACE="halt_on_error=1" go test -race ./...
 # static checker.
 
 # check linters
-golangci-lint run --disable-all --deadline=10m \
-  --enable=gofmt \
-  --enable=revive \
-  --enable=vet \
-  --enable=gosec \
-  --enable=gosimple \
-  --enable=unconvert \
-  --enable=ineffassign
+golangci-lint run
