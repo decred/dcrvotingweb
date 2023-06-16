@@ -16,7 +16,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/decred/dcrd/rpcclient/v7"
+	"github.com/decred/dcrd/rpcclient/v8"
 	"github.com/decred/dcrd/wire"
 )
 
@@ -55,6 +55,8 @@ var (
 		"explicitverupgrades":  "Explicit Version Upgrades",
 		"autorevocations":      "Automatic Ticket Revocations",
 		"changesubsidysplit":   "Change PoW/PoS Subsidy Split",
+		"changesubsidysplitr2": "Change PoW/PoS Subsidy Split To 1/89",
+		"blake3pow":            "Change PoW to BLAKE3 and ASERT",
 	}
 	longAgendaDescriptions = map[string]string{
 		"sdiffalgorithm":       "Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals.",
@@ -67,6 +69,8 @@ var (
 		"explicitverupgrades":  "Modifications to Decred transaction and scripting language version enforcement which will simplify deployment and integration of future consensus changes across the Decred ecosystem.",
 		"autorevocations":      "Changes to ticket revocation transactions and block acceptance criteria in order to enable <a href='https://proposals.decred.org/record/e2d7b7d' target='_blank' rel='noopener noreferrer'>automatic ticket revocations</a>, significantly improving the user experience for stakeholders.",
 		"changesubsidysplit":   "<a href='https://proposals.decred.org/record/427e1d4' target='_blank' rel='noopener noreferrer'>Proposal</a> to modify to the block reward subsidy split such that 10% goes to Proof-of-Work and 80% goes to Proof-of-Stake.",
+		"changesubsidysplitr2": "Modify the block reward subsidy split such that 1% goes to Proof-of-Work (PoW) and 89% goes to Proof-of-Stake (PoS). The Treasury subsidy remains at 10%.",
+		"blake3pow":            "<a href='https://proposals.decred.org/record/a8501bc' target='_blank' rel='noopener noreferrer'>Stakeholders voted</a> to change the Proof-of-Work hash function to BLAKE3. This consensus change will also update the difficulty algorithm to ASERT (Absolutely Scheduled Exponentially weighted Rising Targets).",
 	}
 )
 
