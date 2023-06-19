@@ -276,7 +276,7 @@ func updatetemplateInformation(ctx context.Context, dcrdClient *rpcclient.Client
 		templateInformation.IsUpgrading = true
 	}
 
-	templateInformation.Agendas, err = agendasForVersions(ctx, dcrdClient, svis.MaxVoteVersion, height, svis)
+	templateInformation.Agendas, err = agendasForVersions(ctx, dcrdClient, height, svis)
 	if err != nil {
 		log.Printf("Error getting agendas: %v", err)
 		return
