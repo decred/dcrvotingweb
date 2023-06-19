@@ -213,9 +213,9 @@ func agendasFromJSON(getVoteInfo types.GetVoteInfoResult) []Agenda {
 	return parsedAgendas
 }
 
-func agendasForVersions(ctx context.Context, dcrdClient *rpcclient.Client, maxVoteVersion uint32, currentHeight int64, svis StakeVersionIntervals) ([]Agenda, error) {
+func agendasForVersions(ctx context.Context, dcrdClient *rpcclient.Client, currentHeight int64, svis StakeVersionIntervals) ([]Agenda, error) {
 	var allAgendas []Agenda
-	for version := uint32(0); version <= maxVoteVersion; version++ {
+	for version := svis.MinVoteVersion; version <= svis.MaxVoteVersion; version++ {
 		// Retrieve Agendas for this voting period
 		getVoteInfo, err := dcrdClient.GetVoteInfo(ctx, version)
 		if err != nil {

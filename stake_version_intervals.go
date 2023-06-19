@@ -16,6 +16,7 @@ import (
 // StakeVersionIntervals wraps a set of types.VersionIntervals
 type StakeVersionIntervals struct {
 	Intervals      []types.VersionInterval
+	MinVoteVersion uint32
 	MaxVoteVersion uint32
 }
 
@@ -82,7 +83,8 @@ func AllStakeVersionIntervals(ctx context.Context, dcrdClient *rpcclient.Client,
 	}
 
 	svis := StakeVersionIntervals{
-		Intervals: stakeVersionInfoResult.Intervals}
+		Intervals: stakeVersionInfoResult.Intervals,
+	}
 
 	// Reverse the slice of SVIs
 	// This makes traversing the set easier later on,
@@ -100,6 +102,11 @@ func AllStakeVersionIntervals(ctx context.Context, dcrdClient *rpcclient.Client,
 		}
 	}
 
+	min := activeNetParams.GenesisBlock.Header.StakeVersion
+	if min < 4 {
+		min = 4
+	}
+	svis.MinVoteVersion = min
 	svis.MaxVoteVersion = max
 
 	return svis, nil
