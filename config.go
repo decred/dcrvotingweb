@@ -22,11 +22,11 @@ const (
 
 	// blockVersionMain is the version of the block being generated for
 	// the main network.
-	blockVersionMain = 10
+	blockVersionMain = 11
 
 	// blockVersionTest is the version of the block being generated
 	// for the testnet network.
-	blockVersionTest = 11
+	blockVersionTest = 12
 )
 
 var (
