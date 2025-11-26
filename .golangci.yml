@@ -1,17 +1,13 @@
+version: "2"
 run:
-  deadline: 10m
-
+  timeout: 10m
 linters:
-  disable-all: true
+  default: none
   enable:
     - asciicheck
     - bidichk
     - bodyclose
     - errchkjson
-    - exportloopref
-    - gofmt
-    - goimports
-    - gosimple
     - govet
     - grouper
     - ineffassign
@@ -20,9 +16,12 @@ linters:
     - nosprintfhostport
     - reassign
     - rowserrcheck
+    - staticcheck
     - tparallel
-    - typecheck
     - unconvert
     - unparam
     - unused
-    - vetshadow
+formatters:
+  enable:
+    - gofmt
+    - goimports

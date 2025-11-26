@@ -14,8 +14,3 @@ set -ex
 # run tests
 env GORACE="halt_on_error=1" go test -race ./...
 
-# golangci-lint (github.com/golangci/golangci-lint) is used to run each each
-# static checker.
-
-# check linters
-golangci-lint run
