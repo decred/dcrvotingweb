@@ -10,7 +10,7 @@ information about consensus rule voting.
 
 ## Developing
 
-It is recommended to use Go 1.17 (or newer) for development.
+It is recommended to use Go 1.24 (or newer) for development.
 
 To build the code:
 
