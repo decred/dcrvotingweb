@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2023 The Decred developers
+// Copyright (c) 2017-2025 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -57,7 +57,7 @@ var (
 		"changesubsidysplit":   "Change PoW/PoS Subsidy Split",
 		"changesubsidysplitr2": "Change PoW/PoS Subsidy Split To 1/89",
 		"blake3pow":            "Change PoW to BLAKE3 and ASERT",
-		"maxtreasuryspend":     "Change maximum treasury expenditure policy",
+		"maxtreasuryspend":     "Change Maximum Treasury Expenditure Policy",
 	}
 	longAgendaDescriptions = map[string]string{
 		"sdiffalgorithm":       "Specifies a proposed replacement algorithm for determining the stake difficulty (commonly called the ticket price). This proposal resolves all issues with a new algorithm that adheres to the referenced ideals.",
